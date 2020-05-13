@@ -17,7 +17,7 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import piuk.blockchain.androidcoreui.utils.logging.RecoverWalletEvent
 import timber.log.Timber
@@ -39,6 +39,7 @@ class CreateWalletPresenter(
     }
 
     fun parseExtras(intent: Intent) {
+        analytics.logEventOnce(AnalyticsEvents.WalletSignupClickCreate)
         val mnemonic = intent.getStringExtra(RecoverFundsActivity.RECOVERY_PHRASE)
 
         if (mnemonic != null) recoveryPhrase = mnemonic
@@ -47,8 +48,8 @@ class CreateWalletPresenter(
             view.setTitleText(R.string.recover_funds)
             view.setNextText(R.string.dialog_continue)
         } else {
-            view.setTitleText(R.string.new_wallet)
-            view.setNextText(R.string.create_wallet)
+            view.setTitleText(R.string.new_account_title)
+            view.setNextText(R.string.new_account_cta_text)
         }
     }
 
@@ -82,12 +83,15 @@ class CreateWalletPresenter(
                 R.string.password_mismatch_error,
                 ToastCustom.TYPE_ERROR
             )
-            passwordStrength < 50 -> view.showWeakPasswordDialog(email, password1)
+            passwordStrength < 50 -> view.showWeakPasswordDialog(
+                email,
+                password1)
             else -> createOrRecoverWallet(email, password1)
         }
     }
 
     fun createOrRecoverWallet(email: String, password: String) {
+        analytics.logEventOnce(AnalyticsEvents.WalletSignupCreated)
         when {
             !recoveryPhrase.isEmpty() -> recoverWallet(email, password)
             else -> createWallet(email, password)
@@ -136,6 +140,7 @@ class CreateWalletPresenter(
             password
         ).doOnNext {
             accessState.isNewlyCreated = true
+            accessState.isRestored = true
             prefs.setValue(PersistentPrefs.KEY_WALLET_GUID, payloadDataManager.wallet!!.guid)
             appUtil.sharedKey = payloadDataManager.wallet!!.sharedKey
         }.addToCompositeDisposable(this)
@@ -159,4 +164,8 @@ class CreateWalletPresenter(
                 }
             )
     }
+
+    fun logEventEmailClicked() = analytics.logEventOnce(AnalyticsEvents.WalletSignupClickEmail)
+    fun logEventPasswordOneClicked() = analytics.logEventOnce(AnalyticsEvents.WalletSignupClickPasswordFirst)
+    fun logEventPasswordTwoClicked() = analytics.logEventOnce(AnalyticsEvents.WalletSignupClickPasswordSecond)
 }

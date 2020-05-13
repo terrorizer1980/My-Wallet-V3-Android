@@ -1,11 +1,12 @@
 package piuk.blockchain.android.ui.kyc.countryselection
 
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.NavHostFragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.countryselection.adapter.CountryCodeAdapter
 import piuk.blockchain.android.ui.kyc.countryselection.models.CountrySelectionState
 import piuk.blockchain.android.ui.kyc.countryselection.util.CountryDisplayModel
@@ -15,6 +16,7 @@ import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import piuk.blockchain.android.ui.kyc.navigate
 import piuk.blockchain.android.ui.kyc.search.filterCountries
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import com.jakewharton.rxbinding2.support.v7.widget.queryTextChanges
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -30,9 +32,7 @@ import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import java.util.concurrent.TimeUnit
-import kotlinx.android.synthetic.main.fragment_kyc_country_selection.recycler_view_country_selection as recyclerView
-import kotlinx.android.synthetic.main.fragment_kyc_country_selection.search_view_kyc as searchView
-import kotlinx.android.synthetic.main.fragment_kyc_country_selection.text_view_country_selection_message as messageView
+import kotlinx.android.synthetic.main.fragment_kyc_country_selection.*
 
 internal class KycCountrySelectionFragment :
     BaseFragment<KycCountrySelectionView, KycCountrySelectionPresenter>(), KycCountrySelectionView {
@@ -42,9 +42,10 @@ internal class KycCountrySelectionFragment :
     }
 
     private val presenter: KycCountrySelectionPresenter by inject()
+    private val analytics: Analytics by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private val countryCodeAdapter = CountryCodeAdapter {
-        presenter.onRegionSelected(it, progressListener.campaignType)
+        presenter.onRegionSelected(it)
     }
     private var countryList = ReplaySubject.create<List<CountryDisplayModel>>(1)
     private var progressDialog: MaterialProgressDialog? = null
@@ -59,23 +60,27 @@ internal class KycCountrySelectionFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerView.apply {
+        country_selection.apply {
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
             adapter = countryCodeAdapter
         }
-        val texts = when (regionType) {
+
+        when (regionType) {
             RegionType.Country -> {
                 logEvent(AnalyticsEvents.KycCountry)
-                R.string.kyc_country_selection_title to R.string.kyc_country_selection_message
+                progressListener.setHostTitle(R.string.kyc_country_selection_title)
+                message.setText(R.string.kyc_country_selection_message)
+                search_view.queryHint = getString(R.string.kyc_country_selection_search_hint)
             }
             RegionType.State -> {
                 logEvent(AnalyticsEvents.KycStates)
-                R.string.kyc_country_selection_state_title to R.string.kyc_country_selection_message_state
+                progressListener.setHostTitle(R.string.kyc_country_selection_state_title)
+                message.setText(R.string.kyc_country_selection_message_state)
+                search_view.queryHint = getString(R.string.kyc_state_selection_search_hint)
             }
         }
-        progressListener.setHostTitle(texts.first)
-        messageView.setText(texts.second)
+
         progressListener.incrementProgress(KycStep.CountrySelection)
 
         onViewReady()
@@ -86,13 +91,13 @@ internal class KycCountrySelectionFragment :
 
         compositeDisposable += countryList
             .filterCountries(
-                searchView.queryTextChanges().skipInitialValue()
+                search_view.queryTextChanges().skipInitialValue()
                     .debounce(100, TimeUnit.MILLISECONDS)
             )
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 countryCodeAdapter.items = it
-                recyclerView.scrollToPosition(0)
+                country_selection.scrollToPosition(0)
             }
     }
 
@@ -102,8 +107,9 @@ internal class KycCountrySelectionFragment :
     }
 
     override fun continueFlow(countryCode: String) {
+        analytics.logEvent(KYCAnalyticsEvents.CountrySelected)
         navigate(
-            KycCountrySelectionFragmentDirections.ActionKycCountrySelectionFragmentToKycProfileFragment(
+            KycCountrySelectionFragmentDirections.actionKycCountrySelectionFragmentToKycProfileFragment(
                 countryCode
             )
         )
@@ -111,7 +117,7 @@ internal class KycCountrySelectionFragment :
 
     override fun invalidCountry(displayModel: CountryDisplayModel) {
         navigate(
-            KycCountrySelectionFragmentDirections.ActionKycCountrySelectionFragmentToKycInvalidCountryFragment(
+            KycCountrySelectionFragmentDirections.actionKycCountrySelectionFragmentToKycInvalidCountryFragment(
                 displayModel
             )
         )

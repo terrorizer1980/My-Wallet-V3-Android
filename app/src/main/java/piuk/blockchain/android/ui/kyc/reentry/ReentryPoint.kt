@@ -6,5 +6,5 @@ enum class ReentryPoint(val entryPoint: String) {
     Profile("Profile Entry"),
     Address("Address Entry"),
     MobileEntry("Mobile Entry"),
-    Onfido("Onfido Splash")
+    Veriff("Veriff Splash")
 }

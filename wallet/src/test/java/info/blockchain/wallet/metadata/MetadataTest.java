@@ -8,7 +8,6 @@ import info.blockchain.wallet.api.PersistentUrls;
 import info.blockchain.wallet.bip44.HDWallet;
 import info.blockchain.wallet.bip44.HDWalletFactory;
 import info.blockchain.wallet.bip44.HDWalletFactory.Language;
-import info.blockchain.wallet.contacts.data.PublicContactDetails;
 import info.blockchain.wallet.util.MetadataUtil;
 import info.blockchain.wallet.util.RestClient;
 
@@ -26,9 +25,11 @@ import retrofit2.Retrofit;
 
 public final class MetadataTest {
 
-    boolean isEncrypted = false;
+    private boolean isEncrypted = false;
 
-    MockInterceptor mockInterceptor;
+    private MockInterceptor mockInterceptor;
+
+    private MetadataDerivation metadataDerivation = new MetadataDerivation(BitcoinMainNetParams.get());
 
     @Before
     public void setup() {
@@ -91,8 +92,8 @@ public final class MetadataTest {
     private HDWallet getWallet() throws Exception {
 
         return HDWalletFactory
-            .restoreWallet(PersistentUrls.getInstance().getBitcoinParams(), Language.US,
-                "15e23aa73d25994f1921a1256f93f72c", "", 1);
+                .restoreWallet(PersistentUrls.getInstance().getBitcoinParams(), Language.US,
+                        "15e23aa73d25994f1921a1256f93f72c", "", 1);
     }
 
     @Test
@@ -103,55 +104,10 @@ public final class MetadataTest {
         mockInterceptor.setResponseString("{\"message\":\"Not Found\"}");
         mockInterceptor.setResponseCode(404);
 
-        DeterministicKey metaDataHDNode = MetadataUtil.deriveMetadataNode(getWallet().getMasterKey());
+        DeterministicKey metaDataHDNode = MetadataUtil.INSTANCE.deriveMetadataNode(getWallet().getMasterKey());
 
-        Metadata metadata = new Metadata.Builder(metaDataHDNode, 2)
-                .setEncrypted(isEncrypted)
-                .build();
+        Metadata metadata = Metadata.Companion.newInstance(metaDataHDNode, 2, isEncrypted, null, metadataDerivation);
 
-        Assert.assertTrue(metadata.getAddress().equals(address));
-    }
-
-    @Test
-    public void testMetadata() throws Exception{
-
-        mockInterceptor.setResponseString("{\"message\":\"Not Found\"}");
-        mockInterceptor.setResponseCode(404);//New metadata response
-
-        DeterministicKey metaDataHDNode = MetadataUtil.deriveMetadataNode(getWallet().getMasterKey());
-
-        Metadata metadata = new Metadata.Builder(metaDataHDNode, 2)
-                .setEncrypted(isEncrypted)
-                .build();
-
-        String msg = "Rage rage";
-        mockInterceptor.setResponseString("{\"version\":1,\"payload\":\"UmFnZSByYWdl\",\"signature\":\"HwIx4Cs+1pB+8iCDREC1PiDqkDnEDhfcto6bQjxzo3RrHB562kg8nTjbFoaydlUI6tDkl3WnZahrmFZ8ErNqmBY=\",\"type_id\":1}");
-        mockInterceptor.setResponseCode(200);
-        metadata.putMetadata(new PublicContactDetails("mock").toJson());
-
-        mockInterceptor.setResponseString("{\"payload\":\"UmFnZSByYWdl\",\"version\":1,\"type_id\":1,\"signature\":\"HwIx4Cs+1pB+8iCDREC1PiDqkDnEDhfcto6bQjxzo3RrHB562kg8nTjbFoaydlUI6tDkl3WnZahrmFZ8ErNqmBY=\",\"created_at\":1480592845000,\"updated_at\":1480592845000,\"address\":\"1ErzrzB1FE1YyQ7LADMzye9J3Q8QeR1mja\"}");
-        mockInterceptor.setResponseCode(200);
-        String result1 = metadata.getMetadata();
-
-        Assert.assertTrue(msg.equals(result1));
-
-        mockInterceptor.setResponseString("{\"version\":1,\"payload\":\"UmFnZSByYWdlIHNvbWUgbW9yZQ==\",\"signature\":\"H7zIO7fzkb8t+zdbiEzlKt/8InFjH5N2ja+SaJPcAuheP3soAJwxVrnzG0tDQpxyJKSgYn/9il6XsLW3rmm3a+g=\",\"prev_magic_hash\":\"73d03136dfdadf66b4048f938ad8acf6084134a84ac6f542e0144b29999a6836\",\"type_id\":1}");
-        mockInterceptor.setResponseCode(200);
-        msg = "Rage rage some more";
-        metadata.putMetadata(new PublicContactDetails("mock").toJson());
-
-        mockInterceptor.setResponseString("{\"payload\":\"UmFnZSByYWdlIHNvbWUgbW9yZQ==\",\"version\":1,\"type_id\":1,\"signature\":\"H7zIO7fzkb8t+zdbiEzlKt/8InFjH5N2ja+SaJPcAuheP3soAJwxVrnzG0tDQpxyJKSgYn/9il6XsLW3rmm3a+g=\",\"prev_magic_hash\":\"73d03136dfdadf66b4048f938ad8acf6084134a84ac6f542e0144b29999a6836\",\"created_at\":1480592845000,\"updated_at\":1480592845000,\"address\":\"1ErzrzB1FE1YyQ7LADMzye9J3Q8QeR1mja\"}");
-        mockInterceptor.setResponseCode(200);
-        String result2 = metadata.getMetadata();
-        Assert.assertTrue(msg.equals(result2));
-
-        mockInterceptor.setResponseString("{\"status\": \"success\"}");
-        mockInterceptor.setResponseCode(200);
-        mockInterceptor.setResponseString("");
-        metadata.deleteMetadata(msg);
-
-        mockInterceptor.setResponseString("{\"message\":\"Not Found\"}");
-        mockInterceptor.setResponseCode(404);
-        Assert.assertNull(metadata.getMetadata());
+        Assert.assertEquals(metadata.getAddress(), address);
     }
 }

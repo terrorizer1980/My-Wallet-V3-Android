@@ -1,29 +1,30 @@
 package piuk.blockchain.android.ui.swipetoreceive
 
-import android.content.BroadcastReceiver
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.LocalBroadcastManager
-import android.support.v4.view.PagerAdapter
-import android.support.v4.view.ViewPager
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.AppCompatImageView
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatImageView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import com.blockchain.balance.drawableResFilled
+import androidx.viewpager.widget.PagerAdapter
+import androidx.viewpager.widget.ViewPager
+import piuk.blockchain.android.util.drawableResFilled
 import info.blockchain.balance.CryptoCurrency
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.fragment_swipe_to_receive.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.websocket.WebSocketService
+import piuk.blockchain.android.util.assetName
+import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import piuk.blockchain.androidcoreui.utils.extensions.gone
@@ -38,15 +39,7 @@ class SwipeToReceiveFragment : BaseFragment<SwipeToReceiveView, SwipeToReceivePr
     SwipeToReceiveView {
 
     private val presenter: SwipeToReceivePresenter by inject()
-
-    private val broadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == WebSocketService.ACTION_INTENT) {
-                // Update UI with new Address + QR
-                presenter.currencyPosition = presenter.currencyPosition
-            }
-        }
-    }
+    private val rxBus: RxBus by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -110,9 +103,9 @@ class SwipeToReceiveFragment : BaseFragment<SwipeToReceiveView, SwipeToReceivePr
         textview_account.text = accountName
     }
 
-    override fun displayCoinType(coinName: String) {
-        val requestString = context?.resources?.getString(R.string.swipe_receive_request, coinName) ?: ""
-
+    override fun displayCoinType(cryptoCurrency: CryptoCurrency) {
+        val assetName = resources.getString(cryptoCurrency.assetName())
+        val requestString = resources.getString(R.string.swipe_to_receive_request, assetName)
         textview_request_currency.text = requestString
         textview_request_currency.contentDescription = requestString
     }
@@ -132,18 +125,21 @@ class SwipeToReceiveFragment : BaseFragment<SwipeToReceiveView, SwipeToReceivePr
 
     override fun onStop() {
         super.onStop()
-        context?.run {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
-        }
+        compositeDisposable.clear()
+        rxBus.unregister(ActionEvent::class.java, event)
+    }
+
+    private val compositeDisposable = CompositeDisposable()
+
+    private val event by unsafeLazy {
+        rxBus.register(ActionEvent::class.java)
     }
 
     override fun onStart() {
         super.onStart()
-        context?.run {
-            LocalBroadcastManager.getInstance(this).registerReceiver(
-                broadcastReceiver,
-                IntentFilter(WebSocketService.ACTION_INTENT)
-            )
+        compositeDisposable += event.subscribe {
+            // Update UI with new Address + QR
+            presenter.currencyPosition = presenter.currencyPosition
         }
     }
 

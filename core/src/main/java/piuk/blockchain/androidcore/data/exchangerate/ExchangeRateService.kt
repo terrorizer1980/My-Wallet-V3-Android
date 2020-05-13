@@ -8,12 +8,12 @@ import io.reactivex.Single
 class ExchangeRateService(private val priceApi: PriceApi) {
 
     fun getExchangeRateMap(cryptoCurrency: CryptoCurrency): Single<Map<String, PriceDatum>> =
-        priceApi.getPriceIndexes(cryptoCurrency.symbol)
+        priceApi.getPriceIndexes(cryptoCurrency.networkTicker)
 
     fun getHistoricPrice(
         cryptoCurrency: CryptoCurrency,
         currency: String,
         timeInSeconds: Long
     ): Single<Double> =
-        priceApi.getHistoricPrice(cryptoCurrency.symbol, currency, timeInSeconds)
+        priceApi.getHistoricPrice(cryptoCurrency.networkTicker, currency, timeInSeconds)
 }

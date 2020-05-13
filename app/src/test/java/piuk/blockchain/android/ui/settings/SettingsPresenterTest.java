@@ -1,10 +1,13 @@
 package piuk.blockchain.android.ui.settings;
 
-import com.blockchain.kyc.models.nabu.Kyc2TierState;
-import com.blockchain.kyc.models.nabu.NabuApiException;
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper;
+
 import com.blockchain.notifications.NotificationTokenManager;
+import com.blockchain.notifications.analytics.Analytics;
 import com.blockchain.remoteconfig.FeatureFlag;
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager;
+import com.blockchain.swap.nabu.models.nabu.Kyc2TierState;
+import com.blockchain.swap.nabu.models.nabu.NabuApiException;
 
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.payload.PayloadManager;
@@ -30,7 +33,6 @@ import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper;
 import piuk.blockchain.android.util.StringUtils;
 import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.auth.AuthDataManager;
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager;
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.settings.Email;
@@ -41,12 +43,14 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import retrofit2.Response;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -84,8 +88,6 @@ public class SettingsPresenterTest extends RxTest {
     @Mock
     private ExchangeRateDataManager exchangeRateDataManager;
     @Mock
-    private CurrencyFormatManager currencyFormatManager;
-    @Mock
     private KycStatusHelper kycStatusHelper;
     @Mock
     private EmailSyncUpdater emailSyncUpdater;
@@ -95,6 +97,13 @@ public class SettingsPresenterTest extends RxTest {
     private PitLinkingState pitLinkState;
     @Mock
     private FeatureFlag featureFlag;
+    @Mock
+    private Analytics analytics;
+    @Mock
+    private CustodialWalletManager custodialWalletManager;
+
+    @Mock
+    private FeatureFlag cardsFeatureFlag;
 
     @Before
     public void setUp() {
@@ -109,13 +118,16 @@ public class SettingsPresenterTest extends RxTest {
                 stringUtils,
                 prefsUtil,
                 accessState,
+                custodialWalletManager,
                 swipeToReceiveHelper,
                 notificationTokenManager,
                 exchangeRateDataManager,
-                currencyFormatManager,
                 kycStatusHelper,
                 pitLinking,
-                featureFlag);
+                analytics,
+                featureFlag,
+                cardsFeatureFlag
+        );
         subject.initView(activity);
     }
 
@@ -135,8 +147,11 @@ public class SettingsPresenterTest extends RxTest {
         when(kycStatusHelper.getSettingsKycState2Tier()).thenReturn(Single.just(Kyc2TierState.Hidden));
 
         when(pitLinkState.isLinked()).thenReturn(false);
+        when(custodialWalletManager.fetchUnawareLimitsCards(anyList()))
+                .thenReturn(Single.just(Collections.emptyList()));
         when(pitLinking.getState()).thenReturn(Observable.just(pitLinkState));
         when(featureFlag.getEnabled()).thenReturn(Single.just(true));
+        when(cardsFeatureFlag.getEnabled()).thenReturn(Single.just(true));
 
         // Act
         subject.onViewReady();
@@ -145,6 +160,7 @@ public class SettingsPresenterTest extends RxTest {
         verify(activity).hideProgressDialog();
         verify(activity).setUpUi();
         verify(activity).setPitLinkingState(false);
+        verify(activity, times(2)).updateCards(anyList());
         verify(activity).isPitEnabled(true);
         assertEquals(mockSettings, subject.settings);
     }
@@ -157,6 +173,9 @@ public class SettingsPresenterTest extends RxTest {
         when(pitLinkState.isLinked()).thenReturn(false);
         when(pitLinking.getState()).thenReturn(Observable.just(pitLinkState));
         when(featureFlag.getEnabled()).thenReturn(Single.just(false));
+        when(cardsFeatureFlag.getEnabled()).thenReturn(Single.just(false));
+        when(custodialWalletManager.fetchUnawareLimitsCards(anyList()))
+                .thenReturn(Single.just(Collections.emptyList()));
 
         // Act
         subject.onViewReady();
@@ -165,6 +184,7 @@ public class SettingsPresenterTest extends RxTest {
         verify(activity).showProgressDialog(anyInt());
         verify(activity).hideProgressDialog();
         verify(activity).setUpUi();
+        verify(activity, times(2)).updateCards(anyList());
         verify(activity).isPitEnabled(false);
         assertNotSame(settings, subject.settings);
     }
@@ -186,12 +206,12 @@ public class SettingsPresenterTest extends RxTest {
 
     @Test
     public void onKycStatusClicked_should_launch_kyc_status_tier1_review() {
-        assertClickLaunchesKyc(Kyc2TierState.Tier1InReview);
+        assertClickLaunchesKyc(Kyc2TierState.Tier1Pending);
     }
 
     @Test
     public void onKycStatusClicked_should_launch_kyc_status_tier2_review() {
-        assertClickLaunchesKyc(Kyc2TierState.Tier2InReview);
+        assertClickLaunchesKyc(Kyc2TierState.Tier2InPending);
     }
 
     @Test
@@ -768,12 +788,12 @@ public class SettingsPresenterTest extends RxTest {
     @Test
     public void storeSwipeToReceiveAddressesSuccessful() {
         // Arrange
-        when(swipeToReceiveHelper.storeAll()).thenReturn(Completable.complete());
+        when(swipeToReceiveHelper.generateAddresses()).thenReturn(Completable.complete());
         // Act
         subject.storeSwipeToReceiveAddresses();
         getTestScheduler().triggerActions();
         // Assert
-        verify(swipeToReceiveHelper).storeAll();
+        verify(swipeToReceiveHelper).generateAddresses();
         verifyNoMoreInteractions(swipeToReceiveHelper);
         verify(activity).showProgressDialog(R.string.please_wait);
         verify(activity).hideProgressDialog();
@@ -783,12 +803,12 @@ public class SettingsPresenterTest extends RxTest {
     @Test
     public void storeSwipeToReceiveAddressesFailed() {
         // Arrange
-        when(swipeToReceiveHelper.storeAll()).thenReturn(Completable.error(new Throwable()));
+        when(swipeToReceiveHelper.generateAddresses()).thenReturn(Completable.error(new Throwable()));
         // Act
         subject.storeSwipeToReceiveAddresses();
         getTestScheduler().triggerActions();
         // Assert
-        verify(swipeToReceiveHelper).storeAll();
+        verify(swipeToReceiveHelper).generateAddresses();
         verifyNoMoreInteractions(swipeToReceiveHelper);
         verify(activity).showProgressDialog(anyInt());
         verify(activity).hideProgressDialog();

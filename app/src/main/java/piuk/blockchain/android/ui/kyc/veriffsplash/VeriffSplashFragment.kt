@@ -2,12 +2,12 @@ package piuk.blockchain.android.ui.kyc.veriffsplash
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity.RESULT_OK
+import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
@@ -15,10 +15,11 @@ import android.view.ViewGroup
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.activities.StartSwap
-import com.blockchain.kyc.models.nabu.SupportedDocuments
+import com.blockchain.swap.nabu.models.nabu.SupportedDocuments
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener
 import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_GOLD_UNAVAILABLE_SUPPORT
@@ -42,10 +43,12 @@ import piuk.blockchain.androidcoreui.utils.extensions.visible
 import timber.log.Timber
 import kotlinx.android.synthetic.main.fragment_kyc_veriff_splash.*
 import piuk.blockchain.android.R
+import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.toast
+import piuk.blockchain.androidcoreui.utils.extensions.visibleIf
 import java.lang.IllegalStateException
 
 class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresenter>(),
@@ -55,7 +58,9 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
     private val swapStarter: StartSwap by inject()
     private val stringUtils: StringUtils by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
-    override val countryCode by unsafeLazy { VeriffSplashFragmentArgs.fromBundle(arguments).countryCode }
+    override val countryCode by unsafeLazy {
+        VeriffSplashFragmentArgs.fromBundle(arguments ?: Bundle()).countryCode
+    }
     private var progressDialog: MaterialProgressDialog? = null
 
     override val nextClick: Observable<Unit>
@@ -111,8 +116,8 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
             requireActivity(),
             Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
-        view?.findViewById<View>(R.id.text_view_veriff_splash_enable_camera_title)?.goneIf(granted)
-        view?.findViewById<View>(R.id.text_view_veriff_splash_enable_camera_body)?.goneIf(granted)
+        text_view_veriff_splash_enable_camera_title.goneIf(granted)
+        text_view_veriff_splash_enable_camera_body.goneIf(granted)
     }
 
     override fun showProgressDialog(cancelable: Boolean) {
@@ -132,6 +137,7 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
     @SuppressLint("InflateParams")
     override fun continueToVeriff(applicant: VeriffApplicantAndToken) {
         launchVeriff(applicant)
+        logEvent(KYCAnalyticsEvents.VeriffInfoStarted)
     }
 
     private fun launchVeriff(applicant: VeriffApplicantAndToken) {
@@ -213,6 +219,9 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
         error_layout.visible()
         content_view.gone()
         loading_view.gone()
+        btn_goto_swap.visibleIf {
+            progressListener.campaignType != CampaignType.SimpleBuy
+        }
     }
 
     private fun showEmptyState() {

@@ -43,7 +43,11 @@ class KycMobileEntryFragment : BaseFragment<KycMobileEntryView, KycMobileEntryPr
     private val presenter: KycMobileEntryPresenter by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private val compositeDisposable = CompositeDisposable()
-    private val countryCode by unsafeLazy { KycMobileEntryFragmentArgs.fromBundle(arguments).countryCode }
+    private val countryCode by unsafeLazy {
+        KycMobileEntryFragmentArgs.fromBundle(
+            arguments ?: Bundle()
+        ).countryCode
+    }
     private val phoneNumberObservable
         get() = editTextPhoneNumber.afterTextChangeEvents()
             .skipInitialValue()
@@ -125,7 +129,7 @@ class KycMobileEntryFragment : BaseFragment<KycMobileEntryView, KycMobileEntryPr
     }
 
     override fun continueSignUp(displayModel: PhoneDisplayModel) {
-        navigate(KycMobileEntryFragmentDirections.ActionMobileCodeEntry(countryCode, displayModel))
+        navigate(KycMobileEntryFragmentDirections.actionMobileCodeEntry(countryCode, displayModel))
     }
 
     override fun showProgressDialog() {

@@ -1,8 +1,9 @@
 package piuk.blockchain.android.ui.settings
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
+import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 
-import com.blockchain.kyc.models.nabu.Kyc2TierState
+import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
@@ -47,6 +48,10 @@ internal interface SettingsView : View {
     fun setTorBlocked(blocked: Boolean)
 
     fun setPitLinkingState(isLinked: Boolean)
+
+    fun updateCards(cards: List<PaymentMethod.Card>)
+
+    fun cardsEnabled(enabled: Boolean)
 
     fun setScreenshotsEnabled(enabled: Boolean)
 

@@ -1,101 +1,78 @@
 package info.blockchain.balance
 
 import org.amshove.kluent.`should be`
-import org.amshove.kluent.`should throw the Exception`
-import org.amshove.kluent.`with message`
 import org.junit.Test
 
 class CryptoCurrencyTests {
 
     @Test
     fun `lowercase btc`() {
-        CryptoCurrency.fromSymbol("btc") `should be` CryptoCurrency.BTC
+        CryptoCurrency.fromNetworkTicker("btc") `should be` CryptoCurrency.BTC
     }
 
     @Test
     fun `uppercase BTC`() {
-        CryptoCurrency.fromSymbol("BTC") `should be` CryptoCurrency.BTC
+        CryptoCurrency.fromNetworkTicker("BTC") `should be` CryptoCurrency.BTC
     }
 
     @Test
     fun `lowercase bch`() {
-        CryptoCurrency.fromSymbol("btc") `should be` CryptoCurrency.BTC
+        CryptoCurrency.fromNetworkTicker("btc") `should be` CryptoCurrency.BTC
     }
 
     @Test
     fun `uppercase BCH`() {
-        CryptoCurrency.fromSymbol("BCH") `should be` CryptoCurrency.BCH
+        CryptoCurrency.fromNetworkTicker("BCH") `should be` CryptoCurrency.BCH
     }
 
     @Test
     fun `lowercase eth`() {
-        CryptoCurrency.fromSymbol("eth") `should be` CryptoCurrency.ETHER
+        CryptoCurrency.fromNetworkTicker("eth") `should be` CryptoCurrency.ETHER
     }
 
     @Test
     fun `uppercase ETH`() {
-        CryptoCurrency.fromSymbol("ETH") `should be` CryptoCurrency.ETHER
+        CryptoCurrency.fromNetworkTicker("ETH") `should be` CryptoCurrency.ETHER
     }
 
     @Test
     fun `uppercase XLM`() {
-        CryptoCurrency.fromSymbol("XLM") `should be` CryptoCurrency.XLM
+        CryptoCurrency.fromNetworkTicker("XLM") `should be` CryptoCurrency.XLM
     }
 
     @Test
     fun `lowercase xlm`() {
-        CryptoCurrency.fromSymbol("xlm") `should be` CryptoCurrency.XLM
+        CryptoCurrency.fromNetworkTicker("xlm") `should be` CryptoCurrency.XLM
     }
 
     @Test
     fun `uppercase PAX`() {
-        CryptoCurrency.fromSymbol("PAX") `should be` CryptoCurrency.PAX
+        CryptoCurrency.fromNetworkTicker("PAX") `should be` CryptoCurrency.PAX
     }
 
     @Test
     fun `lowercase pax`() {
-        CryptoCurrency.fromSymbol("pax") `should be` CryptoCurrency.PAX
+        CryptoCurrency.fromNetworkTicker("pax") `should be` CryptoCurrency.PAX
     }
 
     @Test
     fun `mixed case pax`() {
-        CryptoCurrency.fromSymbol("Pax") `should be` CryptoCurrency.PAX
+        CryptoCurrency.fromNetworkTicker("Pax") `should be` CryptoCurrency.PAX
     }
 
     @Test
     fun `null should return null`() {
-        CryptoCurrency.fromSymbol(null) `should be` null
+        CryptoCurrency.fromNetworkTicker(null) `should be` null
     }
 
     @Test
     fun `empty should return null`() {
-        CryptoCurrency.fromSymbol("") `should be` null
+        CryptoCurrency.fromNetworkTicker("") `should be` null
     }
 
     @Test
     fun `not recognised should return null`() {
-        CryptoCurrency.fromSymbol("NONE") `should be` null
-    }
-
-    @Test
-    fun `fromSymbolOrThrow, Ether`() {
-        CryptoCurrency.fromSymbolOrThrow("ETH") `should be` CryptoCurrency.ETHER
-    }
-
-    @Test
-    fun `fromSymbolOrThrow, not recognised should throw`() {
-        {
-            CryptoCurrency.fromSymbolOrThrow("NONE")
-        } `should throw the Exception`
-            IllegalArgumentException::class `with message` "Bad currency symbol \"NONE\""
-    }
-
-    @Test
-    fun `fromSymbolOrThrow, null recognised should throw`() {
-        {
-            CryptoCurrency.fromSymbolOrThrow(null)
-        } `should throw the Exception`
-            IllegalArgumentException::class `with message` "Bad currency symbol \"null\""
+        CryptoCurrency.fromNetworkTicker("NONE") `should be` null
     }
 
     @Test
@@ -135,15 +112,5 @@ class CryptoCurrencyTests {
     @Test
     fun `ether required confirmations is 12`() {
         CryptoCurrency.ETHER.requiredConfirmations `should be` 12
-    }
-
-    @Test
-    fun `unit name XLM`() {
-        CryptoCurrency.XLM.unit `should be` "Stellar"
-    }
-
-    @Test
-    fun `unit name PAX`() {
-        CryptoCurrency.PAX.unit `should be` "USD PAX"
     }
 }

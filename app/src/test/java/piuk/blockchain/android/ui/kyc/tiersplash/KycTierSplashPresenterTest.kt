@@ -2,13 +2,12 @@ package piuk.blockchain.android.ui.kyc.tiersplash
 
 import androidx.navigation.NavDirections
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.kyc.models.nabu.KycTierState
-import com.blockchain.kyc.models.nabu.LimitsJson
-import com.blockchain.kyc.models.nabu.TierJson
-import com.blockchain.kyc.models.nabu.TiersJson
-import com.blockchain.kyc.services.nabu.TierService
-import com.blockchain.kyc.services.nabu.TierUpdater
-import com.blockchain.remoteconfig.FeatureFlag
+import com.blockchain.swap.nabu.models.nabu.KycTierState
+import com.blockchain.swap.nabu.models.nabu.LimitsJson
+import com.blockchain.swap.nabu.models.nabu.TierJson
+import com.blockchain.swap.nabu.models.nabu.TiersJson
+import com.blockchain.swap.nabu.service.TierService
+import com.blockchain.swap.nabu.service.TierUpdater
 import com.blockchain.testutils.usd
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
@@ -35,7 +34,7 @@ class KycTierSplashPresenterTest {
     fun `on tier1 selected`() {
         val view: KycTierSplashView = mock()
         val tierUpdater: TierUpdater = givenTierUpdater()
-        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(email()), givenFeature())
+        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(email()))
             .also {
                 it.initView(view)
                 it.onViewResumed()
@@ -49,7 +48,7 @@ class KycTierSplashPresenterTest {
     fun `on tier1 selected - error setting tier`() {
         val view: KycTierSplashView = mock()
         val tierUpdater: TierUpdater = givenUnableToSetTier()
-        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(email()), givenFeature())
+        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(email()))
             .also {
                 it.initView(view)
                 it.onViewResumed()
@@ -72,8 +71,7 @@ class KycTierSplashPresenterTest {
                     KycTierState.None to 25000.usd()
                 )
             ),
-            givenRedirect(mobile()),
-            givenFeature()
+            givenRedirect(mobile())
         ).also {
             it.initView(view)
             it.onViewResumed()
@@ -86,7 +84,7 @@ class KycTierSplashPresenterTest {
     fun `on tier2 selected`() {
         val view: KycTierSplashView = mock()
         val tierUpdater: TierUpdater = givenTierUpdater()
-        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(veriff()), givenFeature())
+        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(veriff()))
             .also {
                 it.initView(view)
                 it.onViewResumed()
@@ -100,7 +98,7 @@ class KycTierSplashPresenterTest {
     fun `on tier2 selected - error setting tier`() {
         val view: KycTierSplashView = mock()
         val tierUpdater: TierUpdater = givenUnableToSetTier()
-        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(veriff()), givenFeature())
+        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(veriff()))
             .also {
                 it.initView(view)
                 it.onViewResumed()
@@ -123,8 +121,7 @@ class KycTierSplashPresenterTest {
                     KycTierState.Verified to 25000.usd()
                 )
             ),
-            mock(),
-            givenFeature()
+            mock()
         ).also {
             it.initView(view)
             it.onViewResumed()
@@ -143,11 +140,6 @@ class KycTierSplashPresenterTest {
             on { setUserTier(any()) } `it returns` Completable.error(Throwable())
         }
 }
-
-private fun givenFeature(): FeatureFlag =
-    mock {
-        on { enabled } `it returns` Single.just(true)
-    }
 
 private fun givenTiers(tiers: TiersJson? = null): TierService =
     mock {
@@ -195,9 +187,9 @@ fun tiers(tier1: Pair<KycTierState, FiatValue>, tier2: Pair<KycTierState, FiatVa
         )
     )
 
-private fun email(): NavDirections = KycNavXmlDirections.ActionStartEmailVerification()
-private fun mobile(): NavDirections = KycNavXmlDirections.ActionStartMobileVerification("DE")
-private fun veriff(): NavDirections = KycNavXmlDirections.ActionStartVeriff("DE")
+private fun email(): NavDirections = KycNavXmlDirections.actionStartEmailVerification()
+private fun mobile(): NavDirections = KycNavXmlDirections.actionStartMobileVerification("DE")
+private fun veriff(): NavDirections = KycNavXmlDirections.actionStartVeriff("DE")
 
 private fun givenRedirect(email: NavDirections): KycNavigator =
     mock {

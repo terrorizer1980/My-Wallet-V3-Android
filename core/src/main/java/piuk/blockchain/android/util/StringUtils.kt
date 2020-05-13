@@ -4,13 +4,13 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.support.annotation.PluralsRes
-import android.support.annotation.StringRes
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannedString
 import android.text.style.ClickableSpan
 import android.view.View
+import androidx.annotation.PluralsRes
+import androidx.annotation.StringRes
 
 class StringUtils(private val context: Context) {
 
@@ -30,8 +30,9 @@ class StringUtils(private val context: Context) {
 
     fun getStringWithMappedLinks(
         @StringRes stringId: Int,
-        linksMap: Map<String, Uri>,
-        launchActivity: Activity
+        linksMap: Map<String, Uri?>,
+        launchActivity: Activity,
+        onClick: () -> Unit = {}
     ): CharSequence {
 
         val rawText = context.getText(stringId) as SpannedString
@@ -39,17 +40,19 @@ class StringUtils(private val context: Context) {
 
         for (annotation in rawText.getSpans(0, rawText.length, android.text.Annotation::class.java)) {
             if (annotation.key == "link") {
-                linksMap[annotation.value]?.let {
-                    out.setSpan(
-                        object : ClickableSpan() {
-                            override fun onClick(widget: View?) {
-                                launchActivity.startActivity(Intent(Intent.ACTION_VIEW, it))
+                out.setSpan(
+                    object : ClickableSpan() {
+                        override fun onClick(widget: View?) {
+                            linksMap[annotation.value]?.let {
+                                launchActivity.startActivity(Intent(Intent.ACTION_VIEW,
+                                    it))
                             }
-                        },
-                        rawText.getSpanStart(annotation),
-                        rawText.getSpanEnd(annotation),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                }
+                            onClick()
+                        }
+                    },
+                    rawText.getSpanStart(annotation),
+                    rawText.getSpanEnd(annotation),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
         }
         return out

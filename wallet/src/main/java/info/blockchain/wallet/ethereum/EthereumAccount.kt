@@ -39,21 +39,16 @@ class EthereumAccount : JsonSerializableAccount {
     var isCorrect: Boolean = false
 
     @JsonProperty("addr")
-    private var _address: String = ""
-
-    val address: String
-        get() = Keys.toChecksumAddress(_address)
+    var address: String = ""
 
     constructor() {
         // default constructor for Jackson
     }
 
-    // TODO: 24/08/2017 Case sensitivity is used for optional checksum
-    // TODO: 24/08/2017 https://forum.ethereum.org/discussion/9220/eth-address-upper-and-lower-characters-does-not-matter
     constructor(addressKey: ECKey) {
-        this._address =
+        this.address = Keys.toChecksumAddress(
             HashUtil.toHexString(
-                computeAddress(addressKey.pubKeyPoint.getEncoded(false)))
+                computeAddress(addressKey.pubKeyPoint.getEncoded(false))))
     }
 
     /**
@@ -74,6 +69,12 @@ class EthereumAccount : JsonSerializableAccount {
         val credentials = Credentials.create(accountKey.privateKeyAsHex)
         return TransactionEncoder.signMessage(transaction, credentials)
     }
+
+    fun withChecksummedAddress(): String =
+        Keys.toChecksumAddress(this.address)
+
+    fun isAddressChecksummed(): Boolean =
+        address == this.withChecksummedAddress()
 
     companion object {
 

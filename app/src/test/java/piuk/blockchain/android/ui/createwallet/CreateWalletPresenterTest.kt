@@ -20,7 +20,7 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 
 class CreateWalletPresenterTest {
 
@@ -54,8 +54,8 @@ class CreateWalletPresenterTest {
         // Act
         subject.parseExtras(intent)
         // Assert
-        verify(view).setTitleText(R.string.new_wallet)
-        verify(view).setNextText(R.string.create_wallet)
+        verify(view).setTitleText(R.string.new_account_title)
+        verify(view).setNextText(R.string.new_account_cta_text)
         verifyNoMoreInteractions(view)
     }
 

@@ -3,30 +3,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:orientation="vertical"
-    android:padding="32dp">
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/backup_header"
         style="@style/TextAppearance.AppCompat.Headline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="24dp"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:layout_marginEnd="@dimen/standard_margin"
+        android:layout_marginTop="32dp"
         android:text="@string/backup_header" />
 
     <TextView
         android:id="@+id/backup_subheader"
-        style="@style/TextAppearance.AppCompat.Small"
+        style="@style/Text.Standard.14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:layout_marginEnd="@dimen/standard_margin"
+        android:layout_marginTop="32dp"
         android:text="@string/backup_explanation" />
 
     <Button
         android:id="@+id/button_start"
-        style="@style/ButtonStyle"
+        style="@style/CtaButton.Blue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="@string/backup_button_start"
-        android:theme="@style/ButtonLightBlueTheme" />
+        android:contentDescription="@string/backup_button_start"
+        android:text="@string/backup_button_start"/>
 </LinearLayout>

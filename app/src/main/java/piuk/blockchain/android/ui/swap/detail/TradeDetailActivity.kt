@@ -3,8 +3,8 @@ package piuk.blockchain.android.ui.swap.detail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v4.content.ContextCompat
+import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import android.widget.ImageView
 import android.widget.TextView
 import org.koin.android.ext.android.inject

@@ -4,37 +4,35 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.annotation.UiThread
-import android.support.v7.app.AlertDialog
+import androidx.annotation.StringRes
+import androidx.annotation.UiThread
+import androidx.appcompat.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.blockchain.annotations.CommonCode
-import com.blockchain.balance.colorRes
+import piuk.blockchain.android.util.colorRes
 import com.blockchain.koin.injectActivity
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.swap.common.exchange.mvi.ExchangeViewState
 import com.blockchain.swap.nabu.service.Quote
 import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeModel
 import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeViewModelProvider
 import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewHostActivityListener
 import com.blockchain.notifications.analytics.Analytics
-import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import com.blockchain.ui.extensions.sampleThrottledClicks
 import com.blockchain.ui.password.SecondPasswordHandler
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
-import info.blockchain.balance.formatWithUnit
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_homebrew_trade_confirmation.*
-import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.swap.homebrew.exchange.detail.HomebrewTradeDetailActivity
@@ -48,23 +46,24 @@ import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import timber.log.Timber
-import java.util.Locale
 
 class ExchangeConfirmationFragment :
     BaseMvpFragment<ExchangeConfirmationView, ExchangeConfirmationPresenter>(),
     ExchangeConfirmationView {
 
     private val presenter: ExchangeConfirmationPresenter by inject()
+    private val analytics: Analytics by inject()
     private val secondPasswordHandler: SecondPasswordHandler by injectActivity()
     private val activityListener: HomebrewHostActivityListener by ParentActivityDelegate(this)
 
     private var progressDialog: MaterialProgressDialog? = null
 
-    override val locale: Locale = Locale.getDefault()
     override val exchangeViewState: Observable<ExchangeViewState> by unsafeLazy {
         exchangeModel.exchangeViewStates
             .observeOn(AndroidSchedulers.mainThread())
-            .sampleThrottledClicks(confirm_button)
+            .sampleThrottledClicks(confirm_button).doOnNext {
+                analytics.logEvent(SwapAnalyticsEvents.SwapSummaryConfirmClick)
+            }
     }
 
     override fun onCreateView(
@@ -75,7 +74,7 @@ class ExchangeConfirmationFragment :
 
     private lateinit var exchangeModel: ExchangeModel
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         val provider = (context as? ExchangeViewModelProvider)
             ?: throw Exception("Host activity must support ExchangeViewModelProvider")
@@ -91,9 +90,7 @@ class ExchangeConfirmationFragment :
             setCancelable(false)
         }
 
-        activityListener.setToolbarTitle(R.string.confirm_exchange)
-        get<Analytics>().logEvent(AnalyticsEvents.ExchangeDetailConfirm)
-
+        activityListener.setToolbarTitle(R.string.confirm_swap)
         onViewReady()
     }
 
@@ -124,14 +121,17 @@ class ExchangeConfirmationFragment :
     private fun renderUi(viewModel: ExchangeConfirmationViewModel) {
         with(viewModel) {
             from_amount.setBackgroundResource(sending.currency.colorRes())
-            from_amount.text = sending.formatWithUnit(locale)
+            from_amount.text = sending.toStringWithSymbol()
 
-            val receivingCryptoValue = receiving.formatWithUnit(locale)
+            val receivingCryptoValue = receiving.toStringWithSymbol()
             to_amount.setBackgroundResource(receiving.currency.colorRes())
+            if (to_amount.text.isNullOrEmpty().not() && receivingCryptoValue != to_amount.text.toString()) {
+                analytics.logEvent(SwapAnalyticsEvents.SwapExchangeReceiveChange)
+            }
             to_amount.text = receivingCryptoValue
 
             receive_amount.text = receivingCryptoValue
-            fiat_value.text = value.toStringWithSymbol(locale)
+            fiat_value.text = value.toStringWithSymbol()
             send_to_wallet.text = viewModel.toAccount.label
         }
     }
@@ -142,7 +142,7 @@ class ExchangeConfirmationFragment :
     }
 
     override fun updateFee(cryptoValue: CryptoValue) {
-        fees_value.text = cryptoValue.formatWithUnit()
+        fees_value.text = cryptoValue.toStringWithSymbol()
     }
 
     override fun showSecondPasswordDialog() {
@@ -203,7 +203,9 @@ class ExchangeConfirmationFragment :
         swapErrorDialogContent.dismissClick?.let {
             bottomSheetDialog.onDismissClick = it
         }
-        bottomSheetDialog.show(fragmentManager, "BottomDialog")
+        fragmentManager?.let {
+            bottomSheetDialog.show(it, "BottomDialog")
+        }
     }
 
     override fun openTiersCard() {

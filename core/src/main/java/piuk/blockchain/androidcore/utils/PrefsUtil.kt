@@ -1,8 +1,11 @@
 package piuk.blockchain.androidcore.utils
 
 import android.content.SharedPreferences
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.wallet.api.data.Settings.UNIT_FIAT
+import java.util.Currency
+import java.util.Locale
 
 interface UUIDGenerator {
     fun generateUUID(): String
@@ -13,6 +16,15 @@ class PrefsUtil(
     private val idGenerator: DeviceIdGenerator,
     private val uuidGenerator: UUIDGenerator
 ) : PersistentPrefs {
+
+    private var isUnderAutomationTesting = false // Don't persist!
+
+    override val isUnderTest: Boolean
+        get() = isUnderAutomationTesting
+
+    override fun setIsUnderTest() {
+        isUnderAutomationTesting = true
+    }
 
     override val deviceId: String
         get() {
@@ -36,6 +48,10 @@ class PrefsUtil(
         get() = getValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, false)
         set(completed) = setValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, completed)
 
+    override var isCustodialIntroSeen: Boolean
+        get() = getValue(KEY_CUSTODIAL_INTRO_SEEN, false)
+        set(seen) = setValue(KEY_CUSTODIAL_INTRO_SEEN, seen)
+
     override val isLoggedOut: Boolean
         get() = getValue(KEY_LOGGED_OUT, true)
 
@@ -43,14 +59,24 @@ class PrefsUtil(
         get() = getValue(KEY_IS_DEVICE_ID_RANDOMISED, false)
         set(value) = setValue(KEY_IS_DEVICE_ID_RANDOMISED, value)
 
-    // Settings - TODO: Move to interface
+    // SecurityPrefs
     override var disableRootedWarning: Boolean
         get() = getValue(PersistentPrefs.KEY_ROOT_WARNING_DISABLED, false)
         set(v) = setValue(PersistentPrefs.KEY_ROOT_WARNING_DISABLED, v)
 
+    override var trustScreenOverlay: Boolean
+        get() = getValue(PersistentPrefs.KEY_OVERLAY_TRUSTED, false)
+        set(v) = setValue(PersistentPrefs.KEY_OVERLAY_TRUSTED, v)
+
+    override val areScreenshotsEnabled: Boolean
+        get() = getValue(PersistentPrefs.KEY_SCREENSHOTS_ENABLED, false)
+
+    override fun setScreenshotsEnabled(enable: Boolean) =
+        setValue(PersistentPrefs.KEY_SCREENSHOTS_ENABLED, enable)
+
     // From CurrencyPrefs
     override var selectedFiatCurrency: String
-        get() = getValue(KEY_SELECTED_FIAT, DEFAULT_FIAT_CURRENCY)
+        get() = getValue(KEY_SELECTED_FIAT, "")
         set(fiat) = setValue(KEY_SELECTED_FIAT, fiat)
 
     override var selectedCryptoCurrency: CryptoCurrency
@@ -63,6 +89,14 @@ class PrefsUtil(
             }
         set(crypto) = setValue(KEY_SELECTED_CRYPTO, crypto.name)
 
+    override val defaultFiatCurrency: String
+        get() = try {
+            val localeFiat = Currency.getInstance(Locale.getDefault()).currencyCode
+            if (UNIT_FIAT.contains(localeFiat)) localeFiat else DEFAULT_FIAT_CURRENCY
+        } catch (e: Exception) {
+            DEFAULT_FIAT_CURRENCY
+        }
+
     // From ThePitLinkingPrefs
     override var pitToWalletLinkId: String
         get() = getValue(KEY_PIT_LINKING_LINK_ID, "")
@@ -70,6 +104,37 @@ class PrefsUtil(
 
     override fun clearPitToWalletLinkId() {
         removeValue(KEY_PIT_LINKING_LINK_ID)
+    }
+
+    override fun simpleBuyState(): String? {
+        return getValue(KEY_SIMPLE_BUY_STATE, "").takeIf { it != "" }
+    }
+
+    override fun cardState(): String? {
+        return getValue(KEY_CARD_STATE, "").takeIf { it != "" }
+    }
+
+    override fun updateCardState(cardState: String) {
+        setValue(KEY_CARD_STATE, cardState)
+    }
+
+    override fun clearCardState() {
+        removeValue(KEY_CARD_STATE)
+    }
+
+    override fun updateSupportedCards(cardTypes: String) {
+        setValue(KEY_SUPPORTED_CARDS_STATE, cardTypes)
+    }
+
+    override fun getSupportedCardTypes(): String? =
+        getValue(KEY_SUPPORTED_CARDS_STATE, "").takeIf { it != "" }
+
+    override fun updateSimpleBuyState(simpleBuyState: String) {
+        setValue(KEY_SIMPLE_BUY_STATE, simpleBuyState)
+    }
+
+    override fun clearState() {
+        removeValue(KEY_SIMPLE_BUY_STATE)
     }
 
     // From Onboarding
@@ -214,10 +279,15 @@ class PrefsUtil(
         const val KEY_SELECTED_CRYPTO = "KEY_CURRENCY_CRYPTO_STATE"
 
         private const val KEY_PIT_LINKING_LINK_ID = "pit_wallet_link_id"
+        private const val KEY_SIMPLE_BUY_STATE = "key_simple_buy_state"
+        private const val KEY_CARD_STATE = "key_card_state"
+
+        private const val KEY_SUPPORTED_CARDS_STATE = "key_supported_cards"
 
         private const val KEY_SWAP_INTRO_COMPLETED = "key_swap_intro_completed"
         private const val KEY_INTRO_TOUR_COMPLETED = "key_intro_tour_complete"
         private const val KEY_INTRO_TOUR_CURRENT_STAGE = "key_intro_tour_current_stage"
+        private const val KEY_CUSTODIAL_INTRO_SEEN = "key_custodial_balance_intro_seen"
 
         private const val BACKUP_DATE_KEY = "BACKUP_DATE_KEY"
         private const val SWAP_DATE_KEY = "SWAP_DATE_KEY"

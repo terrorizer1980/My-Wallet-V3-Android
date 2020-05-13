@@ -2,7 +2,7 @@ package piuk.blockchain.androidcoreui.ui.base
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.support.annotation.CallSuper
+import androidx.annotation.CallSuper
 import android.view.WindowManager
 import com.blockchain.koin.injectActivity
 import com.blockchain.ui.password.SecondPasswordHandler
@@ -15,6 +15,7 @@ import piuk.blockchain.androidcoreui.ApplicationLifeCycle
 /**
  * A base Activity for all activities which need auth timeouts & screenshot prevention
  */
+@Deprecated("Use SecureActivityBase in :app instead")
 abstract class BaseAuthActivity : ToolBarActivity() {
 
     private val environment: EnvironmentConfig by inject()
@@ -44,7 +45,7 @@ abstract class BaseAuthActivity : ToolBarActivity() {
         stopLogoutTimer()
         ApplicationLifeCycle.getInstance().onActivityResumed()
 
-        if (environment.shouldShowDebugMenu() || (prefs.areScreenshotAllowed && !enforceFlagSecure())) {
+        if (prefs.isUnderTest || (prefs.areScreenshotAllowed && !enforceFlagSecure())) {
             enableScreenshots()
         } else {
             disallowScreenshots()

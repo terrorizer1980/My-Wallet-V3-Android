@@ -1,11 +1,14 @@
 package piuk.blockchain.android.ui.account
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import android.view.View
+import com.blockchain.notifications.analytics.AddressAnalytics
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.WalletAnalytics
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.WriterException
@@ -45,7 +48,9 @@ import piuk.blockchain.android.util.LabelUtil
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
+import piuk.blockchain.androidcore.data.events.PayloadSyncedEvent
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.payments.SendDataManager
@@ -69,7 +74,8 @@ class AccountEditPresenter constructor(
     private val swipeToReceiveHelper: SwipeToReceiveHelper,
     private val dynamicFeeCache: DynamicFeeCache,
     private val environmentSettings: EnvironmentConfig,
-    private val currencyFormatManager: CurrencyFormatManager,
+    private val analytics: Analytics,
+    private val exchangeRates: ExchangeRateDataManager,
     private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig
 ) : BasePresenter<AccountEditView>() {
 
@@ -199,9 +205,6 @@ class AccountEditPresenter constructor(
         view.hideMerchantCopy()
     }
 
-    internal fun areLauncherShortcutsEnabled(): Boolean =
-        prefs.getValue(PersistentPrefs.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
-
     private fun setDefault(isDefault: Boolean) {
         if (isDefault) {
             with(accountModel) {
@@ -304,48 +307,34 @@ class AccountEditPresenter constructor(
     internal fun transferFundsClickable(): Boolean = accountModel.transferFundsClickable
 
     private fun getTransactionDetailsForDisplay(pendingTransaction: PendingTransaction): PaymentConfirmationDetails {
-        val details = PaymentConfirmationDetails()
-        details.fromLabel = pendingTransaction.sendingObject?.label ?: ""
 
-        if (pendingTransaction.receivingObject != null &&
-            pendingTransaction.receivingObject?.label != null &&
-            !pendingTransaction.receivingObject?.label.isNullOrEmpty()
-        ) {
-            details.toLabel = pendingTransaction.receivingObject?.label ?: ""
+        val destination = if (pendingTransaction.receivingObject?.label?.isEmpty() == true) {
+            pendingTransaction.receivingAddress
         } else {
-            details.toLabel = pendingTransaction.receivingAddress
+            pendingTransaction.receivingObject?.label ?: ""
         }
 
-        val fiatUnit = prefs.selectedFiatCurrency
-        val btcUnit = CryptoCurrency.BTC.name
+        val fiatCurrency = prefs.selectedFiatCurrency
 
-        with(details) {
-            cryptoAmount = currencyFormatManager.getFormattedSelectedCoinValue(pendingTransaction.bigIntAmount)
-            cryptoFee = currencyFormatManager.getFormattedSelectedCoinValue(pendingTransaction.bigIntFee)
-            btcSuggestedFee = currencyFormatManager.getFormattedSelectedCoinValue(pendingTransaction.bigIntFee)
-            cryptoUnit = btcUnit
-            this.fiatUnit = fiatUnit
+        val amount = CryptoValue.fromMinor(CryptoCurrency.BTC, pendingTransaction.bigIntAmount)
+        val fee = CryptoValue.fromMinor(CryptoCurrency.BTC, pendingTransaction.bigIntFee)
+        val total = amount + fee
 
-            cryptoTotal = currencyFormatManager.getFormattedSelectedCoinValue(
-                pendingTransaction.bigIntAmount + pendingTransaction.bigIntFee
-            )
-
-            fiatFee = currencyFormatManager.getFormattedFiatValueFromSelectedCoinValue(
-                pendingTransaction.bigIntFee.toBigDecimal()
-            )
-            fiatAmount = currencyFormatManager.getFormattedFiatValueFromSelectedCoinValue(
-                pendingTransaction.bigIntAmount.toBigDecimal()
-            )
-
-            val totalFiat = pendingTransaction.bigIntAmount.add(pendingTransaction.bigIntFee)
-            fiatTotal = currencyFormatManager.getFormattedFiatValueFromSelectedCoinValue(totalFiat.toBigDecimal())
-
-            fiatSymbol = currencyFormatManager.getFiatSymbol(fiatUnit)
-            isLargeTransaction = isLargeTransaction(pendingTransaction)
-            hasConsumedAmounts = pendingTransaction.unspentOutputBundle!!.consumedAmount
-                .compareTo(BigInteger.ZERO) == 1
-        }
-        return details
+        return PaymentConfirmationDetails(
+            fromLabel = pendingTransaction.sendingObject?.label ?: "",
+            toLabel = destination,
+            crypto = CryptoCurrency.BTC,
+            fiatUnit = fiatCurrency,
+            cryptoTotal = total.toStringWithoutSymbol(),
+            cryptoAmount = amount.toStringWithoutSymbol(),
+            cryptoFee = fee.toStringWithoutSymbol(),
+            btcSuggestedFee = fee.toStringWithoutSymbol(),
+            fiatFee = fee.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol(),
+            fiatAmount = amount.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol(),
+            fiatTotal = total.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol(),
+            isLargeTransaction = isLargeTransaction(pendingTransaction),
+            hasConsumedAmounts = pendingTransaction.unspentOutputBundle!!.consumedAmount.compareTo(BigInteger.ZERO) == 1
+        )
     }
 
     private fun isLargeTransaction(pendingTransaction: PendingTransaction): Boolean {
@@ -416,7 +405,7 @@ class AccountEditPresenter constructor(
                         .emptySubscribe()
 
                     accountModel.transferFundsVisibility = View.GONE
-                    view.setActivityResult(Activity.RESULT_OK)
+                    view.setActivityResult(AppCompatActivity.RESULT_OK)
                 },
                 { view.showToast(R.string.send_failed, ToastCustom.TYPE_ERROR) }
             )
@@ -463,7 +452,8 @@ class AccountEditPresenter constructor(
                 .subscribe(
                     {
                         accountModel.label = labelCopy
-                        view.setActivityResult(Activity.RESULT_OK)
+                        view.setActivityResult(AppCompatActivity.RESULT_OK)
+                        analytics.logEvent(WalletAnalytics.EditWalletName)
                     },
                     { revertLabelAndShowError(revertLabel) }
                 )
@@ -524,17 +514,17 @@ class AccountEditPresenter constructor(
                     } else {
                         setDefault(isDefaultBch(bchAccount))
                     }
-
+                    analytics.logEvent(WalletAnalytics.ChangeDefault)
                     updateSwipeToReceiveAddresses()
                     getView().updateAppShortcuts()
-                    getView().setActivityResult(Activity.RESULT_OK)
+                    getView().setActivityResult(AppCompatActivity.RESULT_OK)
                 },
                 { revertDefaultAndShowError(revertDefault) }
             )
     }
 
     private fun updateSwipeToReceiveAddresses() {
-        compositeDisposable += swipeToReceiveHelper.storeAll()
+        compositeDisposable += swipeToReceiveHelper.generateAddresses()
             .subscribeOn(Schedulers.computation())
             .subscribe(
                 { /* No-op */ },
@@ -621,7 +611,7 @@ class AccountEditPresenter constructor(
             .doOnError { Timber.e(it) }
             .subscribe(
                 {
-                    view.setActivityResult(Activity.RESULT_OK)
+                    view.setActivityResult(AppCompatActivity.RESULT_OK)
                     accountModel.scanPrivateKeyVisibility = View.GONE
                     accountModel.archiveVisibility = View.VISIBLE
 
@@ -721,6 +711,7 @@ class AccountEditPresenter constructor(
         }
 
         view.showAddressDetails(heading, note, copy, bitmap, qrString)
+        analytics.logEvent(WalletAnalytics.ShowXpub)
     }
 
     internal fun handleIncomingScanIntent(data: Intent) {
@@ -764,9 +755,13 @@ class AccountEditPresenter constructor(
             .subscribe(
                 {
                     updateTransactions.emptySubscribe()
-
+                    analytics.logEvent(AddressAnalytics.DeleteAddressLabel)
                     updateArchivedUi(isArchived, archivable)
-                    view.setActivityResult(Activity.RESULT_OK)
+                    view.setActivityResult(AppCompatActivity.RESULT_OK)
+                    if (!isArchived)
+                        analytics.logEvent(WalletAnalytics.UnArchiveWallet)
+                    else
+                        analytics.logEvent(WalletAnalytics.ArchiveWallet)
                 },
                 { view.showToast(R.string.remote_save_ko, ToastCustom.TYPE_ERROR) }
             )
@@ -836,8 +831,8 @@ class AccountEditPresenter constructor(
             .subscribe(
                 {
                     // Subscribe to new address only if successfully created
-                    view.sendBroadcast("address", legacyAddress.address)
-                    view.setActivityResult(Activity.RESULT_OK)
+                    view.sendBroadcast(PayloadSyncedEvent())
+                    view.setActivityResult(AppCompatActivity.RESULT_OK)
                 },
                 { view.showToast(R.string.remote_save_ko, ToastCustom.TYPE_ERROR) }
             )
@@ -873,8 +868,8 @@ class AccountEditPresenter constructor(
                 )
                 val sweepAmount = sweepableCoins.left
 
-                var label: String? = legacyAddress.label
-                if (label.isNullOrEmpty()) {
+                var label: String = legacyAddress.label
+                if (label.isEmpty()) {
                     label = legacyAddress.address
                 }
 
@@ -882,20 +877,14 @@ class AccountEditPresenter constructor(
                 val defaultAccount = payloadDataManager.defaultAccount
                 pendingTransaction.apply {
                     sendingObject = ItemAccount(
-                        label,
-                        sweepAmount.toString(),
-                        "",
-                        sweepAmount.toLong(),
-                        legacyAddress,
-                        legacyAddress.address
+                        label = label,
+                        balance = CryptoValue.fromMinor(cryptoCurrency, sweepAmount),
+                        accountObject = legacyAddress,
+                        address = legacyAddress.address
                     )
                     receivingObject = ItemAccount(
-                        defaultAccount.label,
-                        "",
-                        "",
-                        sweepAmount.toLong(),
-                        defaultAccount,
-                        null
+                        label = defaultAccount.label ?: "",
+                        accountObject = defaultAccount
                     )
                     unspentOutputBundle = sendDataManager.getSpendableCoins(
                         unspentOutputs,

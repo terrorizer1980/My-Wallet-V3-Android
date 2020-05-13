@@ -2,8 +2,8 @@ package piuk.blockchain.android.ui.kyc.address
 
 import com.blockchain.android.testutils.rxInit
 import piuk.blockchain.android.ui.getBlankNabuUser
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.Tiers
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.models.nabu.Tiers
 import com.blockchain.swap.nabu.NabuToken
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Single

@@ -13,8 +13,8 @@
 
             <LinearLayout
                 android:id="@+id/button1"
-                android:contentDescription="@string/keyboard_input_1"
                 style="@style/PinEntryButtonLayout"
+                android:contentDescription="@string/keyboard_input_1"
                 android:tag="1">
 
                 <TextView
@@ -29,8 +29,8 @@
 
             <LinearLayout
                 android:id="@+id/button2"
-                android:contentDescription="@string/keyboard_input_2"
                 style="@style/PinEntryButtonLayout"
+                android:contentDescription="@string/keyboard_input_2"
                 android:tag="2">
 
                 <TextView
@@ -45,8 +45,8 @@
 
             <LinearLayout
                 android:id="@+id/button3"
-                android:contentDescription="@string/keyboard_input_3"
                 style="@style/PinEntryButtonLayout"
+                android:contentDescription="@string/keyboard_input_3"
                 android:tag="3">
 
                 <TextView
@@ -65,8 +65,8 @@
 
             <LinearLayout
                 android:id="@+id/button4"
-                android:contentDescription="@string/keyboard_input_4"
                 style="@style/PinEntryButtonLayout"
+                android:contentDescription="@string/keyboard_input_4"
                 android:tag="4">
 
                 <TextView
@@ -81,8 +81,8 @@
 
             <LinearLayout
                 android:id="@+id/button5"
-                android:contentDescription="@string/keyboard_input_5"
                 style="@style/PinEntryButtonLayout"
+                android:contentDescription="@string/keyboard_input_5"
                 android:tag="5">
 
                 <TextView
@@ -97,8 +97,8 @@
 
             <LinearLayout
                 android:id="@+id/button6"
-                android:contentDescription="@string/keyboard_input_6"
                 style="@style/PinEntryButtonLayout"
+                android:contentDescription="@string/keyboard_input_6"
                 android:tag="6">
 
                 <TextView
@@ -117,8 +117,8 @@
 
             <LinearLayout
                 android:id="@+id/button7"
-                android:contentDescription="@string/keyboard_input_7"
                 style="@style/PinEntryButtonLayout"
+                android:contentDescription="@string/keyboard_input_7"
                 android:tag="7">
 
                 <TextView
@@ -133,8 +133,8 @@
 
             <LinearLayout
                 android:id="@+id/button8"
-                android:contentDescription="@string/keyboard_input_8"
                 style="@style/PinEntryButtonLayout"
+                android:contentDescription="@string/keyboard_input_8"
                 android:tag="8">
 
                 <TextView
@@ -149,8 +149,8 @@
 
             <LinearLayout
                 android:id="@+id/button9"
-                android:contentDescription="@string/keyboard_input_9"
                 style="@style/PinEntryButtonLayout"
+                android:contentDescription="@string/keyboard_input_9"
                 android:tag="9">
 
                 <TextView
@@ -185,8 +185,8 @@
 
             <LinearLayout
                 android:id="@+id/button0"
-                android:contentDescription="@string/keyboard_input_0"
                 style="@style/PinEntryButtonLayout"
+                android:contentDescription="@string/keyboard_input_0"
                 android:tag="0">
 
                 <TextView
@@ -201,11 +201,11 @@
 
             <LinearLayout
                 android:id="@+id/buttonDeleteBack"
-                android:contentDescription="@string/keyboard_input_delete"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/selector_navy_blue"
+                android:contentDescription="@string/keyboard_input_delete"
                 android:gravity="center"
                 android:orientation="vertical">
 

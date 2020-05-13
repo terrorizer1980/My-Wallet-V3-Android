@@ -48,15 +48,14 @@
 
                 <Button
                     android:id="@+id/button_enable"
-                    style="@style/ButtonStyle"
+                    style="@style/CtaButton.Blue"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="64dp"
                     android:layout_marginRight="64dp"
                     android:layout_marginBottom="64dp"
                     android:contentDescription="@string/onboarding_fingerprint_enable"
-                    android:text="@string/onboarding_fingerprint_enable"
-                    android:theme="@style/ButtonLightBlueTheme" />
+                    android:text="@string/onboarding_fingerprint_enable" />
 
             </LinearLayout>
         </LinearLayout>

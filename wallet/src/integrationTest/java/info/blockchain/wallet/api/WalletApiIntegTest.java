@@ -53,26 +53,6 @@ public final class WalletApiIntegTest extends BaseIntegTest {
     }
 
     @Test
-    public void registerMdid() {
-        final TestObserver<ResponseBody> testObserver =
-                walletApi.registerMdid("", "", "").test();
-
-        testObserver.assertTerminated();
-        testObserver.assertNotComplete();
-        testObserver.assertError(HttpException.class);
-    }
-
-    @Test
-    public void unregisterMdid() {
-        final TestObserver<ResponseBody> testObserver =
-                walletApi.unregisterMdid("", "", "").test();
-
-        testObserver.assertTerminated();
-        testObserver.assertNotComplete();
-        testObserver.assertError(HttpException.class);
-    }
-
-    @Test
     public void setAccess() throws Exception {
 
         byte[] bytes = new byte[16];

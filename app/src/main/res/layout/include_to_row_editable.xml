@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/toConstraintLayout"
@@ -48,7 +48,7 @@
         app:layout_constraintStart_toEndOf="@+id/toAddressEditTextView"
         app:layout_constraintTop_toTopOf="@+id/toAddressEditTextView"
         app:layout_goneMarginEnd="8dp"
-        app:srcCompat="@drawable/vector_pit_send_address" />
+        app:srcCompat="@drawable/ic_the_exchange_colour" />
 
     <ImageView
         android:id="@+id/toArrow"
@@ -57,11 +57,11 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:src="@drawable/ic_arrow_drop_down_grey600_24dp"
+        app:srcCompat="@drawable/ic_arrow_drop_down_grey600_24dp"
         app:layout_constraintBottom_toBottomOf="@+id/toAddressEditTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toEndOf="@+id/pitAddress"
         app:layout_constraintTop_toTopOf="@+id/toAddressEditTextView" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

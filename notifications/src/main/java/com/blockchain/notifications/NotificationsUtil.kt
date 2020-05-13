@@ -6,14 +6,17 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.net.Uri
-import android.support.annotation.DrawableRes
-import android.support.v4.app.NotificationCompat
-import android.support.v4.content.ContextCompat
+import androidx.annotation.DrawableRes
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.NotificationReceived
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 
 class NotificationsUtil(
     private val context: Context,
-    private val notificationManager: NotificationManager
+    private val notificationManager: NotificationManager,
+    private val analytics: Analytics
 ) {
 
     fun triggerNotification(
@@ -59,9 +62,11 @@ class NotificationsUtil(
         }
 
         notificationManager.notify(id, builder.build())
+        analytics.logEvent(NotificationReceived)
     }
 
     companion object {
         private const val NOTIFICATION_CHANNEL_ID = "group_01"
+        const val INTENT_FROM_NOTIFICATION = "notification_pending_intent"
     }
 }

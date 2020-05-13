@@ -6,8 +6,8 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import android.support.v4.content.LocalBroadcastManager
 import com.blockchain.notifications.NotificationsUtil
+import com.blockchain.notifications.analytics.Analytics
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import org.koin.android.ext.android.inject
@@ -16,6 +16,9 @@ import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrate
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.util.lifecycle.AppState
 import piuk.blockchain.android.util.lifecycle.LifecycleInterestedComponent
+import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
 class CoinsWebSocketService : Service(), MessagesSocketHandler {
 
@@ -24,6 +27,8 @@ class CoinsWebSocketService : Service(), MessagesSocketHandler {
     private val notificationManager: NotificationManager by inject()
     private val coinsWebSocketStrategy: CoinsWebSocketStrategy by inject()
     private val lifecycleInterestedComponent: LifecycleInterestedComponent by inject()
+    private val rxBus: RxBus by inject()
+    private val analytics: Analytics by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -38,17 +43,27 @@ class CoinsWebSocketService : Service(), MessagesSocketHandler {
         }
     }
 
+    override fun showToast(message: Int) {
+        ToastCustom.makeText(
+            this,
+            getString(message),
+            ToastCustom.LENGTH_SHORT,
+            ToastCustom.TYPE_GENERAL)
+    }
+
     override fun onBind(intent: Intent?): IBinder? = binder
 
     override fun triggerNotification(title: String, marquee: String, text: String) {
         val notifyIntent = Intent(applicationContext, MainActivity::class.java)
+        notifyIntent.putExtra(NotificationsUtil.INTENT_FROM_NOTIFICATION, true)
+
         val pendingIntent = PendingIntent.getActivity(
             this,
             0,
             notifyIntent,
             PendingIntent.FLAG_UPDATE_CURRENT)
 
-        NotificationsUtil(applicationContext, notificationManager).triggerNotification(
+        NotificationsUtil(applicationContext, notificationManager, analytics).triggerNotification(
             title,
             marquee,
             text,
@@ -57,8 +72,8 @@ class CoinsWebSocketService : Service(), MessagesSocketHandler {
             1000)
     }
 
-    override fun sendBroadcast(intent: String) {
-        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(Intent(intent))
+    override fun sendBroadcast(event: ActionEvent) {
+        rxBus.emitEvent(ActionEvent::class.java, event)
     }
 
     override fun onDestroy() {

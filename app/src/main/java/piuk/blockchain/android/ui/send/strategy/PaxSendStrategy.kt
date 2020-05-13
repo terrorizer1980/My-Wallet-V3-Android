@@ -1,14 +1,16 @@
 package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
-import android.support.design.widget.Snackbar
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.NabuApiException
-import com.blockchain.kyc.models.nabu.NabuErrorCodes
-import com.blockchain.kyc.models.nabu.State
+import com.google.android.material.snackbar.Snackbar
+import com.blockchain.swap.nabu.models.nabu.NabuApiException
+import com.blockchain.swap.nabu.models.nabu.NabuErrorCodes
+import com.blockchain.swap.nabu.models.nabu.State
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SendAnalytics
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.serialization.JsonSerializableAccount
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.api.data.FeeOptions
@@ -31,14 +33,12 @@ import piuk.blockchain.android.ui.account.PitAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
-import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -57,32 +57,38 @@ class PaxSendStrategy(
     private val paxAccount: Erc20Account,
     private val dynamicFeeCache: DynamicFeeCache,
     private val feeDataManager: FeeDataManager,
-    private val currencyFormatter: CurrencyFormatManager,
-    private val exchangeRates: FiatExchangeRates,
+    private val exchangeRates: ExchangeRateDataManager,
     private val stringUtils: StringUtils,
-    private val currencyPrefs: CurrencyPrefs,
     private val nabuDataManager: NabuDataManager,
     private val nabuToken: NabuToken,
     private val pitLinking: PitLinking,
+    private val analytics: Analytics,
+    prefs: CurrencyPrefs,
     currencyState: CurrencyState,
     environmentConfig: EnvironmentConfig
-) : SendStrategy<SendView>(currencyState) {
+) : SendStrategy<SendView>(currencyState, prefs) {
+
+    override fun onViewAttached() { }
+    override fun onViewDetached() { }
+
+    override val alwaysDisableScreenshots = false
+    override val enableLogoutTimer = false
 
     private var pitAccount: PitAccount? = null
 
     override fun onPitAddressSelected() {
         pitAccount?.let {
             pendingTx.receivingAddress = it.address
-            view.updateReceivingAddress(it.label)
+            view?.updateReceivingAddress(it.label)
         }
     }
 
     override fun onPitAddressCleared() {
         pendingTx.receivingAddress = ""
-        view.updateReceivingAddress("")
+        view?.updateReceivingAddress("")
     }
 
-    private val walletName = stringUtils.getString(R.string.pax_wallet_name)
+    private val walletName = stringUtils.getString(R.string.pax_wallet_name_1)
 
     override fun onCurrencySelected() {
         currencyState.cryptoCurrency = CryptoCurrency.PAX
@@ -114,7 +120,7 @@ class PaxSendStrategy(
     }
 
     private fun setupUiForPax() {
-        view.let {
+        view?.let {
             reset()
             it.hideFeePriority()
             it.setFeePrioritySelection(0)
@@ -138,26 +144,31 @@ class PaxSendStrategy(
     private fun resetAccountList() {
         compositeDisposable += pitLinking.isPitLinked().filter { it }.flatMapSingle { nabuToken.fetchNabuToken() }
             .flatMap {
-                nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.PAX.symbol)
+                nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.PAX)
             }.applySchedulers().doOnSubscribe {
-                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false)
+                view?.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false)
             }.subscribeBy(onError = {
-                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1,
+                view?.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1,
                     it is NabuApiException && it.getErrorCode() == NabuErrorCodes.Bad2fa) {
-                    view.show2FANotAvailableError()
+                    view?.show2FANotAvailableError()
                 }
             }) {
-                pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
-                    CryptoCurrency.PAX.symbol), it.address)
-                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX,
+                pitAccount = PitAccount(
+                    stringUtils.getFormattedString(
+                        R.string.exchange_default_account_label,
+                        CryptoCurrency.PAX.displayTicker
+                    ),
+                    it.address
+                )
+                view?.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX,
                     1,
-                    it.state == State.ACTIVE && it.address.isNotEmpty()) { view.fillOrClearAddress() }
+                    it.state == State.ACTIVE && it.address.isNotEmpty()) { view?.fillOrClearAddress() }
             }
     }
 
     override fun processURIScanAddress(address: String) {
         pendingTx.receivingAddress = address
-        view.updateReceivingAddress(address)
+        view?.updateReceivingAddress(address)
     }
 
     override fun isAddressValid(address: String): Boolean =
@@ -168,23 +179,22 @@ class PaxSendStrategy(
 
         checkManualAddressInput()
 
-        validateTransaction()
+        compositeDisposable += validateTransaction()
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { view?.showProgressDialog(R.string.app_name) }
             .doAfterTerminate { view?.dismissProgressDialog() }
             .doOnError { Timber.e(it) }
-            .addToCompositeDisposable(this)
             .subscribeBy(
                 onNext = { (validated, errorMessage) ->
                     when {
-                        validated -> view.showSecondPasswordDialog()
-                        errorMessage == R.string.insufficient_eth_for_fees -> view.showInsufficientGasDlg()
-                        else -> view.showSnackbar(errorMessage, Snackbar.LENGTH_LONG)
+                        validated -> view?.showSecondPasswordDialog()
+                        errorMessage == R.string.insufficient_eth_for_fees -> view?.showInsufficientGasDlg()
+                        else -> view?.showSnackbar(errorMessage, Snackbar.LENGTH_LONG)
                     }
                 },
                 onError = {
-                    view.showSnackbar(R.string.unexpected_error, Snackbar.LENGTH_LONG)
-                    view.finishPage()
+                    view?.showSnackbar(R.string.unexpected_error, Snackbar.LENGTH_LONG)
+                    view?.finishPage()
                 }
             )
     }
@@ -194,36 +204,39 @@ class PaxSendStrategy(
      */
     @SuppressLint("CheckResult")
     override fun submitPayment() {
-        createPaxTransaction()
-            .addToCompositeDisposable(this)
+        compositeDisposable += createPaxTransaction()
             .flatMap {
                 if (payloadDataManager.isDoubleEncrypted) {
                     payloadDataManager.decryptHDWallet(networkParameters, verifiedSecondPassword)
                 }
 
-                val ecKey = EthereumAccount.deriveECKey(payloadDataManager.wallet!!.hdWallets[0].masterKey, 0)
+                val ecKey = EthereumAccount.deriveECKey(
+                    payloadDataManager.wallet!!.hdWallets[0].masterKey,
+                    0
+                )
                 return@flatMap ethDataManager.signEthTransaction(it, ecKey)
             }
             .flatMap { ethDataManager.pushEthTx(it) }
             .flatMap { ethDataManager.setLastTxHashObservable(it, System.currentTimeMillis()) }
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { view.showProgressDialog(R.string.app_name) }
-            .doOnError { view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG) }
+            .doOnSubscribe { view?.showProgressDialog(R.string.app_name) }
+            .doOnError { view?.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG) }
             .doOnTerminate {
-                view.dismissProgressDialog()
-                view.dismissConfirmationDialog()
+                view?.dismissProgressDialog()
+                view?.dismissConfirmationDialog()
             }
             .subscribe(
                 {
                     logPaymentSentEvent(true, CryptoCurrency.PAX, pendingTx.amountPax)
 
-                    // handleSuccessfulPayment(...) clears PendingTransaction object
+                    analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.PAX))
                     handleSuccessfulPayment(it)
                 },
                 {
                     Timber.e(it)
                     logPaymentSentEvent(false, CryptoCurrency.PAX, pendingTx.amountPax)
-                    view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG)
+                    view?.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG)
+                    analytics.logEvent(SendAnalytics.SummarySendFailure(CryptoCurrency.PAX))
                 }
             )
     }
@@ -262,11 +275,11 @@ class PaxSendStrategy(
     }
 
     private fun showPaymentReview() {
-        view.showPaymentDetails(getConfirmationDetails(), null, null, false)
+        view?.showPaymentDetails(getConfirmationDetails(), null, null, false)
     }
 
     private fun checkManualAddressInput() {
-        val address = view.getReceivingAddress() ?: return
+        val address = view?.getReceivingAddress() ?: return
 
         // Only if valid address so we don't override with a label
         if (FormatsUtil.isValidEthereumAddress(address)) {
@@ -277,36 +290,27 @@ class PaxSendStrategy(
     private fun getConfirmationDetails(): PaymentConfirmationDetails {
         val tx = pendingTx
 
-        return PaymentConfirmationDetails().apply {
-            fromLabel = tx.sendingAccountLabel
-            toLabel = tx.receivingAddress
+        val paxValue = CryptoValue.usdPaxFromMinor(pendingTx.amountPax)
+        var paxAmount = paxValue.toBigDecimal()
+        paxAmount = paxAmount.setScale(8, RoundingMode.HALF_UP).stripTrailingZeros()
+        val fiatValue = paxValue.toFiat(exchangeRates, fiatCurrency)
+        var ethFeeValue = Convert.fromWei(pendingTx.feeEth.toString(), Convert.Unit.ETHER)
+        ethFeeValue = ethFeeValue.setScale(8, RoundingMode.HALF_UP).stripTrailingZeros()
+        val fiatFeeValue = CryptoValue.etherFromWei(pendingTx.feeEth).toFiat(exchangeRates, fiatCurrency)
 
-            cryptoUnit = CryptoCurrency.PAX.symbol
-            cryptoFeeUnit = CryptoCurrency.ETHER.symbol
-
-            fiatUnit = currencyPrefs.selectedFiatCurrency
-            fiatSymbol = currencyFormatter.getFiatSymbol(currencyFormatter.fiatCountryCode)
-
-            val paxValue = CryptoValue.usdPaxFromMinor(pendingTx.amountPax)
-            var paxAmount = paxValue.toBigDecimal()
-            paxAmount = paxAmount.setScale(8, RoundingMode.HALF_UP).stripTrailingZeros()
-
-            val fiatValue = paxValue.toFiat(exchangeRates)
-            cryptoAmount = paxAmount.toString()
-            fiatAmount = fiatValue.toStringWithoutSymbol()
-
-            var ethFeeValue = Convert.fromWei(pendingTx.feeEth.toString(), Convert.Unit.ETHER)
-            ethFeeValue = ethFeeValue.setScale(8, RoundingMode.HALF_UP).stripTrailingZeros()
-
-            cryptoFee = ethFeeValue.toString()
-
-            val fiatFeeValue = CryptoValue.etherFromWei(pendingTx.feeEth).toFiat(exchangeRates)
-
-            fiatFee = fiatFeeValue.toStringWithoutSymbol()
-
-            showCryptoTotal = false
-
-            fiatTotal = (fiatFeeValue + fiatValue).toStringWithoutSymbol()
+        return PaymentConfirmationDetails(
+            fromLabel = tx.sendingAccountLabel,
+            toLabel = tx.receivingAddress,
+            crypto = CryptoCurrency.PAX,
+            cryptoAmount = paxAmount.toString(),
+            fiatAmount = fiatValue.toStringWithoutSymbol(),
+            fiatUnit = fiatCurrency,
+            cryptoFee = ethFeeValue.toString(),
+            fiatFee = fiatFeeValue.toStringWithoutSymbol(),
+            showCryptoTotal = false,
+            fiatTotal = (fiatFeeValue + fiatValue).toStringWithSymbol()
+        ).apply {
+            cryptoFeeUnit = CryptoCurrency.ETHER.displayTicker
         }
     }
 
@@ -322,7 +326,7 @@ class PaxSendStrategy(
     }
 
     override fun selectDefaultOrFirstFundedSendingAccount() {
-        view.updateSendingAddress(pendingTx.sendingAccountLabel)
+        view?.updateSendingAddress(pendingTx.sendingAccountLabel)
 
         val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount(CryptoCurrency.ETHER)
         pendingTx.sendingObject = accountItem
@@ -333,16 +337,15 @@ class PaxSendStrategy(
      */
     @SuppressLint("CheckResult")
     private fun getSuggestedFee() {
-        feeDataManager.ethFeeOptions
+        compositeDisposable += feeDataManager.ethFeeOptions
             .doOnSubscribe { feeOptions = dynamicFeeCache.ethFeeOptions!! }
             .doOnNext { dynamicFeeCache.ethFeeOptions = it }
-            .addToCompositeDisposable(this)
             .subscribe(
                 { /* No-op */ },
                 {
                     Timber.e(it)
-                    view.showSnackbar(R.string.confirm_payment_fee_sync_error, Snackbar.LENGTH_LONG)
-                    view.finishPage()
+                    view?.showSnackbar(R.string.confirm_payment_fee_sync_error, Snackbar.LENGTH_LONG)
+                    view?.finishPage()
                 }
             )
     }
@@ -356,7 +359,7 @@ class PaxSendStrategy(
         absoluteSuggestedFee = fee
 
         val cryptoValue = CryptoValue(CryptoCurrency.ETHER, absoluteSuggestedFee)
-        view.updateFeeAmount(cryptoValue, cryptoValue.toFiat(exchangeRates))
+        view?.updateFeeAmount(cryptoValue, cryptoValue.toFiat(exchangeRates, fiatCurrency))
     }
 
     override fun onCryptoTextChange(cryptoText: String) {
@@ -383,9 +386,9 @@ class PaxSendStrategy(
     }
 
     private fun calculateSpendableAmounts(spendAll: Boolean, amountToSendText: String) {
-        view.setSendButtonEnabled(true)
-        view.hideMaxAvailable()
-        view.clearWarning()
+        view?.setSendButtonEnabled(true)
+        view?.hideMaxAvailable()
+        view?.clearWarning()
 
         getSuggestedFee()
 
@@ -393,8 +396,7 @@ class PaxSendStrategy(
         getPaxAccountBalance(spendAll, amountToSendText)
 
         // Check if any pending ether txs exist and warn user
-        isLastTxPending()
-            .addToCompositeDisposable(this)
+        compositeDisposable += isLastTxPending()
             .subscribeBy(
                 onNext = { /* No-op */ },
                 onComplete = { /* No-op */ },
@@ -404,12 +406,11 @@ class PaxSendStrategy(
 
     @SuppressLint("CheckResult")
     private fun getEthAccountBalance() {
-        view.showMaxAvailable()
+        view?.showMaxAvailable()
 
         if (ethDataManager.getEthResponseModel() == null) {
-            ethDataManager.fetchEthAddress()
-                .addToCompositeDisposable(this)
-                .doOnError { view.showSnackbar(R.string.api_fail, Snackbar.LENGTH_INDEFINITE) }
+            compositeDisposable += ethDataManager.fetchEthAddress()
+                .doOnError { view?.showSnackbar(R.string.api_fail, Snackbar.LENGTH_INDEFINITE) }
                 .subscribe { calculateUnspentEth(it) }
         } else {
             ethDataManager.getEthResponseModel()?.let {
@@ -432,9 +433,8 @@ class PaxSendStrategy(
 
     @SuppressLint("CheckResult")
     private fun getPaxAccountBalance(spendAll: Boolean, amountToSendText: String) {
-        ethDataManager.getErc20Address(CryptoCurrency.PAX)
-            .addToCompositeDisposable(this)
-            .doOnError { view.showSnackbar(R.string.api_fail, Snackbar.LENGTH_INDEFINITE) }
+        compositeDisposable += ethDataManager.getErc20Address(CryptoCurrency.PAX)
+            .doOnError { view?.showSnackbar(R.string.api_fail, Snackbar.LENGTH_INDEFINITE) }
             .subscribe { calculateUnspentPax(it, spendAll, amountToSendText) }
     }
 
@@ -452,23 +452,19 @@ class PaxSendStrategy(
             view?.updateCryptoAmount(cryptoValue)
             pendingTx.amountPax = availablePax
         } else {
-            // TODO: Not wei, but pax-minor. Since we share dp, we can use this
-            pendingTx.amountPax = currencyFormatter.getWeiFromText(
-                amountToSendSanitised,
-                getDefaultDecimalSeparator()
-            )
+            pendingTx.amountPax = getPaxMinorFromText(amountToSendSanitised, getDefaultDecimalSeparator())
         }
 
         // Format for display
-        val number = currencyFormatter.getFormattedValueWithUnit(cryptoValue)
-        view.updateMaxAvailable("${stringUtils.getString(R.string.max_available)} $number")
+        val number = cryptoValue.toStringWithSymbol()
+        view?.updateMaxAvailable("${stringUtils.getString(R.string.max_available)} $number")
 
         // No dust in Ethereum
         if (maxPaxAvailable <= BigInteger.ZERO) {
-            view.updateMaxAvailable(stringUtils.getString(R.string.insufficient_funds))
-            view.updateMaxAvailableColor(R.color.product_red_medium)
+            view?.updateMaxAvailable(stringUtils.getString(R.string.insufficient_funds))
+            view?.updateMaxAvailableColor(R.color.product_red_medium)
         } else {
-            view.updateMaxAvailableColor(R.color.primary_blue_accent)
+            view?.updateMaxAvailableColor(R.color.primary_blue_accent)
         }
     }
 
@@ -478,7 +474,7 @@ class PaxSendStrategy(
 
     private fun validateTransaction(): Observable<Pair<Boolean, Int>> {
         return if (pendingTx.receivingAddress.isEmpty()) {
-            Observable.just(Pair(false, R.string.pax_invalid_address))
+            Observable.just(Pair(false, R.string.pax_invalid_address_1))
         } else {
             ethDataManager.getIfContract(pendingTx.receivingAddress)
                 .map { isContract ->
@@ -492,7 +488,7 @@ class PaxSendStrategy(
                     } else {
                         // Validate address
                         if (!FormatsUtil.isValidEthereumAddress(pendingTx.receivingAddress)) {
-                            errorMessage = R.string.pax_invalid_address
+                            errorMessage = R.string.pax_invalid_address_1
                             validated = false
                         }
 
@@ -536,7 +532,7 @@ class PaxSendStrategy(
                     view?.updateMaxAvailable(stringUtils.getString(R.string.eth_unconfirmed_wait))
                     view?.updateMaxAvailableColor(R.color.product_red_medium)
                 } else {
-                    view.enableInput()
+                    view?.enableInput()
                 }
 
                 val errorMessage = R.string.eth_unconfirmed_wait
@@ -553,3 +549,15 @@ private data class PendingPaxTx(
 ) {
     fun isValidAmount(): Boolean = amountPax > BigInteger.ZERO
 }
+
+private fun getPaxMinorFromText(text: String?, decimalSeparator: String): BigInteger {
+    if (text == null || text.isEmpty()) return BigInteger.ZERO
+
+    val amountToSend = stripSeparator(text, decimalSeparator)
+    return Convert.toWei(amountToSend, Convert.Unit.ETHER).toBigInteger()
+}
+
+private fun stripSeparator(text: String, decimalSeparator: String) =
+    text.trim { it <= ' ' }
+        .replace(" ", "")
+        .replace(decimalSeparator, ".")

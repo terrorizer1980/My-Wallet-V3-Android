@@ -1,11 +1,12 @@
 package piuk.blockchain.android.ui.account;
 
 import android.content.Context;
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
-import android.support.annotation.ColorRes;
-import android.support.annotation.FloatRange;
-import android.support.v4.content.ContextCompat;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.FloatRange;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.BaseObservable;
+import androidx.databinding.Bindable;
 
 import piuk.blockchain.android.BR;
 import piuk.blockchain.androidcoreui.utils.ViewUtils;

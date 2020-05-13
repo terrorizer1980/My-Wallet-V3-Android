@@ -1,145 +1,156 @@
 package piuk.blockchain.android.ui.home
 
+import android.content.Intent
 import android.net.Uri
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.CampaignData
-import com.blockchain.kyc.models.nabu.KycState
-import com.blockchain.kyc.models.nabu.NabuApiException
-import com.blockchain.kyc.models.nabu.NabuErrorCodes
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import androidx.annotation.StringRes
+import com.blockchain.swap.nabu.models.nabu.CampaignData
+import com.blockchain.swap.nabu.models.nabu.KycState
+import com.blockchain.swap.nabu.models.nabu.NabuApiException
+import com.blockchain.swap.nabu.models.nabu.NabuErrorCodes
+import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
-import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
-import piuk.blockchain.android.ui.kyc.sunriver.SunriverCardType
+import piuk.blockchain.android.campaign.SunriverCampaignRegistration
+import piuk.blockchain.android.campaign.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.logging.CrashLogger
-import com.blockchain.remoteconfig.ABTestExperiment
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.sunriver.XlmDataManager
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.api.Environment
-import info.blockchain.wallet.exceptions.HDWalletException
-import info.blockchain.wallet.exceptions.InvalidCredentialsException
-import info.blockchain.wallet.payload.PayloadManagerWiper
-import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.deeplink.EmailVerifiedLinkState
 import piuk.blockchain.android.deeplink.LinkState
 import piuk.blockchain.android.kyc.KycLinkState
+import piuk.blockchain.android.simplebuy.SimpleBuyAvailability
+import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.android.sunriver.CampaignLinkState
 import piuk.blockchain.android.thepit.PitLinking
-import piuk.blockchain.android.ui.dashboard.DashboardPresenter
-import piuk.blockchain.android.ui.home.models.MetadataEvent
-import piuk.blockchain.android.ui.launcher.LauncherActivity
-import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
-import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
-import piuk.blockchain.androidbuysell.services.ExchangeService
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
-import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
-import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.erc20.Erc20Account
-import piuk.blockchain.androidcore.data.ethereum.EthDataManager
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.fees.FeeDataManager
-import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.data.rxjava.RxBus
-import com.blockchain.swap.shapeshift.ShapeShiftDataManager
+import piuk.blockchain.android.ui.base.MvpPresenter
+import piuk.blockchain.android.ui.base.MvpView
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcore.utils.extensions.applySchedulers
-import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import piuk.blockchain.androidcoreui.utils.logging.SecondPasswordEvent
 import timber.log.Timber
 
+interface MainView : MvpView, HomeNavigator {
+
+    @Deprecated("Used for processing deep links. Find a way to get rid of this")
+    fun getStartIntent(): Intent
+
+    fun onHandleInput(strUri: String)
+    fun refreshAnnouncements()
+    fun kickToLauncherPage()
+    fun showProgressDialog(@StringRes message: Int)
+    fun hideProgressDialog()
+    fun clearAllDynamicShortcuts()
+    fun setPitEnabled(enabled: Boolean)
+    fun setSimpleBuyEnabled(enabled: Boolean)
+    fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String)
+    fun showHomebrewDebugMenu()
+    fun enableSwapButton(isEnabled: Boolean)
+    fun displayLockboxMenu(lockboxAvailable: Boolean)
+    fun showTestnetWarning()
+    fun launchSwapIntro()
+    fun launchPendingVerificationScreen(campaignType: CampaignType)
+    fun shouldIgnoreDeepLinking(): Boolean
+    fun displayDialog(@StringRes title: Int, @StringRes message: Int)
+}
+
 class MainPresenter internal constructor(
     private val prefs: PersistentPrefs,
-    private val appUtil: AppUtil,
     private val accessState: AccessState,
-    private val payloadManagerWiper: PayloadManagerWiper,
+    private val credentialsWiper: CredentialsWiper,
     private val payloadDataManager: PayloadDataManager,
-    private val buyDataManager: BuyDataManager,
-    private val dynamicFeeCache: DynamicFeeCache,
     private val exchangeRateFactory: ExchangeRateDataManager,
-    private val rxBus: RxBus,
-    private val feeDataManager: FeeDataManager,
-    private val ethDataManager: EthDataManager,
-    private val bchDataManager: BchDataManager,
     private val currencyState: CurrencyState,
-    private val metadataManager: MetadataManager,
-    private val stringUtils: StringUtils,
-    private val shapeShiftDataManager: ShapeShiftDataManager,
     private val environmentSettings: EnvironmentConfig,
-    private val coinifyDataManager: CoinifyDataManager,
-    private val exchangeService: ExchangeService,
     private val kycStatusHelper: KycStatusHelper,
     private val lockboxDataManager: LockboxDataManager,
     private val deepLinkProcessor: DeepLinkProcessor,
-    private val sunriverCampaignHelper: SunriverCampaignHelper,
+    private val sunriverCampaignRegistration: SunriverCampaignRegistration,
     private val xlmDataManager: XlmDataManager,
-    private val paxAccount: Erc20Account,
     private val pitFeatureFlag: FeatureFlag,
-    private val pitABTestingExperiment: ABTestExperiment,
     private val pitLinking: PitLinking,
-    private val nabuToken: NabuToken,
     private val nabuDataManager: NabuDataManager,
-    private val crashLogger: CrashLogger
-) : BasePresenter<MainView>() {
+    private val simpleBuySync: SimpleBuySyncFactory,
+    private val crashLogger: CrashLogger,
+    private val analytics: Analytics,
+    private val simpleBuyAvailability: SimpleBuyAvailability,
+    private val cacheCredentialsWiper: CacheCredentialsWiper,
+    nabuToken: NabuToken
+) : MvpPresenter<MainView>() {
+
+    override val alwaysDisableScreenshots: Boolean = false
+    override val enableLogoutTimer: Boolean = true
 
     internal val defaultCurrency: String
         get() = prefs.selectedFiatCurrency
 
-    override fun onViewReady() {
+    private val nabuUser = nabuToken
+        .fetchNabuToken()
+        .flatMap {
+            nabuDataManager.getUser(it)
+        }
+
+    internal var cryptoCurrency: CryptoCurrency
+        get() = currencyState.cryptoCurrency
+        set(v) { currencyState.cryptoCurrency = v }
+
+    override fun onViewAttached() {
         if (!accessState.isLoggedIn) {
             // This should never happen, but handle the scenario anyway by starting the launcher
             // activity, which handles all login/auth/corruption scenarios itself
-            view.kickToLauncherPage()
+            view?.kickToLauncherPage()
         } else {
             logEvents()
 
             checkLockboxAvailability()
 
-            view.showProgressDialog(R.string.please_wait)
-
-            initMetadataElements()
+            lightSimpleBuySync()
 
             doPushNotifications()
 
             checkPitAvailability()
-
-            setPitTitle()
         }
     }
 
-    private fun setPitTitle() {
-        compositeDisposable += pitABTestingExperiment.getABVariant(ABTestExperiment.AB_THE_PIT_SIDE_NAV_VARIANT).map {
-            when (it) {
-                "B" -> return@map stringUtils.getString(R.string.trading)
-                "C" -> return@map stringUtils.getString(R.string.the_pit_exchange_title)
-                else -> return@map stringUtils.getString(R.string.the_pit_title)
-            }
-        }.subscribeBy { view.setPitItemTitle(it) }
+    private fun initSimpleBuyState() {
+        compositeDisposable +=
+            simpleBuyAvailability.isAvailable()
+                .doOnSubscribe { view?.setSimpleBuyEnabled(false) }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onSuccess = {
+                        view?.setSimpleBuyEnabled(it)
+                    }
+                )
     }
 
+    override fun onViewDetached() {}
+
     private fun checkPitAvailability() {
-        compositeDisposable += pitFeatureFlag.enabled.subscribeBy { view.setPitEnabled(it) }
+        compositeDisposable += pitFeatureFlag.enabled.subscribeBy { view?.setPitEnabled(it) }
     }
 
     private fun checkLockboxAvailability() {
         compositeDisposable += lockboxDataManager.isLockboxAvailable()
-            .subscribe { enabled, _ -> view.displayLockboxMenu(enabled) }
+            .subscribe { enabled, _ -> view?.displayLockboxMenu(enabled) }
     }
 
     /**
@@ -157,8 +168,8 @@ class MainPresenter internal constructor(
 
     internal fun doTestnetCheck() {
         if (environmentSettings.environment == Environment.TESTNET) {
-            currencyState.cryptoCurrency = CryptoCurrency.BTC
-            view.showTestnetWarning()
+            cryptoCurrency = CryptoCurrency.BTC
+            view?.showTestnetWarning()
         }
     }
 
@@ -166,53 +177,44 @@ class MainPresenter internal constructor(
         compositeDisposable += kycStatusHelper.shouldDisplayKyc()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { view.enableSwapButton(it) },
+                { view?.enableSwapButton(it) },
                 { Timber.e(it) }
             )
     }
 
     private fun setDebugExchangeVisibility() {
         if (BuildConfig.DEBUG) {
-            view.showHomebrewDebugMenu()
+            view?.showHomebrewDebugMenu()
         }
     }
 
-    internal fun initMetadataElements() {
-        compositeDisposable += metadataManager.attemptMetadataSetup()
-            .andThen(exchangeRateCompletable())
-            .andThen(ethCompletable())
-            .andThen(shapeShiftCompletable())
-            .andThen(bchCompletable())
-            .andThen(feesCompletable())
+    private fun lightSimpleBuySync() {
+        compositeDisposable += simpleBuySync.lightweightSync()
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                view?.showProgressDialog(R.string.please_wait)
+            }
             .doAfterTerminate {
-                view.hideProgressDialog()
+                view?.hideProgressDialog()
 
                 val strUri = prefs.getValue(PersistentPrefs.KEY_SCHEME_URL, "")
                 if (strUri.isNotEmpty()) {
                     prefs.removeValue(PersistentPrefs.KEY_SCHEME_URL)
-                    view.onHandleInput(strUri)
+                    view?.onHandleInput(strUri)
                 }
+                view?.refreshAnnouncements()
             }
-            .subscribe({
-                checkKycStatus()
-                setDebugExchangeVisibility()
-                initBuyService()
-                rxBus.emitEvent(MetadataEvent::class.java, MetadataEvent.SETUP_COMPLETE)
-
-                checkForPendingLinks()
-            }, { throwable ->
-                if (throwable is InvalidCredentialsException || throwable is HDWalletException) {
-                    if (payloadDataManager.isDoubleEncrypted) {
-                        // Wallet double encrypted and needs to be decrypted to set up ether wallet, contacts etc
-                        view.showSecondPasswordDialog()
-                    } else {
-                        logException(throwable)
-                    }
-                } else {
+            .subscribeBy(
+                onComplete = {
+                    checkKycStatus()
+                    setDebugExchangeVisibility()
+                    initSimpleBuyState()
+                    checkForPendingLinks()
+                },
+                onError = { throwable ->
                     logException(throwable)
                 }
-            })
+            )
     }
 
     fun handlePossibleDeepLink(url: String) {
@@ -229,8 +231,8 @@ class MainPresenter internal constructor(
     }
 
     private fun checkForPendingLinks() {
-        compositeDisposable += deepLinkProcessor.getLink(view.getStartIntent())
-            .filter { !view.shouldIgnoreDeepLinking() }
+        compositeDisposable += deepLinkProcessor.getLink(view!!.getStartIntent())
+            .filter { !view!!.shouldIgnoreDeepLinking() }
             .subscribeBy(
                 onError = { Timber.e(it) },
                 onSuccess = { dispatchDeepLink(it) }
@@ -248,29 +250,31 @@ class MainPresenter internal constructor(
 
     private fun handleSunriverDeepLink(linkState: LinkState.SunriverDeepLink) {
         when (linkState.link) {
-            is CampaignLinkState.WrongUri -> view.displayDialog(R.string.sunriver_invalid_url_title,
-                R.string.sunriver_invalid_url_message)
+            is CampaignLinkState.WrongUri -> view?.displayDialog(
+                R.string.sunriver_invalid_url_title,
+                R.string.sunriver_invalid_url_message
+            )
             is CampaignLinkState.Data -> registerForCampaign(linkState.link.campaignData)
         }
     }
 
     private fun handleKycDeepLink(linkState: LinkState.KycDeepLink) {
         when (linkState.link) {
-            is KycLinkState.Resubmit -> view.launchKyc(CampaignType.Resubmission)
-            is KycLinkState.EmailVerified -> view.launchKyc(CampaignType.Swap)
+            is KycLinkState.Resubmit -> view?.launchKyc(CampaignType.Resubmission)
+            is KycLinkState.EmailVerified -> view?.launchKyc(CampaignType.Swap)
             is KycLinkState.General -> {
                 val data = linkState.link.campaignData
                 if (data != null) {
                     registerForCampaign(data)
                 } else {
-                    view.launchKyc(CampaignType.Swap)
+                    view?.launchKyc(CampaignType.Swap)
                 }
             }
         }
     }
 
     private fun handleThePitDeepLink(linkState: LinkState.ThePitDeepLink) {
-        view.launchThePitLinking(linkState.linkId)
+        view?.launchThePitLinking(linkState.linkId)
     }
 
     private fun handleEmailVerifiedDeepLink(linkState: LinkState.EmailVerifiedDeepLink) {
@@ -282,21 +286,19 @@ class MainPresenter internal constructor(
     private fun registerForCampaign(data: CampaignData) {
         compositeDisposable +=
             xlmDataManager.defaultAccount()
-                .flatMapCompletable { account ->
-                    sunriverCampaignHelper
-                        .registerCampaignAndSignUpIfNeeded(account, data)
+                .flatMapCompletable {
+                    sunriverCampaignRegistration
+                        .registerCampaign(data)
                 }
                 .andThen(kycStatusHelper.getKycStatus())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { view.showProgressDialog(R.string.please_wait) }
-                .doOnEvent { _, _ -> view.hideProgressDialog() }
+                .doOnSubscribe { view?.showProgressDialog(R.string.please_wait) }
+                .doOnEvent { _, _ -> view?.hideProgressDialog() }
                 .subscribe({ status ->
                     prefs.setValue(SunriverCardType.JoinWaitList.javaClass.simpleName, true)
                     if (status != KycState.Verified) {
-                        view.launchKyc(CampaignType.Sunriver)
-                    } else {
-                        view.refreshDashboard()
+                        view?.launchKyc(CampaignType.Sunriver)
                     }
                 }, { throwable ->
                     Timber.e(throwable)
@@ -314,7 +316,7 @@ class MainPresenter internal constructor(
                                     R.string.sunriver_generic_error
                                 }
                             }
-                        view.displayDialog(
+                        view?.displayDialog(
                             R.string.sunriver_invalid_url_title,
                             errorMessageStringId
                         )
@@ -323,78 +325,14 @@ class MainPresenter internal constructor(
                 )
     }
 
-    private fun bchCompletable(): Completable {
-        return bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
-            .doOnError { throwable ->
-                crashLogger.logException(throwable)
-                // TODO: 21/02/2018 Reload or disable?
-                Timber.e(throwable, "Failed to load bch wallet")
-            }
-    }
-
-    private fun ethCompletable(): Completable {
-        return ethDataManager.initEthereumWallet(
-            stringUtils.getString(R.string.eth_default_account_label),
-            stringUtils.getString(R.string.pax_default_account_label)
-        ).doOnError { throwable ->
-            crashLogger.logException(throwable)
-            // TODO: 21/02/2018 Reload or disable?
-            Timber.e(throwable, "Failed to load eth wallet")
-        }
-    }
-
-    private fun shapeShiftCompletable(): Completable {
-        return shapeShiftDataManager.initShapeshiftTradeData()
-            .onErrorComplete()
-            .doOnError { throwable ->
-                crashLogger.logException(throwable)
-                // TODO: 21/02/2018 Reload or disable?
-                Timber.e(throwable, "Failed to load shape shift trades")
-            }
-    }
-
     private fun logException(throwable: Throwable) {
         crashLogger.logException(throwable)
-        view.showMetadataNodeFailure()
-    }
-
-    /**
-     * All of these calls are allowed to fail here, we're just caching them in advance because we
-     * can.
-     */
-    private fun feesCompletable(): Completable =
-        feeDataManager.btcFeeOptions
-            .doOnNext { dynamicFeeCache.btcFeeOptions = it }
-            .ignoreElements()
-            .onErrorComplete()
-            .andThen(feeDataManager.ethFeeOptions
-                .doOnNext { dynamicFeeCache.ethFeeOptions = it }
-                .ignoreElements()
-                .onErrorComplete()
-            )
-            .andThen(feeDataManager.bchFeeOptions
-                .doOnNext { dynamicFeeCache.bchFeeOptions = it }
-                .ignoreElements()
-                .onErrorComplete()
-            )
-            .subscribeOn(Schedulers.io())
-
-    private fun exchangeRateCompletable(): Completable {
-        return exchangeRateFactory.updateTickers().applySchedulers()
     }
 
     internal fun unPair() {
-        view.clearAllDynamicShortcuts()
-        payloadManagerWiper.wipe()
-        accessState.logout()
-        accessState.unpairWallet()
-        appUtil.restartApp(LauncherActivity::class.java)
-        accessState.clearPin()
-        buyDataManager.wipe()
-        ethDataManager.clearEthAccountDetails()
-        paxAccount.clear()
-        bchDataManager.clearBchAccountDetails()
-        DashboardPresenter.onLogout()
+        view?.clearAllDynamicShortcuts()
+        credentialsWiper.unload()
+        cacheCredentialsWiper.wipe()
     }
 
     internal fun updateTicker() {
@@ -404,90 +342,31 @@ class MainPresenter internal constructor(
     }
 
     private fun logEvents() {
+        analytics.logEventOnce(AnalyticsEvents.WalletSignupFirstLogIn)
         Logging.logCustom(SecondPasswordEvent(payloadDataManager.isDoubleEncrypted))
-    }
-
-    private fun initBuyService() {
-        compositeDisposable +=
-            Observables.zip(buyDataManager.canBuy,
-                buyDataManager.isCoinifyAllowed).subscribe(
-                { (isEnabled, isCoinifyAllowed) ->
-                    view.setBuySellEnabled(isEnabled, isCoinifyAllowed)
-                    if (isEnabled && !isCoinifyAllowed) {
-                        compositeDisposable += buyDataManager.watchPendingTrades()
-                            .applySchedulers()
-                            .subscribe({ view.showTradeCompleteMsg(it) }, { it.printStackTrace() })
-
-                        compositeDisposable += buyDataManager.webViewLoginDetails
-                            .subscribe({ view.setWebViewLoginDetails(it) }, { it.printStackTrace() })
-                    } else if (isEnabled && isCoinifyAllowed) {
-                        notifyCompletedCoinifyTrades()
-                    }
-                }, { throwable ->
-                    Timber.e(throwable)
-                    view.setBuySellEnabled(enabled = false, useWebView = false)
-                })
-    }
-
-    private fun notifyCompletedCoinifyTrades() {
-        compositeDisposable +=
-            CoinifyTradeCompleteListener(exchangeService, coinifyDataManager, metadataManager)
-                .getCompletedCoinifyTradesAndUpdateMetaData()
-                .firstElement()
-                .applySchedulers()
-                .subscribeBy({
-                    Timber.e(it)
-                }) { view.showTradeCompleteMsg(it) }
-    }
-
-    internal fun decryptAndSetupMetadata(secondPassword: String) {
-        if (!payloadDataManager.validateSecondPassword(secondPassword)) {
-            view.showToast(R.string.invalid_password, ToastCustom.TYPE_ERROR)
-            view.showSecondPasswordDialog()
-        } else {
-            compositeDisposable += metadataManager.decryptAndSetupMetadata(environmentSettings.bitcoinNetworkParameters,
-                secondPassword)
-                .subscribeBy(onError = { it.printStackTrace() },
-                    onComplete = { appUtil.restartApp(LauncherActivity::class.java) })
-        }
-    }
-
-    internal fun setCryptoCurrency(cryptoCurrency: CryptoCurrency) {
-        currencyState.cryptoCurrency = cryptoCurrency
-    }
-
-    internal fun routeToBuySell() {
-        compositeDisposable += buyDataManager.isCoinifyAllowed
-            .subscribeBy(onError = { it.printStackTrace() },
-                onNext = { coinifyAllowed ->
-                    if (coinifyAllowed)
-                        view.launchBuySell()
-                })
     }
 
     internal fun clearLoginState() {
         accessState.logout()
     }
 
-    internal fun startSwapOrKyc(targetCurrency: CryptoCurrency? /* = null*/) {
-        val nabuUser = nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.getUser(it)
-        }
-        compositeDisposable += nabuUser
+    internal fun startSwapOrKyc(toCurrency: CryptoCurrency?, fromCurrency: CryptoCurrency?) {
+        compositeDisposable += nabuUser.observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(onError = { it.printStackTrace() }, onSuccess = { nabuUser ->
                 if (nabuUser.tiers?.current ?: 0 > 0) {
-                    view.launchSwap(
-                        prefs.selectedFiatCurrency,
-                        targetCurrency
+                    view?.launchSwap(
+                        defCurrency = prefs.selectedFiatCurrency,
+                        toCryptoCurrency = toCurrency,
+                        fromCryptoCurrency = fromCurrency
                     )
                 } else {
                     if (nabuUser.kycState == KycState.Rejected ||
                         nabuUser.kycState == KycState.UnderReview ||
                         prefs.swapIntroCompleted
                     )
-                        view.launchKyc(CampaignType.Swap)
+                        view?.launchPendingVerificationScreen(CampaignType.Swap)
                     else
-                        view.launchSwapIntro()
+                        view?.launchSwapIntro()
                 }
             })
     }
@@ -500,9 +379,9 @@ class MainPresenter internal constructor(
         compositeDisposable += pitLinking.isPitLinked().observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(onError = { Timber.e(it) }, onSuccess = { isLinked ->
                 if (isLinked) {
-                    view.launchThePit()
+                    view?.launchThePit()
                 } else {
-                    view.launchThePitLinking(linkId)
+                    view?.launchThePitLinking(linkId)
                 }
             })
     }

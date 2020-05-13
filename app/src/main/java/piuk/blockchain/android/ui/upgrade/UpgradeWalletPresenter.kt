@@ -13,7 +13,7 @@ import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.android.util.StringUtils
 
 internal class UpgradeWalletPresenter constructor(
@@ -70,7 +70,7 @@ internal class UpgradeWalletPresenter constructor(
     internal fun onUpgradeRequested(secondPassword: String?) {
         compositeDisposable += payloadDataManager.upgradeV2toV3(
             secondPassword,
-            stringUtils.getString(R.string.default_wallet_name))
+            stringUtils.getString(R.string.btc_default_wallet_name))
             .doOnSubscribe { view.onUpgradeStarted() }
             .doOnError { accessState.isNewlyCreated = false }
             .doOnComplete { accessState.isNewlyCreated = true }

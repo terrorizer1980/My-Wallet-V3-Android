@@ -10,6 +10,7 @@ import org.amshove.kluent.mock
 import org.junit.Before
 import org.junit.Test
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
+import piuk.blockchain.android.data.datamanagers.TransferableFundTransactionList
 import piuk.blockchain.android.ui.send.PendingTransaction
 
 class BackupWalletCompletedPresenterTest {
@@ -55,10 +56,15 @@ class BackupWalletCompletedPresenterTest {
     @Test
     fun `checkTransferableFunds success`() {
         // Arrange
-        val triple =
-            org.apache.commons.lang3.tuple.Triple.of(mutableListOf(PendingTransaction()), 0L, 0L)
+        val result = TransferableFundTransactionList(
+            pendingTransactions = listOf(PendingTransaction()),
+            totalToSend = 0.toBigInteger(),
+            totalFee = 0.toBigInteger()
+        )
+
         whenever(transferFundsDataManager.transferableFundTransactionListForDefaultAccount)
-            .thenReturn(Observable.just(triple))
+            .thenReturn(Observable.just(result))
+
         // Act
         subject.checkTransferableFunds()
         // Assert

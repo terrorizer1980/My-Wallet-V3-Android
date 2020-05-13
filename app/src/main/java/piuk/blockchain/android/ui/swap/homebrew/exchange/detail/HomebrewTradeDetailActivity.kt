@@ -7,10 +7,10 @@ import android.content.Intent
 import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
-import android.support.constraint.ConstraintSet
-import android.support.transition.AutoTransition
-import android.support.transition.TransitionManager
 import android.view.View
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
 import com.blockchain.swap.common.trade.MorphTrade
 import piuk.blockchain.android.ui.swap.homebrew.exchange.extensions.toDrawable
 import piuk.blockchain.android.ui.swap.homebrew.exchange.extensions.toStatusString
@@ -23,7 +23,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcoreui.ui.base.BaseAuthActivity
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import com.blockchain.ui.dialog.ErrorBottomDialog
+import piuk.blockchain.android.ui.customviews.ErrorBottomDialog
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -165,7 +165,7 @@ class HomebrewTradeDetailActivity : BaseAuthActivity() {
             getString(R.string.morph_success_for_first_gold_pax_trade_title)
 
         val description = if (!firstGoldPaxTrade) "" else
-            getString(R.string.morph_success_for_first_gold_pax_trade_description)
+            getString(R.string.morph_success_for_first_gold_pax_trade_description_1)
 
         val exchangeStartedDialog = ErrorBottomDialog.newInstance(
             ErrorBottomDialog.Content(

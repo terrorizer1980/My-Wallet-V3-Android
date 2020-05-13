@@ -2,8 +2,6 @@ package com.blockchain.sunriver
 
 import com.blockchain.account.BalanceAndMin
 import com.blockchain.account.DefaultAccountDataManager
-import com.blockchain.balance.AsyncAccountBalanceReporter
-import com.blockchain.balance.AsyncAddressBalanceReporter
 import com.blockchain.fees.FeeType
 import com.blockchain.sunriver.datamanager.XlmAccount
 import com.blockchain.sunriver.datamanager.XlmMetaData
@@ -16,7 +14,6 @@ import com.blockchain.transactions.SendFundsResult
 import com.blockchain.transactions.TransactionSender
 import com.blockchain.utils.toHex
 import info.blockchain.balance.AccountReference
-import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import io.reactivex.Maybe
 import io.reactivex.Single
@@ -34,9 +31,7 @@ class XlmDataManager internal constructor(
     xlmHorizonUrlFetcher: XlmHorizonUrlFetcher,
     xlmHorizonDefUrl: String
 ) : TransactionSender,
-    DefaultAccountDataManager,
-    AsyncAddressBalanceReporter,
-    AsyncAccountBalanceReporter {
+    DefaultAccountDataManager {
 
     private val xlmProxyUrl = xlmHorizonUrlFetcher.xlmHorizonUrl(xlmHorizonDefUrl).doOnSuccess {
         horizonProxy.update(it)
@@ -88,19 +83,12 @@ class XlmDataManager internal constructor(
     private val wallet = Single.defer { metaDataInitializer.initWalletMaybePrompt.toSingle() }
     private val maybeWallet = Maybe.defer { metaDataInitializer.initWalletMaybe }
 
-    override fun getBalance(address: String): Single<CryptoValue> =
-        Single.fromCallable { horizonProxy.getBalance(address) }.ensureUrlUpdated()
-            .subscribeOn(Schedulers.io())
-
     fun getBalance(accountReference: AccountReference.Xlm): Single<CryptoValue> =
         getBalance(accountReference.accountId)
 
-    override fun balanceOf(accountReference: AccountReference): Maybe<CryptoValue> {
-        if (accountReference.cryptoCurrency != CryptoCurrency.XLM) {
-            return Maybe.empty()
-        }
-        return getBalance(accountReference as AccountReference.Xlm).toMaybe()
-    }
+    private fun getBalance(address: String): Single<CryptoValue> =
+        Single.fromCallable { horizonProxy.getBalance(address) }.ensureUrlUpdated()
+            .subscribeOn(Schedulers.io())
 
     private fun getBalanceAndMin(accountReference: AccountReference.Xlm): Single<BalanceAndMin> =
         Single.fromCallable { horizonProxy.getBalanceAndMin(accountReference.accountId) }.ensureUrlUpdated()

@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.kyc.mobile.validation
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import piuk.blockchain.android.ui.kyc.mobile.entry.models.PhoneVerificationModel
 import io.reactivex.Observable
 import piuk.blockchain.androidcore.data.settings.PhoneNumber

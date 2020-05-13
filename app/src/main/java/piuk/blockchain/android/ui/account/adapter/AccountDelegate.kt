@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.account.adapter
 
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.RecyclerView
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -25,21 +25,25 @@ class AccountDelegate<in T>(
     override fun onBindViewHolder(
         items: List<T>,
         position: Int,
-        holder: RecyclerView.ViewHolder,
-        payloads: List<*>
+        holder: RecyclerView.ViewHolder
     ) {
         val accountViewHolder = holder as AccountViewHolder
         accountViewHolder.bind(items[position] as AccountItem, listener)
     }
 
-    override fun isForViewType(items: List<T>, position: Int): Boolean =
-        if (items[position] is AccountItem) {
-            (items[position] as AccountItem).type == AccountItem.TYPE_ACCOUNT_BTC ||
-                (items[position] as AccountItem).type == AccountItem.TYPE_ACCOUNT_BCH ||
-                (items[position] as AccountItem).type == AccountItem.TYPE_LEGACY_SUMMARY
+    override fun isForViewType(items: List<T>, position: Int): Boolean {
+        val item = items[position]
+        return if (item is AccountItem) {
+            when (item.type) {
+                AccountItem.TYPE_ACCOUNT_BTC,
+                AccountItem.TYPE_ACCOUNT_BCH,
+                AccountItem.TYPE_LEGACY_SUMMARY -> true
+                else -> false
+            }
         } else {
             false
         }
+    }
 
     private class AccountViewHolder internal constructor(
         itemView: View
@@ -93,46 +97,26 @@ class AccountDelegate<in T>(
                 if (accountItem.isArchived) {
                     amount.apply {
                         setText(R.string.archived_label)
-                        setTextColor(
-                            ContextCompat.getColor(
-                                itemView.context,
-                                R.color.product_grey_transferred
-                            )
-                        )
+                        setTextColor(ContextCompat.getColor(itemView.context, R.color.product_grey_transferred))
                     }
                 } else {
                     amount.apply {
                         text = accountItem.amount
-                        setTextColor(
-                            ContextCompat.getColor(
-                                itemView.context,
-                                R.color.product_green_medium
-                            )
-                        )
+                        setTextColor(ContextCompat.getColor(itemView.context, R.color.product_green_medium))
                     }
                 }
 
                 if (accountItem.isWatchOnly) {
                     tag.apply {
                         setText(R.string.watch_only)
-                        setTextColor(
-                            ContextCompat.getColor(
-                                itemView.context,
-                                R.color.product_red_medium
-                            )
-                        )
+                        setTextColor(ContextCompat.getColor(itemView.context, R.color.product_red_medium))
                     }
                 }
 
                 if (accountItem.isDefault) {
                     tag.apply {
                         setText(R.string.default_label)
-                        setTextColor(
-                            ContextCompat.getColor(
-                                itemView.context,
-                                R.color.product_grey_transferred
-                            )
-                        )
+                        setTextColor(ContextCompat.getColor(itemView.context, R.color.product_grey_transferred))
                     }
                 }
 
@@ -142,6 +126,7 @@ class AccountDelegate<in T>(
                     tag.visible()
                 }
             }
+            itemView.contentDescription = title.text
         }
     }
 }

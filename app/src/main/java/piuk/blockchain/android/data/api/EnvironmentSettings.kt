@@ -9,8 +9,6 @@ import org.bitcoinj.params.BitcoinMainNetParams
 import org.bitcoinj.params.BitcoinTestNet3Params
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.data.api.bitpay.BITPAY_LIVE_BASE
-import piuk.blockchain.androidbuysell.api.COINIFY_LIVE_BASE
-import piuk.blockchain.androidbuysell.api.COINIFY_SANDBOX_BASE
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 
 class EnvironmentSettings : EnvironmentConfig {
@@ -22,6 +20,7 @@ class EnvironmentSettings : EnvironmentConfig {
             CryptoCurrency.BCH -> BuildConfig.BITCOIN_CASH_WEBSOCKET_URL
             CryptoCurrency.XLM -> BuildConfig.BITCOIN_CASH_WEBSOCKET_URL
             CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
+            CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         }
 
     override fun shouldShowDebugMenu(): Boolean = BuildConfig.FLAVOR != "envProd"
@@ -31,11 +30,9 @@ class EnvironmentSettings : EnvironmentConfig {
     override val explorerUrl: String = BuildConfig.EXPLORER_URL
 
     override val apiUrl: String = BuildConfig.API_URL
+    override val everypayHostUrl: String = BuildConfig.EVERYPAY_HOST_URL
 
     override val bitpayUrl: String = BITPAY_LIVE_BASE
-
-    override val coinifyUrl: String
-        get() = if (environment != Environment.PRODUCTION) COINIFY_SANDBOX_BASE else COINIFY_LIVE_BASE
 
     override val bitcoinNetworkParameters: NetworkParameters
         get() = when (environment) {

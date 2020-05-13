@@ -1,8 +1,8 @@
 package piuk.blockchain.android.ui.kyc.reentry
 
 import androidx.navigation.NavDirections
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.NabuUser
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.models.nabu.NabuUser
 import piuk.blockchain.android.ui.kyc.navhost.toProfileModel
 import com.blockchain.swap.nabu.NabuToken
 import io.reactivex.Single
@@ -25,7 +25,7 @@ interface KycNavigator {
     fun userAndReentryPointToDirections(user: NabuUser, reentryPoint: ReentryPoint): NavDirections
 }
 
-internal class ReentryDecisionKycNavigator(
+class ReentryDecisionKycNavigator(
     private val token: NabuToken,
     private val dataManager: NabuDataManager,
     private val reentryDecision: ReentryDecision
@@ -34,21 +34,21 @@ internal class ReentryDecisionKycNavigator(
     override fun findNextStep(): Single<NavDirections> =
         token.fetchNabuToken()
             .flatMap(dataManager::getUser)
-            .flatMap { Single.just(findNextStep(it)) }
+            .map { findNextStep(it) }
 
     override fun findNextStep(user: NabuUser) =
         userAndReentryPointToDirections(user, reentryDecision.findReentryPoint(user))
 
     override fun userAndReentryPointToDirections(user: NabuUser, reentryPoint: ReentryPoint) =
         when (reentryPoint) {
-            ReentryPoint.EmailEntry -> KycNavXmlDirections.ActionStartEmailVerification()
-            ReentryPoint.CountrySelection -> KycNavXmlDirections.ActionStartCountrySelection()
-            ReentryPoint.Profile -> KycNavXmlDirections.ActionStartProfile(user.requireCountryCode())
-            ReentryPoint.Address -> KycNavXmlDirections.ActionStartAddressEntry(user.toProfileModel())
-            ReentryPoint.MobileEntry -> KycNavXmlDirections.ActionStartMobileVerification(user.requireCountryCode())
-            ReentryPoint.Onfido -> {
+            ReentryPoint.EmailEntry -> KycNavXmlDirections.actionStartEmailVerification()
+            ReentryPoint.CountrySelection -> KycNavXmlDirections.actionStartCountrySelection()
+            ReentryPoint.Profile -> KycNavXmlDirections.actionStartProfile(user.requireCountryCode())
+            ReentryPoint.Address -> KycNavXmlDirections.actionStartAddressEntry(user.toProfileModel())
+            ReentryPoint.MobileEntry -> KycNavXmlDirections.actionStartMobileVerification(user.requireCountryCode())
+            ReentryPoint.Veriff -> {
                 val countryCode = user.requireCountryCode()
-                KycNavXmlDirections.ActionStartVeriff(countryCode)
+                KycNavXmlDirections.actionStartVeriff(countryCode)
             }
         }
 }

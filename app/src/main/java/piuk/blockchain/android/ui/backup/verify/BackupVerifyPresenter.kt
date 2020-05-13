@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.backup.verify
 
 import android.annotation.SuppressLint
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.preferences.WalletStatus
 import io.reactivex.rxkotlin.plusAssign
 import piuk.blockchain.android.R

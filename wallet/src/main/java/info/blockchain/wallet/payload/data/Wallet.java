@@ -246,7 +246,7 @@ public class Wallet {
         return new ObjectMapper().writeValueAsString(this);
     }
 
-    public void addHDWallet(HDWallet hdWallet) {
+    void addHDWallet(HDWallet hdWallet) {
 
         if (hdWallets == null) {
             hdWallets = new ArrayList<>();
@@ -283,7 +283,7 @@ public class Wallet {
         return isEncryptionConsistent(isDoubleEncryption(), keyList);
     }
 
-    public boolean isEncryptionConsistent(boolean isDoubleEncrypted, List<String> keyList) {
+    boolean isEncryptionConsistent(boolean isDoubleEncrypted, List<String> keyList) {
 
         boolean consistent = true;
 

@@ -1,8 +1,8 @@
 package piuk.blockchain.androidcoreui.utils.extensions
 
 import android.content.Context
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 
 /**
  * Allows us to dispatch changes to a [RecyclerView] and have the diff calculated automatically

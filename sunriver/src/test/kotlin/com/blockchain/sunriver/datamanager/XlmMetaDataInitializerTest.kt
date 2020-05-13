@@ -13,6 +13,7 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import com.nhaarman.mockito_kotlin.verifyZeroInteractions
 import info.blockchain.balance.CryptoCurrency
 import io.github.novacrypto.bip39.SeedCalculator
@@ -77,7 +78,9 @@ class XlmMetaDataInitializerTest {
 
         repository.assertSaved(expectedData)
         repository.assertLoaded()
-        assertNoWarnings()
+
+        verifyNoMoreInteractions(crashLogger)
+
         assertSingleMetaDataLoad(repository)
     }
 
@@ -114,7 +117,9 @@ class XlmMetaDataInitializerTest {
 
         repository.assertSaved(expectedData)
         repository.assertLoaded()
-        assertNoWarnings()
+
+        verifyNoMoreInteractions(crashLogger)
+
         assertSingleMetaDataLoad(repository)
     }
 
@@ -152,7 +157,9 @@ class XlmMetaDataInitializerTest {
 
         repository.assertSaved(expectedData)
         repository.assertLoaded()
-        assertNoWarnings()
+
+        verifyNoMoreInteractions(crashLogger)
+
         assertSingleMetaDataLoad(repository)
     }
 
@@ -187,7 +194,9 @@ class XlmMetaDataInitializerTest {
 
         repository.assertNothingSaved()
         repository.assertLoaded()
-        assertNoWarnings()
+
+        verifyNoMoreInteractions(crashLogger)
+
         assertSingleMetaDataLoad(repository)
     }
 
@@ -222,7 +231,9 @@ class XlmMetaDataInitializerTest {
 
         repository.assertNothingSaved()
         repository.assertLoaded()
-        assertNoWarnings()
+
+        verifyNoMoreInteractions(crashLogger)
+
         assertSingleMetaDataLoad(repository)
     }
 
@@ -247,7 +258,9 @@ class XlmMetaDataInitializerTest {
             .initWalletMaybe
             .test()
             .assertFailureAndMessage(Exception::class.java, "Save fail")
-        assertNoWarnings()
+
+        verifyNoMoreInteractions(crashLogger)
+
         assertSingleMetaDataLoad(repository)
     }
 
@@ -270,7 +283,9 @@ class XlmMetaDataInitializerTest {
 
         repository.assertNothingSaved()
         repository.assertLoaded()
-        assertNoWarnings()
+
+        verifyNoMoreInteractions(crashLogger)
+
         assertSingleMetaDataLoad(repository)
     }
 
@@ -293,7 +308,9 @@ class XlmMetaDataInitializerTest {
 
         repository.assertNothingSaved()
         repository.assertLoaded()
-        assertNoWarnings()
+
+        verifyNoMoreInteractions(crashLogger)
+
         assertSingleMetaDataLoad(repository)
     }
 
@@ -328,7 +345,9 @@ class XlmMetaDataInitializerTest {
 
         repository.assertNothingSaved()
         repository.assertLoaded()
-        assertNoWarnings()
+
+        verifyNoMoreInteractions(crashLogger)
+
         assertSingleMetaDataLoad(repository)
     }
 
@@ -368,7 +387,9 @@ class XlmMetaDataInitializerTest {
 
         repository.assertSaved(expectedData)
         repository.assertLoaded()
-        assertNoWarnings()
+
+        verifyNoMoreInteractions(crashLogger)
+
         assertSingleMetaDataLoad(repository)
     }
 
@@ -408,7 +429,9 @@ class XlmMetaDataInitializerTest {
 
         repository.assertSaved(expectedData)
         repository.assertLoaded()
-        assertNoWarnings()
+
+        verifyNoMoreInteractions(crashLogger)
+
         assertSingleMetaDataLoad(repository)
     }
 
@@ -447,7 +470,9 @@ class XlmMetaDataInitializerTest {
 
         repository.assertSaved(expectedData)
         repository.assertLoaded()
-        assertNoWarnings()
+
+        verifyNoMoreInteractions(crashLogger)
+
         assertSingleMetaDataLoad(repository)
     }
 
@@ -485,7 +510,9 @@ class XlmMetaDataInitializerTest {
 
         repository.assertNothingSaved()
         repository.assertLoaded()
-        verify(crashLogger).logException(any())
+
+        verify(crashLogger).logException(any<Throwable>(), any())
+
         assertSingleMetaDataLoad(repository)
     }
 
@@ -531,7 +558,9 @@ class XlmMetaDataInitializerTest {
 
         repository.assertNothingSaved()
         repository.assertLoaded()
-        assertNoWarnings()
+
+        verifyNoMoreInteractions(crashLogger)
+
         assertSingleMetaDataLoad(repository)
     }
 
@@ -571,11 +600,8 @@ class XlmMetaDataInitializerTest {
         repository.assertSaved(expectedData)
         verify(repository, times(2)).loadMetadata(XlmMetaData.MetaDataType, XlmMetaData::class.java)
         verify(repository, times(2)).loadMetadata(any(), eq(XlmMetaData::class.java))
-        assertNoWarnings()
-    }
 
-    private fun assertNoWarnings() {
-        verify(crashLogger, never()).logException(any())
+        verifyNoMoreInteractions(crashLogger)
     }
 }
 
@@ -695,5 +721,5 @@ private fun KStubbing<MetadataRepository>.successfulSave() {
 
 private fun givenDefaultXlmLabel(defaultLabel: String): DefaultLabels =
     mock {
-        on { get(CryptoCurrency.XLM) } `it returns` defaultLabel
+        on { getDefaultNonCustodialWalletLabel(CryptoCurrency.XLM) } `it returns` defaultLabel
     }

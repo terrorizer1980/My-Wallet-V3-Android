@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.account.adapter
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -23,8 +23,7 @@ class CreateWalletDelegate<in T>(
     override fun onBindViewHolder(
         items: List<T>,
         position: Int,
-        holder: RecyclerView.ViewHolder,
-        payloads: List<*>
+        holder: RecyclerView.ViewHolder
     ) {
         val headerViewHolder = holder as HeaderViewHolder
         headerViewHolder.bind(items[position] as AccountItem, listener)
@@ -57,6 +56,7 @@ class CreateWalletDelegate<in T>(
                 itemView.setOnClickListener(null)
                 plus.gone()
             }
+            itemView.contentDescription = header.text
         }
     }
 }

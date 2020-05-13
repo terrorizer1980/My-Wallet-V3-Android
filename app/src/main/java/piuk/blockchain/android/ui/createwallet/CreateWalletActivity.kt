@@ -1,23 +1,21 @@
 package piuk.blockchain.android.ui.createwallet
 
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.constraint.ConstraintSet
-import android.support.transition.TransitionManager
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.text.Spannable
-import android.text.SpannableString
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import android.text.method.LinkMovementMethod
-import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.transition.TransitionManager
 import com.blockchain.ui.urllinks.URL_TOS_POLICY
+import com.blockchain.ui.urllinks.URL_PRIVACY_POLICY
 import com.jakewharton.rxbinding2.widget.RxTextView
 import kotlinx.android.synthetic.main.activity_create_wallet.*
 import kotlinx.android.synthetic.main.include_entropy_meter.view.*
@@ -29,6 +27,7 @@ import piuk.blockchain.androidcore.utils.extensions.emptySubscribe
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import com.blockchain.ui.dialog.MaterialProgressDialog
+import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.getTextString
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -37,6 +36,7 @@ class CreateWalletActivity : BaseMvpActivity<CreateWalletView, CreateWalletPrese
     CreateWalletView,
     View.OnFocusChangeListener {
 
+    private val stringUtils: StringUtils by inject()
     private val createWalletPresenter: CreateWalletPresenter by inject()
     private var progressDialog: MaterialProgressDialog? = null
     private var applyConstraintSet: ConstraintSet = ConstraintSet()
@@ -69,6 +69,7 @@ class CreateWalletActivity : BaseMvpActivity<CreateWalletView, CreateWalletPrese
         RxTextView.afterTextChangeEvents(wallet_pass)
             .doOnNext {
                 showEntropyContainer()
+                presenter.logEventPasswordOneClicked()
                 presenter.calculateEntropy(it.editable().toString())
                 hideShowCreateButton(
                     it.editable().toString().length,
@@ -79,6 +80,7 @@ class CreateWalletActivity : BaseMvpActivity<CreateWalletView, CreateWalletPrese
 
         RxTextView.afterTextChangeEvents(wallet_pass_confirm)
             .doOnNext {
+                presenter.logEventPasswordTwoClicked()
                 hideShowCreateButton(
                     wallet_pass.getTextString().length,
                     it.editable().toString().length
@@ -86,24 +88,10 @@ class CreateWalletActivity : BaseMvpActivity<CreateWalletView, CreateWalletPrese
             }
             .emptySubscribe()
 
+        email_address.setOnClickListener { presenter.logEventEmailClicked() }
         command_next.setOnClickListener { onNextClicked() }
 
-        val text = getString(R.string.agree_terms_of_service) + " "
-        val text2 = getString(R.string.blockchain_tos)
-
-        val spannable = SpannableString(text + text2)
-        spannable.setSpan(
-            ForegroundColorSpan(ContextCompat.getColor(this, R.color.primary_blue_accent)),
-            text.length,
-            text.length + text2.length,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-        tos.setText(spannable, TextView.BufferType.SPANNABLE)
-        tos.setOnClickListener {
-            startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse(URL_TOS_POLICY))
-            )
-        }
+        updateTosAndPrivacyLinks()
 
         wallet_pass_confirm.setOnEditorActionListener { _, i, _ ->
             consume { if (i == EditorInfo.IME_ACTION_GO) onNextClicked() }
@@ -112,6 +100,22 @@ class CreateWalletActivity : BaseMvpActivity<CreateWalletView, CreateWalletPrese
         hideEntropyContainer()
 
         onViewReady()
+    }
+
+    private fun updateTosAndPrivacyLinks() {
+        val linksMap = mapOf<String, Uri>(
+        "terms" to Uri.parse(URL_TOS_POLICY),
+        "privacy" to Uri.parse(URL_PRIVACY_POLICY)
+        )
+
+        val tosText = stringUtils.getStringWithMappedLinks(
+            R.string.you_agree_terms_of_service,
+            linksMap,
+            this
+        )
+
+        tos.text = tosText
+        tos.movementMethod = LinkMovementMethod.getInstance()
     }
 
     private fun hideShowCreateButton(password1Length: Int, password2Length: Int) {
@@ -210,14 +214,12 @@ class CreateWalletActivity : BaseMvpActivity<CreateWalletView, CreateWalletPrese
 
     override fun startPinEntryActivity() {
         ViewUtils.hideKeyboard(this)
-        this.startActivity(Intent(this, PinEntryActivity::class.java))
+        PinEntryActivity.startAfterWalletCreation(this)
     }
 
     override fun showProgressDialog(message: Int) {
         dismissProgressDialog()
-        progressDialog = MaterialProgressDialog(
-            this
-        ).apply {
+        progressDialog = MaterialProgressDialog(this).apply {
             setCancelable(false)
             setMessage(getString(message))
             if (!isFinishing) show()
@@ -231,9 +233,7 @@ class CreateWalletActivity : BaseMvpActivity<CreateWalletView, CreateWalletPrese
         }
     }
 
-    override fun getDefaultAccountName(): String {
-        return getString(R.string.default_wallet_name)
-    }
+    override fun getDefaultAccountName(): String = getString(R.string.btc_default_wallet_name)
 
     override fun enforceFlagSecure() = true
 
@@ -243,5 +243,12 @@ class CreateWalletActivity : BaseMvpActivity<CreateWalletView, CreateWalletPrese
         val password2 = wallet_pass_confirm.text.toString()
 
         presenter.validateCredentials(email, password1, password2)
+    }
+
+    companion object {
+        @JvmStatic
+        fun start(context: Context) {
+            context.startActivity(Intent(context, CreateWalletActivity::class.java))
+        }
     }
 }

@@ -42,7 +42,7 @@
 
         </LinearLayout>
 
-        <android.support.v7.widget.AppCompatCheckBox
+        <androidx.appcompat.widget.AppCompatCheckBox
             android:id="@+id/confirm_dont_ask_again"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
             <Button
                 android:id="@+id/confirm_continue"
                 style="@style/CustomDialogButton"
-                android:text="@string/CONTINUE"
+                android:text="@string/btn_continue"
                 android:textColor="@color/primary_blue_accent" />
 
         </LinearLayout>

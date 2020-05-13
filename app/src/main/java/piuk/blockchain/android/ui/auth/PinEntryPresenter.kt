@@ -1,11 +1,13 @@
 package piuk.blockchain.android.ui.auth
 
 import android.annotation.SuppressLint
-import android.support.annotation.StringRes
-import android.support.annotation.UiThread
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.StringRes
+import androidx.annotation.UiThread
+import androidx.annotation.VisibleForTesting
 import android.view.View
 import com.blockchain.logging.CrashLogger
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.crashlytics.android.answers.LoginEvent
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.api.data.UpdateType
@@ -20,10 +22,10 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import org.spongycastle.crypto.InvalidCipherTextException
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.rxjava.RxUtil
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.android.util.DialogButtonCallback
+import com.blockchain.notifications.analytics.logEvent
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
@@ -35,12 +37,13 @@ import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.annotations.Thunk
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
 import java.net.SocketTimeoutException
 
 class PinEntryPresenter(
+    private val analytics: Analytics,
     private val authDataManager: AuthDataManager,
     private val appUtil: AppUtil,
     private val prefs: PersistentPrefs,
@@ -158,6 +161,12 @@ class PinEntryPresenter(
                 return
             }
 
+            if (userEnteredConfirmationPin == null) {
+                analytics.logEventOnce(AnalyticsEvents.WalletSignupPINFirst)
+            } else {
+                analytics.logEventOnce(AnalyticsEvents.WalletSignupPINSecond)
+            }
+
             // Only show warning on first entry and if user is creating a new PIN
             if (isCreatingNewPin && isPinCommon(userEnteredPin) && userEnteredConfirmationPin == null) {
                 view.showCommonPinWarning(object : DialogButtonCallback {
@@ -251,7 +260,7 @@ class PinEntryPresenter(
         if (!wallet.isUpgraded) {
             view.goToUpgradeWalletActivity()
         } else {
-            appUtil.restartAppWithVerifiedPin(LauncherActivity::class.java)
+            view.restartAppWithVerifiedPin()
         }
     }
 
@@ -280,7 +289,7 @@ class PinEntryPresenter(
             is InvalidCipherTextException -> {
                 // Password changed on web, needs re-pairing
                 view.showToast(R.string.password_changed_explanation, ToastCustom.TYPE_ERROR)
-                crashLogger.log("password changed elsewhere. Pin is reset")
+                crashLogger.logEvent("password changed elsewhere. Pin is reset")
                 accessState.clearPin()
                 appUtil.clearCredentialsAndRestart(LauncherActivity::class.java)
             }
@@ -311,7 +320,7 @@ class PinEntryPresenter(
         view.showToast(R.string.pin_4_strikes_password_accepted, ToastCustom.TYPE_OK)
         prefs.removeValue(PersistentPrefs.KEY_PIN_FAILS)
         prefs.removeValue(PersistentPrefs.KEY_PIN_IDENTIFIER)
-        crashLogger.log("new password. pin reset")
+        crashLogger.logEvent("new password. pin reset")
         accessState.clearPin()
         view.restartPageAndClearTop()
     }
@@ -436,7 +445,8 @@ class PinEntryPresenter(
             (payloadDataManager.getAccount(0).label == null ||
                     payloadDataManager.getAccount(0).label.isEmpty())
         ) {
-            payloadDataManager.getAccount(0).label = stringUtils.getString(R.string.default_wallet_name)
+            payloadDataManager.getAccount(0).label =
+                stringUtils.getString(R.string.btc_default_wallet_name)
         }
     }
 
@@ -463,23 +473,28 @@ class PinEntryPresenter(
         accessState.logout()
     }
 
-    @SuppressLint("CheckResult")
     fun fetchInfoMessage() {
         compositeDisposable += mobileNoticeRemoteConfig.mobileNoticeDialog()
-            .subscribeBy(onError = { Timber.e(it) }, onSuccess = {
-                view.showMobileNotice(it)
-            })
+            .subscribeBy(
+                onSuccess = { view.showMobileNotice(it) },
+                onError = {
+                    if (it is NoSuchElementException)
+                        Timber.d("No mobile notice found")
+                    else
+                        Timber.e(it)
+                }
+            )
     }
 
-    @SuppressLint("CheckResult")
     fun checkForceUpgradeStatus(versionName: String) {
-        walletOptionsDataManager.checkForceUpgrade(versionName)
-            .compose(RxUtil.addObservableToCompositeDisposable(this))
-            .subscribe(
-                { updateType ->
+        compositeDisposable += walletOptionsDataManager.checkForceUpgrade(versionName)
+            .subscribeBy(
+                onNext = { updateType ->
                     if (updateType !== UpdateType.NONE)
                         view.appNeedsUpgrade(updateType === UpdateType.FORCE)
-                }) { Timber.e(it) }
+                },
+                onError = { Timber.e(it) }
+            )
     }
 
     companion object {

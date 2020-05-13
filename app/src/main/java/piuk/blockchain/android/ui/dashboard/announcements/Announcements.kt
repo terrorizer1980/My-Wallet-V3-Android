@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
-import android.support.annotation.VisibleForTesting
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import androidx.annotation.VisibleForTesting
+import piuk.blockchain.android.campaign.CampaignType
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -11,18 +11,19 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
+import java.util.concurrent.atomic.AtomicBoolean
 
 interface AnnouncementHost {
     val disposables: CompositeDisposable
 
-    fun clearAllAnnouncements()
     fun showAnnouncementCard(card: AnnouncementCard)
-    fun dismissAnnouncementCard(prefsKey: String)
+    fun dismissAnnouncementCard()
 
     // Actions
     fun startKyc(campaignType: CampaignType)
-    fun startSwapOrKyc(swapTarget: CryptoCurrency? = null)
-    fun startBuySell()
+
+    fun startSwap(swapTarget: CryptoCurrency = CryptoCurrency.ETHER)
+
     fun startPitLinking()
     fun startFundsBackup()
     fun startSetup2Fa()
@@ -30,6 +31,11 @@ interface AnnouncementHost {
     fun startEnableFingerprintLogin()
     fun startIntroTourGuide()
     fun startTransferCrypto()
+
+    fun startStxReceivedDetail()
+    fun startSimpleBuyPaymentDetail()
+    fun finishSimpleBuySignup()
+    fun startSimpleBuy()
 }
 
 abstract class AnnouncementRule(private val dismissRecorder: DismissRecorder) {
@@ -41,6 +47,7 @@ abstract class AnnouncementRule(private val dismissRecorder: DismissRecorder) {
 
     abstract fun shouldShow(): Single<Boolean>
     abstract fun show(host: AnnouncementHost)
+    fun isDismissed(): Boolean = dismissEntry.isDismissed
 }
 
 class AnnouncementList(
@@ -49,17 +56,36 @@ class AnnouncementList(
     private val availableAnnouncements: List<AnnouncementRule>,
     private val dismissRecorder: DismissRecorder
 ) {
-    fun checkLatest(host: AnnouncementHost, disposables: CompositeDisposable) {
-        host.clearAllAnnouncements()
+    // Hack to block announcements until metadata/simple buy etc is initialised.
+    // TODO: Refactor app startup so we can avoid nonsense like this
+    private var isEnabled = AtomicBoolean(false)
 
-        disposables += showNextAnnouncement(host)
-            .subscribeBy(onError = Timber::e)
+    fun enable(): Boolean {
+        if (!isEnabled.get()) {
+            isEnabled.set(true)
+            return true
+        }
+        return false
+    }
+
+    fun checkLatest(host: AnnouncementHost, disposables: CompositeDisposable) {
+        host.dismissAnnouncementCard()
+
+        if (isEnabled.get()) {
+            disposables += showNextAnnouncement(host)
+                .doOnSubscribe { Timber.d("SB Sync: Checking announcements...") }
+                .subscribeBy(
+                    onComplete = { Timber.d("SB Sync: Announcements checked") },
+                    onError = Timber::e
+                )
+        } else {
+            Timber.d("SB Sync: ... Announcements disabled")
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun buildAnnouncementList(order: List<String>): List<AnnouncementRule> {
-        val r = order.mapNotNull { availableAnnouncements.find(it) }
-        return r
+        return order.mapNotNull { availableAnnouncements.find(it) }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -73,7 +99,7 @@ class AnnouncementList(
             .doOnSuccess { dismissRecorder.setPeriod(it.interval) }
             .map { buildAnnouncementList(it.order) }
             .flattenAsObservable { it }
-            .flatMap { a ->
+            .concatMap { a ->
                 Observable.defer {
                     a.shouldShow()
                         .filter { it }

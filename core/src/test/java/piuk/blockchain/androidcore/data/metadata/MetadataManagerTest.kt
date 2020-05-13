@@ -1,31 +1,45 @@
 package piuk.blockchain.androidcore.data.metadata
 
+import com.blockchain.android.testutils.rxInit
+import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.wallet.exceptions.InvalidCredentialsException
-import info.blockchain.wallet.metadata.Metadata
-import info.blockchain.wallet.metadata.MetadataNodeFactory
+import info.blockchain.wallet.metadata.MetadataDerivation
+import info.blockchain.wallet.metadata.MetadataInteractor
+import info.blockchain.wallet.metadata.data.RemoteMetadataNodes
 import io.reactivex.Completable
-import io.reactivex.Observable
-import org.bitcoinj.crypto.DeterministicKey
+import io.reactivex.Maybe
+import org.bitcoinj.crypto.HDKeyDerivation
 import org.bitcoinj.params.BitcoinMainNetParams
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import com.blockchain.android.testutils.rxInit
+import org.mockito.Mockito
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.utils.MetadataUtils
+import piuk.blockchain.androidcore.utils.extensions.then
+import piuk.blockchain.androidcore.utils.extensions.thenMaybe
+import java.lang.IllegalStateException
 
 class MetadataManagerTest {
 
     private lateinit var subject: MetadataManager
     private val payloadDataManager: PayloadDataManager = mock()
-    private val metadataUtils: MetadataUtils = mock()
-    private val rxBus: RxBus = RxBus()
-    private val networkParameters = BitcoinMainNetParams.get()
+    private val metadataInteractor: MetadataInteractor = mock()
+    private val metadataDerivation: MetadataDerivation = MetadataDerivation(BitcoinMainNetParams.get())
+
+    private val seed = "15e23aa73d25994f1921a1256f93f72c"
+    private val fakeMasterKey = HDKeyDerivation.createMasterPrivateKey(
+        seed.toByteArray())
+    private val fakeRemoteMetadata = RemoteMetadataNodes().apply {
+        mdid =
+            "xprv9vM7oGsyw3AdQdzPjRvPAHCC7hEzUhENoeq59qPxjxL5XsMos78qEd3P6dkPpNt8xgvQTiUXcTjbU" +
+                    "nHtKShbGu7X3o7bdbw5yLFGhiaXkVk"
+        metadata =
+            "xprv9vM7oGsuM9zGW2tneNriS8NJF6DNrZEKvYMXSwP8SJNJRUuX6iXjZLQCCy52cXJKKb6XwWF3vr6mQCyy9d5msL9" +
+                    "TrycrBmbPibKd2LhzjDW"
+    }.toJson()
 
     @Suppress("unused")
     @get:Rule
@@ -38,109 +52,111 @@ class MetadataManagerTest {
     fun setUp() {
         subject = MetadataManager(
             payloadDataManager,
-            metadataUtils,
-            rxBus
+            metadataInteractor,
+            metadataDerivation,
+            mock()
         )
+        whenever(payloadDataManager.metadataCredentials).thenReturn(MetadataCredentials("8cdf0e8e-c7b1-4a6" +
+                "f-acb7-f1681d3abf97",
+            "sharedKey",
+            "1234"))
     }
 
     @Test
     fun `attemptMetadataSetup load success`() {
         // Arrange
-        whenever(payloadDataManager.loadNodes()).thenReturn(Observable.just(true))
-        val metadataNodeFactory: MetadataNodeFactory = mock()
-
-        val key: DeterministicKey = mock()
-        whenever(payloadDataManager.getMetadataNodeFactory())
-            .thenReturn(Observable.just(metadataNodeFactory))
-        whenever(metadataNodeFactory.metadataNode).thenReturn(key)
-
+        whenever(metadataInteractor.loadRemoteMetadata(any())).thenReturn(Maybe.just(fakeRemoteMetadata))
         // Act
         val testObserver = subject.attemptMetadataSetup().test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
-        verify(payloadDataManager).loadNodes()
-        verify(payloadDataManager).getMetadataNodeFactory()
-        verifyNoMoreInteractions(payloadDataManager)
     }
 
     @Test
-    fun `attemptMetadataSetup load fails wo 2nd pw`() {
+    fun `attemptMetadataSetup load fails without 2nd pw, correct metadata should created and saved`() {
         // Arrange
-        whenever(payloadDataManager.loadNodes()).thenReturn(Observable.just(false))
+        whenever(metadataInteractor.loadRemoteMetadata(any())).thenReturn(Maybe.empty())
         whenever(payloadDataManager.isDoubleEncrypted).thenReturn(false)
-
-        val key: DeterministicKey = mock()
-        val metadataNodeFactory: MetadataNodeFactory = mock()
-        whenever(metadataNodeFactory.metadataNode).thenReturn(key)
-
-        whenever(payloadDataManager.generateAndReturnNodes())
-            .thenReturn(Observable.just(metadataNodeFactory))
+        whenever(payloadDataManager.masterKey).thenReturn(fakeMasterKey)
+        whenever(metadataInteractor.putMetadata(any(), any())).thenReturn(Completable.complete())
 
         // Act
         val testObserver = subject.attemptMetadataSetup().test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
-        verify(payloadDataManager).loadNodes()
-        verify(payloadDataManager).generateAndReturnNodes()
-        verify(payloadDataManager).isDoubleEncrypted
+        Mockito.verify(payloadDataManager).isDoubleEncrypted
+        Mockito.verify(metadataInteractor)
+            .putMetadata(eq("{\"metadata\":\"xprv9v8qUhWNur6b9if9MZhw1hvxnsWgonfw9dv1hzVAoCeVpSAWrXd7woo" +
+                    "27QqegYXnmYYTDgYjFJTYXTvAu6ZZnS6P7SSkTZTurJ5STEb7952\",\"mdid\":\"xprv9v8qUhWTVjGx3v" +
+                    "stKw6J8HV4CNmZB1oTPJGzoyYz9ZK2YcNviZesiy4KhmgyPF635czS66bL8iANAoJbheDbMV7V41Lc9TYg43AE6vF2pFT\"}"),
+                any())
     }
 
     @Test
     fun `attemptMetadataSetup load fails with 2nd pw`() {
         // Arrange
-        whenever(payloadDataManager.loadNodes()).thenReturn(Observable.just(false))
+        whenever(metadataInteractor.loadRemoteMetadata(any())).thenReturn(Maybe.empty())
         whenever(payloadDataManager.isDoubleEncrypted).thenReturn(true)
+        whenever(payloadDataManager.masterKey).thenReturn(fakeMasterKey)
+        whenever(metadataInteractor.putMetadata(any(), any())).thenReturn(Completable.complete())
         // Act
         val testObserver = subject.attemptMetadataSetup().test()
         // Assert
         testObserver.assertNotComplete()
-        testObserver.assertError(InvalidCredentialsException::class.java)
+        testObserver.assertError {
+            it is InvalidCredentialsException
+        }
+        Mockito.verify(payloadDataManager).isDoubleEncrypted
     }
 
     @Test
-    fun `generateAndSetupMetadata load success`() {
+    fun `fetch metadata fails when they havent been loaded`() {
         // Arrange
-        whenever(payloadDataManager.loadNodes()).thenReturn(Observable.just(true))
-        val metadataNodeFactory: MetadataNodeFactory = mock()
-        val key: DeterministicKey = mock()
-        whenever(payloadDataManager.generateNodes()).thenReturn(Completable.complete())
-        whenever(payloadDataManager.getMetadataNodeFactory())
-            .thenReturn(Observable.just(metadataNodeFactory))
-        whenever(metadataNodeFactory.metadataNode).thenReturn(key)
-
-        // Act
-        val testObserver = subject.decryptAndSetupMetadata(networkParameters, "hello").test()
-        // Assert
-        testObserver.assertComplete()
-        testObserver.assertNoErrors()
-        verify(payloadDataManager).decryptHDWallet(networkParameters, "hello")
-        verify(payloadDataManager).generateNodes()
-        verify(payloadDataManager).loadNodes()
-        verify(payloadDataManager).getMetadataNodeFactory()
-        verifyNoMoreInteractions(payloadDataManager)
+        val testObserver = subject.fetchMetadata(0).test()
+        testObserver.assertNotComplete()
+        testObserver.assertValueCount(0)
+        testObserver.assertError {
+            it is IllegalStateException
+        }
     }
 
     @Test
-    fun saveToMetadata() {
+    fun `fetch metadata succeeds when they have loaded`() {
+        whenever(metadataInteractor.loadRemoteMetadata(any())).thenReturn(Maybe.just(fakeRemoteMetadata))
         // Arrange
-        val type = 1337
-        val data = "DATA"
-        val factory: MetadataNodeFactory = mock()
-        val node: DeterministicKey = mock()
-        val metadata: Metadata = mock()
-        whenever(payloadDataManager.getMetadataNodeFactory()).thenReturn(Observable.just(factory))
-        whenever(factory.metadataNode).thenReturn(node)
-        whenever(metadataUtils.getMetadataNode(node, type)).thenReturn(metadata)
-        // Act
-        val testObserver = subject.saveToMetadata(data, type).test()
-        // Assert
-        testObserver.assertComplete()
-        testObserver.assertNoErrors()
-        verify(payloadDataManager).getMetadataNodeFactory()
-        verify(factory).metadataNode
-        verify(metadataUtils).getMetadataNode(node, type)
-        verify(metadata).putMetadata(data)
+
+        val test = subject.attemptMetadataSetup()
+            .thenMaybe { subject.fetchMetadata(0) }.test()
+
+        test.assertValueAt(0,
+            "{\"metadata\":\"xprv9vM7oGsuM9zGW2tneNriS8NJF6DNrZEKvYMXSwP8SJNJRUuX6iXjZLQCCy52cXJKKb6XwWF3vr6mQC" +
+                    "yy9d5msL9TrycrBmbPibKd2LhzjDW\",\"mdid\":\"xprv9vM7oGsyw3AdQdzPjRvPAHCC7hEzUhENoeq59qPxjxL5XsMos" +
+                    "78qEd3P6dkPpNt8xgvQTiUXcTjbUnHtKShbGu7X3o7bdbw5yLFGhiaXkVk\"}")
+        test.assertComplete()
+    }
+
+    @Test
+    fun `save metadata succeeds when they have loaded`() {
+        whenever(metadataInteractor.loadRemoteMetadata(any())).thenReturn(Maybe.just(fakeRemoteMetadata))
+        whenever(metadataInteractor.putMetadata(any(), any())).thenReturn(Completable.complete())
+        // Arrange
+        val test =
+            subject.attemptMetadataSetup()
+                .then { subject.saveToMetadata("metadata save payload", 0) }
+                .test()
+
+        test.assertComplete()
+    }
+
+    @Test
+    fun `save metadata fails when put metadata fails`() {
+        whenever(metadataInteractor.loadRemoteMetadata(any())).thenReturn(Maybe.just(fakeRemoteMetadata))
+        whenever(metadataInteractor.putMetadata(any(), any())).thenReturn(Completable.error(IllegalStateException()))
+        // Arrange
+        val test = subject.attemptMetadataSetup()
+            .then { subject.saveToMetadata("metadata save payload", 0) }.test()
+        test.assertError { it is IllegalStateException }
     }
 }

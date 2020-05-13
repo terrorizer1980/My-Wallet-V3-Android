@@ -55,7 +55,7 @@ class SwipeToReceivePresenter(
     )
 
     private fun onCurrencySelected(cryptoCurrency: CryptoCurrency) {
-        view.displayCoinType(cryptoCurrency.unit)
+        view.displayCoinType(cryptoCurrency)
         view.setUiState(UiState.LOADING)
 
         val accountDetails = getAccountDetailsFor(cryptoCurrency)
@@ -126,6 +126,7 @@ class SwipeToReceivePresenter(
                 nextAddress = paxAddress,
                 hasAddresses = swipeToReceiveHelper.getPaxReceiveAddress().isNotEmpty()
             )
+            CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         }
 
     companion object {

@@ -1,59 +1,29 @@
 package piuk.blockchain.android.ui.account
 
 import com.blockchain.serialization.JsonSerializableAccount
+import info.blockchain.balance.CryptoValue
+import piuk.blockchain.android.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.exchangerate.toFiat
 
-class ItemAccount {
-
+data class ItemAccount @JvmOverloads constructor(
+    val label: String = "",
+    val balance: CryptoValue? = null,
+    val tag: String = "",
+    // Ultimately this is used to sign txs
+    var accountObject: JsonSerializableAccount? = null,
+    // Address/Xpub to fetch balance/tx list
+    val address: String = "",
+    val type: TYPE = TYPE.SINGLE_ACCOUNT
+) {
     enum class TYPE {
         ALL_ACCOUNTS_AND_LEGACY, ALL_LEGACY, SINGLE_ACCOUNT
     }
-
-    var label: String? = null
-    var displayBalance: String? = null
-    var tag: String? = null
-    var absoluteBalance: Long? = null
-
-    // Ultimately this is used to sign txs
-    var accountObject: JsonSerializableAccount? = null
-
-    // Address/Xpub to fetch balance/tx list
-    var address: String? = null
-    var type: TYPE = TYPE.SINGLE_ACCOUNT
-
-    constructor() {
-        // Empty constructor for serialization
-    }
-
-    override fun toString(): String {
-        return "ItemAccount(label=$label, " +
-            "displayBalance=$displayBalance, " +
-            "tag=$tag, " +
-            "absoluteBalance=$absoluteBalance, " +
-            "accountObject=$accountObject, " +
-            "address=$address, " +
-            "type=$type)"
-    }
-
-    @JvmOverloads
-    constructor(
-        label: String?,
-        displayBalance: String?,
-        tag: String?,
-        absoluteBalance: Long?,
-        accountObject: JsonSerializableAccount? = null,
-        address: String?,
-        type: TYPE = TYPE.SINGLE_ACCOUNT
-    ) {
-        this.label = label
-        this.displayBalance = displayBalance
-        this.tag = tag
-        this.absoluteBalance = absoluteBalance
-        this.address = address
-        this.accountObject = accountObject
-        this.type = type
-    }
-
-    constructor(label: String?) {
-        this.label = label
-    }
 }
+
+fun ItemAccount.formatDisplayBalance(currencyState: CurrencyState, exchangeRates: ExchangeRateDataManager) =
+    if (currencyState.displayMode == CurrencyState.DisplayMode.Fiat) {
+        balance?.toFiat(exchangeRates, currencyState.fiatUnit)
+    } else {
+        balance
+    }?.toStringWithSymbol() ?: ""

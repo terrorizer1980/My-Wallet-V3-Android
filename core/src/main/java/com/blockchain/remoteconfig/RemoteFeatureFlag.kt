@@ -9,8 +9,8 @@ interface ABTestExperiment {
     fun getABVariant(key: String): Single<String>
 
     companion object {
-        const val AB_THE_PIT_SIDE_NAV_VARIANT = "ab_the_pit_side_nav_variant"
-        const val AB_THE_PIT_ANNOUNCEMENT_VARIANT = "ab_the_pit_announcement_variant"
+//        const val AB_THE_PIT_SIDE_NAV_VARIANT = "ab_the_pit_side_nav_variant"
+//        const val AB_THE_PIT_ANNOUNCEMENT_VARIANT = "ab_the_pit_announcement_variant"
     }
 }
 
@@ -31,9 +31,10 @@ class RemoteConfiguration(private val remoteConfig: FirebaseRemoteConfig) :
             .doOnError { Timber.e(it, "Failed to load Firebase Remote Config") }
             .map { remoteConfig }
 
-    override fun getRawJson(key: String): Single<String> = configuration.map {
-        it.getString(key)
-    }
+    override fun getRawJson(key: String): Single<String> =
+        configuration.map {
+            it.getString(key)
+        }
 
     override fun getIfFeatureEnabled(key: String): Single<Boolean> =
         configuration.map { it.getBoolean(key) }

@@ -1,5 +1,7 @@
 package com.blockchain.ui.urllinks
 
+import info.blockchain.balance.CryptoCurrency
+
 const val URL_BLOCKCHAIN_SUPPORT_PORTAL =
     "https://support.blockchain.com/"
 
@@ -30,8 +32,8 @@ const val URL_BLOCKCHAIN_GOLD_UNAVAILABLE_SUPPORT =
 const val URL_BLOCKCHAIN_KYC_SUPPORTED_COUNTRIES_LIST =
     "https://support.blockchain.com/hc/en-us/articles/360018751932"
 
-const val URL_THE_PIT_LANDING_LEARN_MORE = "https://pit.blockchain.com"
-const val URL_THE_PIT_LAUNCH_SUPPORT = "https://pitsupport.blockchain.com/hc/en-us/"
+const val URL_THE_PIT_LANDING_LEARN_MORE = "https://exchange.blockchain.com"
+const val URL_THE_PIT_LAUNCH_SUPPORT = "https://exchange-support.blockchain.com/hc/en-us"
 
 const val URL_COINIFY_POLICY = "https://coinify.com/legal"
 const val URL_TOS_POLICY = "https://blockchain.com/terms"
@@ -42,3 +44,21 @@ const val URL_LEARN_MORE_REJECTED =
 
 const val URL_SUPPORTED_COUNTRIES =
     "https://support.blockchain.com/hc/en-us/articles/360000804146-What-countries-are-supported-for-buying-selling-"
+
+const val STX_STACKS_LEARN_MORE =
+    "https://support.blockchain.com/hc/en-us/articles/360038745191"
+
+const val MODULAR_TERMS_AND_CONDITIONS =
+    "https://exchange.blockchain.com/legal#modulr"
+
+fun makeBlockExplorerUrl(
+    cryptoCurrency: CryptoCurrency,
+    transactionHash: String
+) = when (cryptoCurrency) {
+    CryptoCurrency.BTC -> "https://www.blockchain.com/btc/tx/"
+    CryptoCurrency.ETHER -> "https://www.blockchain.com/eth/tx/"
+    CryptoCurrency.BCH -> "https://www.blockchain.com/bch/tx/"
+    CryptoCurrency.XLM -> "https://stellarchain.io/tx/"
+    CryptoCurrency.PAX -> "https://www.blockchain.com/eth/tx/"
+    CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+} + transactionHash

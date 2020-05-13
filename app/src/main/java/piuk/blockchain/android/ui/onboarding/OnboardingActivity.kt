@@ -3,7 +3,7 @@ package piuk.blockchain.android.ui.onboarding
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import org.koin.android.ext.android.inject
 
 import piuk.blockchain.android.R
@@ -86,13 +86,17 @@ internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPr
             dialog.setAuthCallback(object : FingerprintDialog.FingerprintAuthCallback {
                 override fun onAuthenticated(data: String?) {
                     dialog.dismissAllowingStateLoss()
-                    presenter.setFingerprintUnlockEnabled(true)
-                    showEmailPrompt()
+                    presenter?.setFingerprintUnlockEnabled(true)
+                    if (showEmail) {
+                        showEmailPrompt()
+                    } else {
+                        finish()
+                    }
                 }
 
                 override fun onCanceled() {
                     dialog.dismissAllowingStateLoss()
-                    presenter.setFingerprintUnlockEnabled(true)
+                    presenter?.setFingerprintUnlockEnabled(true)
                 }
             })
 
@@ -106,7 +110,7 @@ internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPr
                 .setTitle(R.string.app_name)
                 .setMessage(R.string.fingerprint_no_fingerprints_added)
                 .setCancelable(true)
-                .setPositiveButton(R.string.yes) { dialog, which ->
+                .setPositiveButton(R.string.yes) { _, _ ->
                     startActivityForResult(
                         Intent(android.provider.Settings.ACTION_SECURITY_SETTINGS),
                         0
@@ -140,6 +144,7 @@ internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPr
         if (requestCode == EMAIL_CLIENT_REQUEST) {
             presenter.enableAutoLogout()
         }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     companion object {

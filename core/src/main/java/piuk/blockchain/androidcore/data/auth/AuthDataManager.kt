@@ -1,6 +1,6 @@
 package piuk.blockchain.androidcore.data.auth
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.logging.CrashLogger
 import info.blockchain.wallet.api.data.WalletOptions
 import info.blockchain.wallet.crypto.AESUtil
@@ -8,7 +8,6 @@ import info.blockchain.wallet.exceptions.InvalidCredentialsException
 import info.blockchain.wallet.exceptions.ServerConnectionException
 import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.Exceptions
 import okhttp3.ResponseBody
 import org.spongycastle.util.encoders.Hex
@@ -101,7 +100,7 @@ class AuthDataManager(
             // If auth not required, emit payload
             .filter { s ->
                 s.errorBody() == null ||
-                    !s.errorBody()!!.string().contains(AUTHORIZATION_REQUIRED)
+                        !s.errorBody()!!.string().contains(AUTHORIZATION_REQUIRED)
             }
             // Return message in response
             .map { responseBodyResponse -> responseBodyResponse.body()!!.string() }
@@ -126,7 +125,6 @@ class AuthDataManager(
         timer = 2 * 60
 
         return Observable.interval(0, 1, TimeUnit.SECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
             .map { timer-- }
             .takeUntil { timer < 0 }
     }
@@ -162,17 +160,18 @@ class AuthDataManager(
             return Observable.error(IllegalArgumentException("Invalid PIN"))
         } else {
             accessState.setPin(passedPin)
-            crashLogger.log("validatePin. pin set. validity: ${passedPin.isValidPin()}")
+            crashLogger.logEvent("validatePin. pin set. validity: ${passedPin.isValidPin()}")
         }
 
         return authService.validateAccess(key, passedPin)
             .map { response ->
                 /*
                 Note: Server side issue - If the incorrect PIN is supplied the server will respond
-                with a 500 { code: 1, error: "Incorrect PIN you have x attempts left" }
+                with a 403 { code: 1, error: "Incorrect PIN you have x attempts left" }
                  */
                 if (response.isSuccessful) {
                     accessState.isNewlyCreated = false
+                    accessState.isRestored = false
                     val decryptionKey = response.body()!!.success
 
                     return@map aesUtilWrapper.decrypt(
@@ -181,7 +180,7 @@ class AuthDataManager(
                         AESUtil.PIN_PBKDF2_ITERATIONS
                     )
                 } else {
-                    if (response.code() == 500) {
+                    if (response.code() == 403) {
                         // Invalid PIN
                         throw InvalidCredentialsException("Validate access failed")
                     } else {
@@ -197,7 +196,7 @@ class AuthDataManager(
             return Completable.error(IllegalArgumentException("Invalid PIN"))
         } else {
             accessState.setPin(passedPin)
-            crashLogger.log("createPin. pin set. validity: ${passedPin.isValidPin()}")
+            crashLogger.logEvent("createPin. pin set. validity: ${passedPin.isValidPin()}")
         }
 
         prngHelper.applyPRNGFixes()

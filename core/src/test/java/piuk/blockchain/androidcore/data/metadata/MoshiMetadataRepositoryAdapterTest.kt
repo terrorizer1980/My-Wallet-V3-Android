@@ -3,13 +3,12 @@ package piuk.blockchain.androidcore.data.metadata
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.serialization.BigDecimalAdaptor
 import com.blockchain.serialization.JsonSerializable
-import com.google.common.base.Optional
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.squareup.moshi.Moshi
 import io.reactivex.Completable
-import io.reactivex.Observable
+import io.reactivex.Maybe
 import org.amshove.kluent.`it returns`
 import org.amshove.kluent.`should equal`
 import org.junit.Rule
@@ -46,10 +45,8 @@ class MoshiMetadataRepositoryAdapterTest {
     @Test
     fun `can load json`() {
         val metadataManager = mock<MetadataManager> {
-            on { fetchMetadata(199) } `it returns` Observable.just(
-                Optional.of(
-                    """{"field1":"DEF","field2":"456"}"""
-                )
+            on { fetchMetadata(199) } `it returns` Maybe.just(
+                """{"field1":"DEF","field2":"456"}"""
             )
         }
         MoshiMetadataRepositoryAdapter(metadataManager, moshi)
@@ -62,9 +59,7 @@ class MoshiMetadataRepositoryAdapterTest {
     @Test
     fun `can load missing json`() {
         val metadataManager = mock<MetadataManager> {
-            on { fetchMetadata(199) } `it returns` Observable.just(
-                Optional.absent()
-            )
+            on { fetchMetadata(199) } `it returns` Maybe.empty()
         }
         MoshiMetadataRepositoryAdapter(metadataManager, moshi)
             .loadMetadata(199, ExampleClass::class.java)
@@ -76,10 +71,8 @@ class MoshiMetadataRepositoryAdapterTest {
     @Test
     fun `bad json is an error`() {
         val metadataManager = mock<MetadataManager> {
-            on { fetchMetadata(199) } `it returns` Observable.just(
-                Optional.of(
-                    """{"field1":"DEF","fie..."""
-                )
+            on { fetchMetadata(199) } `it returns` Maybe.just(
+                """{"field1":"DEF","fie..."""
             )
         }
         MoshiMetadataRepositoryAdapter(metadataManager, moshi)

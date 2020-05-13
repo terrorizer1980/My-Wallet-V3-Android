@@ -3,17 +3,14 @@
 package piuk.blockchain.androidcoreui.utils.extensions
 
 import android.annotation.SuppressLint
-import android.support.animation.DynamicAnimation
-import android.support.animation.SpringAnimation
-import android.support.animation.SpringForce
-import android.support.annotation.LayoutRes
+import androidx.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.TextView
-import piuk.blockchain.androidcoreui.utils.helperfunctions.CustomFont
-import piuk.blockchain.androidcoreui.utils.helperfunctions.loadFont
+import androidx.dynamicanimation.animation.DynamicAnimation
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import timber.log.Timber
 
 /**
@@ -41,11 +38,11 @@ fun View?.gone() {
 }
 
 /**
- * Sets the visibility of a [View] to [View.VISIBLE] epending on a value
+ * Sets the visibility of a [View] to [View.VISIBLE] depending on a value
  */
-fun View?.visibleIf(value: Boolean) {
+fun View?.visibleIf(func: () -> Boolean) {
     if (this != null) {
-        visibility = if (value) View.VISIBLE else visibility
+        visibility = if (func()) View.VISIBLE else View.GONE
     }
 }
 
@@ -149,13 +146,24 @@ fun View.createSpringAnimation(
 }
 
 /**
- * Loads a font via the AppCompat downloadable font system and applies it to a TextView. If this
- * call fails, it will do so silently.
+ * Debounced onClickListener
  *
- * @param customFont A [CustomFont] object that encapsulates the query to be sent to the fonts provider
+ * Filter out fast double taps
  */
-fun TextView.setCustomFont(customFont: CustomFont) {
-    loadFont(context, customFont) {
-        this.typeface = it
+private class DebouncingOnClickListener(private val onClickListener: (View?) -> Unit) : View.OnClickListener {
+    private var lastClick = 0L
+    override fun onClick(v: View?) {
+        val now = System.currentTimeMillis()
+        if (now > lastClick + DEBOUNCE_TIMEOUT) {
+            lastClick = now
+            onClickListener(v)
+        }
+    }
+
+    companion object {
+        private const val DEBOUNCE_TIMEOUT = 500L
     }
 }
+
+fun View.setOnClickListenerDebounced(onClickListener: (View?) -> Unit) =
+    this.setOnClickListener(DebouncingOnClickListener(onClickListener = onClickListener))

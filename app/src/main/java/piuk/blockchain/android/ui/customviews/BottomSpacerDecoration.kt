@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.customviews
 
 import android.graphics.Rect
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 
 /**
@@ -13,11 +13,11 @@ class BottomSpacerDecoration(private val height: Int) : RecyclerView.ItemDecorat
         outRect: Rect,
         view: View,
         parent: RecyclerView,
-        state: RecyclerView.State?
+        state: RecyclerView.State
     ) {
-        val childCount = parent.adapter.itemCount
+        val childCount = parent.adapter?.itemCount
         // If not last position in list, don't offset
-        if (parent.getChildLayoutPosition(view) != childCount - 1) {
+        if (childCount == null || parent.getChildLayoutPosition(view) != childCount - 1) {
             return
         }
 

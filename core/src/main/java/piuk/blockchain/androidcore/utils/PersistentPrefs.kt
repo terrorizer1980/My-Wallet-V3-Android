@@ -2,23 +2,25 @@ package piuk.blockchain.androidcore.utils
 
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.preferences.NotificationPrefs
-import com.blockchain.preferences.OnBoardingPrefs
+import com.blockchain.preferences.DashboardPrefs
+import com.blockchain.preferences.SecurityPrefs
+import com.blockchain.preferences.SimpleBuyPrefs
 import com.blockchain.preferences.ThePitLinkingPrefs
 import com.blockchain.preferences.WalletStatus
 
 interface PersistentPrefs :
     CurrencyPrefs,
+    NotificationPrefs,
+    DashboardPrefs,
+    SecurityPrefs,
     ThePitLinkingPrefs,
-    OnBoardingPrefs,
-    WalletStatus,
-    NotificationPrefs {
+    SimpleBuyPrefs,
+    WalletStatus {
 
     val isLoggedOut: Boolean
 
     val deviceId: String // Pre-IDV device identifier
     var devicePreIDVCheckFailed: Boolean // Pre-IDV check has failed! Don't show 'gold' announce cards etc
-
-    var disableRootedWarning: Boolean
 
     fun getValue(name: String): String?
     fun getValue(name: String, defaultValue: String): String
@@ -56,6 +58,7 @@ interface PersistentPrefs :
         const val KEY_SCHEME_URL = "scheme_url"
         const val KEY_METADATA_URI = "metadata_uri"
         const val KEY_NEWLY_CREATED_WALLET = "newly_created_wallet"
+        const val KEY_RESTORED_WALLET = "restored_wallet"
         const val KEY_ENCRYPTED_PIN_CODE = "encrypted_pin_code"
         const val KEY_FINGERPRINT_ENABLED = "fingerprint_enabled"
         const val KEY_RECEIVE_SHORTCUTS_ENABLED = "receive_shortcuts_enabled"

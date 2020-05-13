@@ -1,37 +1,52 @@
-@file:Suppress("USELESS_CAST")
-
 package com.blockchain.koin.modules
 
 import android.content.Context
+import com.blockchain.accounts.AccountList
+import com.blockchain.accounts.AsyncAllAccountList
+import piuk.blockchain.android.accounts.BtcAccountListAdapter
 import com.blockchain.activities.StartSwap
-import com.blockchain.balance.TotalBalance
-import com.blockchain.balance.plus
 import com.blockchain.network.websocket.Options
 import com.blockchain.network.websocket.autoRetry
 import com.blockchain.network.websocket.debugLog
 import com.blockchain.network.websocket.newBlockchainWebSocket
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
-import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
+import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.PaymentAccountMapper
 import com.blockchain.ui.CurrentContextAccess
 import com.blockchain.ui.chooser.AccountListing
 import com.blockchain.ui.password.SecondPasswordHandler
+import com.blockchain.wallet.DefaultLabels
 import com.google.gson.GsonBuilder
+import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.util.PrivateKeyFactory
+import io.reactivex.android.schedulers.AndroidSchedulers
 import okhttp3.OkHttpClient
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.BuildConfig
+import piuk.blockchain.android.accounts.AsyncAllAccountListImplementation
+import piuk.blockchain.android.accounts.BchAccountListAdapter
+import piuk.blockchain.android.accounts.EthAccountListAdapter
+import piuk.blockchain.android.accounts.PaxAccountListAdapter
+import piuk.blockchain.android.cards.CardModel
+import piuk.blockchain.android.cards.partners.EverypayCardActivator
 import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
 import piuk.blockchain.android.data.api.bitpay.BitPayService
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
-import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrategy
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.deeplink.EmailVerificationDeepLinkHelper
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
-import piuk.blockchain.android.sunriver.SunRiverCampaignAccountProviderAdapter
+import piuk.blockchain.android.simplebuy.EURPaymentAccountMapper
+import piuk.blockchain.android.simplebuy.GBPPaymentAccountMapper
+import piuk.blockchain.android.simplebuy.SimpleBuyAvailability
+import piuk.blockchain.android.simplebuy.SimpleBuyFlowNavigator
+import piuk.blockchain.android.simplebuy.SimpleBuyInflateAdapter
+import piuk.blockchain.android.simplebuy.SimpleBuyInteractor
+import piuk.blockchain.android.simplebuy.SimpleBuyModel
+import piuk.blockchain.android.simplebuy.SimpleBuyState
+import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.thepit.PitLinkingImpl
@@ -39,44 +54,29 @@ import piuk.blockchain.android.thepit.ThePitDeepLinkParser
 import piuk.blockchain.android.ui.account.AccountEditPresenter
 import piuk.blockchain.android.ui.account.AccountPresenter
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
+import piuk.blockchain.android.ui.airdrops.AirdropCentrePresenter
 import piuk.blockchain.android.ui.auth.FirebaseMobileNoticeRemoteConfig
-import piuk.blockchain.android.ui.auth.LandingPresenter
 import piuk.blockchain.android.ui.auth.MobileNoticeRemoteConfig
-import piuk.blockchain.android.ui.auth.PasswordRequiredPresenter
 import piuk.blockchain.android.ui.auth.PinEntryPresenter
 import piuk.blockchain.android.ui.backup.completed.BackupWalletCompletedPresenter
 import piuk.blockchain.android.ui.backup.start.BackupWalletStartingPresenter
 import piuk.blockchain.android.ui.backup.transfer.ConfirmFundsTransferPresenter
 import piuk.blockchain.android.ui.backup.verify.BackupVerifyPresenter
 import piuk.blockchain.android.ui.backup.wordlist.BackupWalletWordListPresenter
-import piuk.blockchain.android.ui.balance.BalancePresenter
-import piuk.blockchain.android.ui.buysell.coinify.signup.CoinifySignUpPresenter
-import piuk.blockchain.android.ui.buysell.coinify.signup.identityinreview.CoinifyIdentityInReviewPresenter
-import piuk.blockchain.android.ui.buysell.coinify.signup.invalidcountry.CoinifyInvalidCountryPresenter
-import piuk.blockchain.android.ui.buysell.coinify.signup.selectcountry.CoinifySelectCountryPresenter
-import piuk.blockchain.android.ui.buysell.coinify.signup.verifyemail.CoinifyVerifyEmailPresenter
-import piuk.blockchain.android.ui.buysell.confirmation.buy.CoinifyBuyConfirmationPresenter
-import piuk.blockchain.android.ui.buysell.confirmation.sell.CoinifySellConfirmationPresenter
-import piuk.blockchain.android.ui.buysell.createorder.BuySellBuildOrderPresenter
-import piuk.blockchain.android.ui.buysell.details.awaitingtransfer.CoinifyAwaitingBankTransferPresenter
-import piuk.blockchain.android.ui.buysell.details.trade.CoinifyTransactionDetailPresenter
-import piuk.blockchain.android.ui.buysell.overview.CoinifyOverviewPresenter
-import piuk.blockchain.android.ui.buysell.payment.bank.accountoverview.BankAccountSelectionPresenter
-import piuk.blockchain.android.ui.buysell.payment.bank.addaccount.AddBankAccountPresenter
-import piuk.blockchain.android.ui.buysell.payment.bank.addaddress.AddAddressPresenter
-import piuk.blockchain.android.ui.charts.ChartsPresenter
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentPresenter
 import piuk.blockchain.android.ui.createwallet.CreateWalletPresenter
-import piuk.blockchain.android.ui.dashboard.DashboardPresenter
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
+import piuk.blockchain.android.ui.dashboard.DashboardInteractor
+import piuk.blockchain.android.ui.dashboard.DashboardModel
+import piuk.blockchain.android.ui.dashboard.DashboardState
+import piuk.blockchain.android.ui.dashboard.BalanceAnalyticsReporter
+import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailsCalculator
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.fingerprint.FingerprintPresenter
 import piuk.blockchain.android.ui.home.MainPresenter
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.launcher.LauncherPresenter
-import piuk.blockchain.android.ui.login.LoginPresenter
-import piuk.blockchain.android.ui.login.ManualPairingPresenter
+import piuk.blockchain.android.ui.launcher.Prerequisites
 import piuk.blockchain.android.ui.onboarding.OnboardingPresenter
 import piuk.blockchain.android.ui.pairingcode.PairingCodePresenter
 import piuk.blockchain.android.ui.receive.ReceivePresenter
@@ -84,14 +84,15 @@ import piuk.blockchain.android.ui.receive.ReceiveQrPresenter
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.recover.RecoverFundsPresenter
 import piuk.blockchain.android.ui.send.SendView
-import piuk.blockchain.android.ui.send.external.PerCurrencySendPresenter
-import piuk.blockchain.android.ui.send.external.SendPresenter
+import piuk.blockchain.android.ui.send.SendPresenter
 import piuk.blockchain.android.ui.send.strategy.BitcoinCashSendStrategy
 import piuk.blockchain.android.ui.send.strategy.BitcoinSendStrategy
 import piuk.blockchain.android.ui.send.strategy.EtherSendStrategy
 import piuk.blockchain.android.ui.send.strategy.SendStrategy
 import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
 import piuk.blockchain.android.ui.send.strategy.PaxSendStrategy
+import piuk.blockchain.android.ui.send.strategy.ResourceSendFundsResultLocalizer
+import piuk.blockchain.android.ui.send.strategy.SendFundsResultLocalizer
 import piuk.blockchain.android.ui.settings.SettingsPresenter
 import piuk.blockchain.android.ui.ssl.SSLVerifyPresenter
 import piuk.blockchain.android.ui.swap.SwapStarter
@@ -100,29 +101,29 @@ import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
 import piuk.blockchain.android.ui.thepit.PitPermissionsPresenter
 import piuk.blockchain.android.ui.thepit.PitVerifyEmailPresenter
-import piuk.blockchain.android.ui.transactions.TransactionDetailPresenter
-import piuk.blockchain.android.ui.transactions.TransactionHelper
+import piuk.blockchain.android.ui.activity.detail.TransactionDetailPresenter
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletPresenter
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementQueries
 import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.lifecycle.LifecycleInterestedComponent
-import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 import piuk.blockchain.androidcore.data.api.ConnectionApi
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.erc20.PaxAccount
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
-import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.SSLVerifyUtil
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
+import piuk.blockchain.android.data.currency.CurrencyState
+import piuk.blockchain.android.ui.home.CacheCredentialsWiper
+import piuk.blockchain.android.ui.home.CredentialsWiper
+import piuk.blockchain.android.ui.swipetoreceive.AddressGenerator
+import piuk.blockchain.android.util.ResourceDefaultLabels
 import piuk.blockchain.androidcoreui.utils.DateUtil
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
-import java.util.Locale
 
 val applicationModule = applicationContext {
 
@@ -141,7 +142,7 @@ val applicationModule = applicationContext {
 
     factory { get<Context>().resources }
 
-    factory { Locale.getDefault() }
+    bean { CurrencyState(prefs = get()) }
 
     bean { CurrentContextAccess() }
 
@@ -150,7 +151,16 @@ val applicationModule = applicationContext {
     context("Payload") {
 
         factory {
-            EthDataManager(get(), get(), get(), get(), get(), get(), get(), get())
+            EthDataManager(
+                payloadManager = get(),
+                ethAccountApi = get(),
+                ethDataStore = get(),
+                walletOptionsDataManager = get(),
+                metadataManager = get(),
+                environmentSettings = get(),
+                lastTxUpdater = get(),
+                rxBus = get()
+            )
         }
 
         factory("pax") {
@@ -162,11 +172,15 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            BchDataManager(get(), get(), get(), get(), get(), get(), get())
-        }
-
-        factory {
-            BuyDataManager(get(), get(), get(), get(), get())
+            BchDataManager(
+                payloadDataManager = get(),
+                bchDataStore = get(),
+                environmentSettings = get(),
+                blockExplorer = get(),
+                defaultLabels = get(),
+                metadataManager = get(),
+                rxBus = get()
+            )
         }
 
         factory {
@@ -179,7 +193,7 @@ val applicationModule = applicationContext {
                 environmentSettings = get(),
                 xlmDataManager = get()
             )
-        }
+        }.bind(AddressGenerator::class)
 
         factory {
             SwipeToReceivePresenter(
@@ -189,41 +203,35 @@ val applicationModule = applicationContext {
         }
 
         factory {
+            AssetDetailsCalculator()
+        }
+
+        factory {
             WalletAccountHelper(
                 payloadManager = get(),
                 stringUtils = get(),
-                currencyState = get(),
                 ethDataManager = get(),
                 bchDataManager = get(),
                 xlmDataManager = get(),
                 environmentSettings = get(),
-                exchangeRates = get(),
                 paxAccount = get("pax"),
                 crashLogger = get()
             )
         }
 
-        factory { WalletAccountHelperAccountListingAdapter(get()) }
-            .bind(AccountListing::class)
+        factory {
+            WalletAccountHelperAccountListingAdapter(
+                walletAccountHelper = get(),
+                currencyState = get(),
+                exchangeRates = get()
+            )
+        }.bind(AccountListing::class)
 
         factory {
             SecondPasswordHandlerDialog(get(), get()) as SecondPasswordHandler
         }
 
         factory { KycStatusHelper(get(), get(), get(), get()) }
-
-        factory { TransactionListDataManager(get(), get(), get(), get(), get(), get(), get()) }
-
-        factory("spendable") { get<TransactionListDataManager>() as TotalBalance }
-
-        @Suppress("ConstantConditionIf")
-        factory("all") {
-            if (BuildConfig.SHOW_LOCKBOX_BALANCE) {
-                get<TotalBalance>("lockbox") + get("spendable")
-            } else {
-                get("spendable")
-            }
-        }
 
         factory {
             FingerprintHelper(
@@ -233,41 +241,58 @@ val applicationModule = applicationContext {
             )
         }
 
+        bean {
+            CredentialsWiper(
+                payloadManagerWiper = get(),
+                paxAccount = get(),
+                accessState = get(),
+                appUtil = get()
+            )
+        }
+
+        factory {
+            CacheCredentialsWiper(
+                ethDataManager = get(),
+                bchDataManager = get(),
+                metadataManager = get(),
+                walletOptionsState = get(),
+                nabuDataManager = get()
+            )
+        }
+
         factory {
             MainPresenter(
                 prefs = get(),
-                appUtil = get(),
                 accessState = get(),
-                payloadManagerWiper = get(),
+                credentialsWiper = get(),
                 payloadDataManager = get(),
-                coinifyDataManager = get(),
-                buyDataManager = get(),
-                dynamicFeeCache = get(),
-                exchangeService = get(),
-                stringUtils = get(),
                 exchangeRateFactory = get(),
-                rxBus = get(),
-                feeDataManager = get(),
-                ethDataManager = get(),
-                bchDataManager = get(),
                 currencyState = get(),
-                metadataManager = get(),
-                shapeShiftDataManager = get(),
                 environmentSettings = get(),
                 kycStatusHelper = get(),
                 lockboxDataManager = get(),
                 deepLinkProcessor = get(),
-                sunriverCampaignHelper = get(),
+                sunriverCampaignRegistration = get(),
                 xlmDataManager = get(),
-                paxAccount = get(),
                 pitFeatureFlag = get("ff_pit_linking"),
-                pitABTestingExperiment = get(),
                 pitLinking = get(),
                 nabuDataManager = get(),
                 nabuToken = get(),
-                crashLogger = get()
+                simpleBuySync = get(),
+                crashLogger = get(),
+                simpleBuyAvailability = get(),
+                cacheCredentialsWiper = get(),
+                analytics = get()
             )
         }
+
+        factory("GBP") {
+            GBPPaymentAccountMapper(stringUtils = get())
+        }.bind(PaymentAccountMapper::class)
+
+        factory("EUR") {
+            EURPaymentAccountMapper(stringUtils = get())
+        }.bind(PaymentAccountMapper::class)
 
         bean {
             CoinsWebSocketStrategy(
@@ -276,7 +301,13 @@ val applicationModule = applicationContext {
                 swipeToReceiveHelper = get(),
                 stringUtils = get(),
                 gson = get(),
-                erc20Account = get("pax")
+                erc20Account = get("pax"),
+                payloadDataManager = get(),
+                bchDataManager = get(),
+                rxBus = get(),
+                prefs = get(),
+                appUtil = get(),
+                accessState = get()
             )
         }
 
@@ -285,122 +316,15 @@ val applicationModule = applicationContext {
         }
 
         factory {
+            SimpleBuyAvailability(
+                simpleBuyFlag = get("ff_simple_buy")
+            )
+        }
+
+        factory {
             OkHttpClient()
                 .newBlockchainWebSocket(options = Options(url = BuildConfig.COINS_WEBSOCKET_URL))
                 .autoRetry().debugLog("COIN_SOCKET")
-        }
-
-        factory {
-            BuySellBuildOrderPresenter(
-                coinifyDataManager = get(),
-                sendDataManager = get(),
-                exchangeService = get(),
-                stringUtils = get(),
-                currencyFormatManager = get(),
-                exchangeRateDataManager = get(),
-                feeDataManager = get(),
-                dynamicFeeCache = get(),
-                payloadDataManager = get(),
-                nabuToken = get(),
-                nabuDataManager = get(),
-                coinSelectionRemoteConfig = get()
-            )
-        }
-
-        factory {
-            CoinifySellConfirmationPresenter(
-                coinifyDataManager = get(),
-                sendDataManager = get(),
-                exchangeService = get(),
-                stringUtils = get(),
-                environmentConfig = get(),
-                payloadDataManager = get(),
-                lastTxUpdater = get(),
-                coinSelectionRemoteConfig = get()
-            )
-        }
-
-        factory {
-            BankAccountSelectionPresenter(
-                exchangeService = get(),
-                coinifyDataManager = get()
-            )
-        }
-
-        factory {
-            CoinifyAwaitingBankTransferPresenter(
-                exchangeService = get(),
-                coinifyDataManager = get()
-            )
-        }
-
-        factory {
-            CoinifyAwaitingBankTransferPresenter(
-                exchangeService = get(),
-                coinifyDataManager = get()
-            )
-        }
-
-        factory {
-            AddBankAccountPresenter()
-        }
-
-        factory {
-            CoinifyTransactionDetailPresenter(
-                coinifyDataManager = get(),
-                exchangeService = get()
-            )
-        }
-
-        factory {
-            CoinifyBuyConfirmationPresenter(
-                payloadDataManager = get(),
-                coinifyDataManager = get(),
-                exchangeService = get(),
-                stringUtils = get(),
-                metadataManager = get(),
-                currencyFormatUtil = get()
-            )
-        }
-
-        factory {
-            CoinifyIdentityInReviewPresenter(
-                exchangeService = get(),
-                coinifyDataManager = get()
-            )
-        }
-
-        factory {
-            CoinifyOverviewPresenter(
-                exchangeService = get(),
-                coinifyDataManager = get(),
-                metadataManager = get(),
-                stringUtils = get(),
-                currencyFormatUtil = get()
-            )
-        }
-
-        factory {
-            CoinifyInvalidCountryPresenter()
-        }
-
-        factory {
-            CoinifySelectCountryPresenter(
-                buyDataManager = get()
-            )
-        }
-
-        factory {
-            CoinifyVerifyEmailPresenter(
-                settingsDataManager = get(),
-                walletOptionsDataManager = get(),
-                coinifyDataManager = get(),
-                payloadDataManager = get(),
-                exchangeService = get(),
-                metadataManager = get(),
-                currencyState = get(),
-                stringUtils = get()
-            )
         }
 
         factory {
@@ -417,32 +341,13 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            ChartsPresenter(
-                chartsDataManager = get(),
-                exchangeRateFactory = get(),
-                prefs = get(),
-                currencyFormatManager = get()
-            )
-        }
-
-        factory {
             ConfirmFundsTransferPresenter(
                 walletAccountHelper = get(),
                 fundsDataManager = get(),
                 payloadDataManager = get(),
                 stringUtils = get(),
-                currencyFormatManager = get()
-            )
-        }
-
-        factory {
-            PasswordRequiredPresenter(
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get()
+                exchangeRates = get(),
+                currencyState = get()
             )
         }
 
@@ -455,22 +360,6 @@ val applicationModule = applicationContext {
                 authDataManager = get(),
                 payloadDataManager = get(),
                 crashLogger = get()
-            )
-        }
-
-        factory {
-            AddAddressPresenter(
-                coinifyDataManager = get(),
-                exchangeService = get(),
-                buyDataManager = get()
-            )
-        }
-
-        factory {
-            CoinifySignUpPresenter(
-                coinifyDataManager = get(),
-                exchangeService = get(),
-                stringUtils = get()
             )
         }
 
@@ -529,21 +418,16 @@ val applicationModule = applicationContext {
 
         factory {
             TransactionDetailPresenter(
-                transactionHelper = get(),
+                coincore = get(),
+                inputOutputMapper = get(),
                 prefs = get(),
-                payloadDataManager = get(),
                 stringUtils = get(),
-                transactionListDataManager = get(),
-                exchangeRateDataManager = get(),
-                bchDataManager = get(),
-                ethDataManager = get(),
-                environmentSettings = get(),
-                xlmDataManager = get()
+                exchangeRateDataManager = get()
             )
         }
 
         factory<SendPresenter<SendView>> {
-            PerCurrencySendPresenter(
+            SendPresenter(
                 btcStrategy = get("BTCStrategy"),
                 bchStrategy = get("BCHStrategy"),
                 etherStrategy = get("EtherStrategy"),
@@ -566,15 +450,13 @@ val applicationModule = applicationContext {
                 payloadDataManager = get(),
                 currencyState = get(),
                 prefs = get(),
-                exchangeRateFactory = get(),
+                exchangeRates = get(),
                 stringUtils = get(),
                 sendDataManager = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),
                 privateKeyFactory = get(),
                 environmentSettings = get(),
-                currencyFormatter = get(),
-                exchangeRates = get(),
                 coinSelectionRemoteConfig = get(),
                 nabuDataManager = get(),
                 nabuToken = get(),
@@ -597,7 +479,6 @@ val applicationModule = applicationContext {
                 privateKeyFactory = get(),
                 environmentSettings = get(),
                 bchDataManager = get(),
-                currencyFormatter = get(),
                 exchangeRates = get(),
                 environmentConfig = get(),
                 currencyState = get(),
@@ -605,7 +486,8 @@ val applicationModule = applicationContext {
                 nabuToken = get(),
                 nabuDataManager = get(),
                 pitLinking = get(),
-                envSettings = get()
+                envSettings = get(),
+                analytics = get()
             )
         }
 
@@ -617,16 +499,22 @@ val applicationModule = applicationContext {
                 stringUtils = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),
-                currencyFormatter = get(),
                 exchangeRates = get(),
                 environmentConfig = get(),
                 currencyState = get(),
-                currencyPrefs = get(),
                 nabuToken = get(),
                 nabuDataManager = get(),
-                pitLinking = get()
+                pitLinking = get(),
+                analytics = get(),
+                prefs = get()
             )
         }
+
+        factory {
+            ResourceSendFundsResultLocalizer(
+                resources = get()
+            )
+        }.bind(SendFundsResultLocalizer::class)
 
         factory<SendStrategy<SendView>>("XLMStrategy") {
             XlmSendStrategy(
@@ -636,11 +524,13 @@ val applicationModule = applicationContext {
                 stringUtils = get(),
                 walletOptionsDataManager = get(),
                 xlmTransactionSender = get(),
-                fiatExchangeRates = get(),
+                exchangeRates = get(),
                 sendFundsResultLocalizer = get(),
                 nabuDataManager = get(),
                 nabuToken = get(),
-                pitLinking = get()
+                pitLinking = get(),
+                analytics = get(),
+                prefs = get()
             )
         }
 
@@ -653,14 +543,14 @@ val applicationModule = applicationContext {
                 stringUtils = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),
-                currencyFormatter = get(),
                 exchangeRates = get(),
                 environmentConfig = get(),
                 currencyState = get(),
-                currencyPrefs = get(),
                 nabuToken = get(),
                 nabuDataManager = get(),
-                pitLinking = get()
+                pitLinking = get(),
+                analytics = get(),
+                prefs = get()
             )
         }
 
@@ -707,16 +597,18 @@ val applicationModule = applicationContext {
                 privateKeyFactory = get(),
                 environmentSettings = get(),
                 currencyState = get(),
-                currencyFormatManager = get()
+                analytics = get(),
+                exchangeRates = get(),
+                coinsWebSocketStrategy = get()
             )
         }
 
         factory {
             TransferFundsDataManager(
-                /* payloadDataManager */ get(),
-                /* sendDataManager */ get(),
-                /* dynamicFeeCache */ get(),
-                /* coinSelectionRemoteConfig */ get()
+                payloadDataManager = get(),
+                sendDataManager = get(),
+                dynamicFeeCache = get(),
+                coinSelectionRemoteConfig = get()
             )
         }
 
@@ -731,42 +623,87 @@ val applicationModule = applicationContext {
 
         factory { ConfirmPaymentPresenter() }
 
-        factory { SunRiverCampaignAccountProviderAdapter(get()) as SunriverCampaignHelper.XlmAccountProvider }
-
         factory {
-            DashboardPresenter(
-                dashboardBalanceCalculator = get(),
-                prefs = get(),
-                exchangeRateFactory = get(),
-                stringUtils = get(),
-                rxBus = get(),
-                swipeToReceiveHelper = get(),
-                lockboxDataManager = get(),
-                currentTier = get(),
-                announcements = get(),
-                pitLinking = get()
+            DashboardModel(
+                initialState = DashboardState(),
+                mainScheduler = AndroidSchedulers.mainThread(),
+                interactor = get(),
+                persistence = get()
             )
-        }.bind(AnnouncementHost::class)
+        }
 
         factory {
-            BalancePresenter(
-                exchangeRateDataManager = get(),
-                transactionListDataManager = get(),
-                ethDataManager = get(),
-                paxAccount = get("pax"),
-                payloadDataManager = get(),
-                buyDataManager = get(),
-                stringUtils = get(),
+            DashboardInteractor(
+                tokens = get(),
+                payloadManager = get(),
+                custodialWalletManager = get(),
+                simpleBuyPrefs = get(),
+                analytics = get()
+            )
+        }
+
+        factory {
+            SimpleBuyInteractor(
+                nabu = get(),
+                tierService = get(),
+                custodialWalletManager = get(),
+                appUtil = get(),
+                coincore = get()
+            )
+        }
+
+        factory {
+            SimpleBuyModel(
+                interactor = get(),
+                scheduler = AndroidSchedulers.mainThread(),
+                initialState = SimpleBuyState(),
                 prefs = get(),
-                rxBus = get(),
-                currencyState = get(),
-                shapeShiftDataManager = get(),
-                bchDataManager = get(),
-                walletAccountHelper = get(),
-                environmentSettings = get(),
-                exchangeService = get(),
-                coinifyDataManager = get(),
-                fiatExchangeRates = get()
+                gson = get(),
+                cardActivators = listOf(
+                    EverypayCardActivator(get(), get())
+                )
+            )
+        }
+
+        factory {
+            CardModel(
+                interactor = get(),
+                currencyPrefs = get(),
+                scheduler = AndroidSchedulers.mainThread(),
+                cardActivators = listOf(
+                    EverypayCardActivator(get(), get())
+                ),
+                gson = get(),
+                prefs = get()
+            )
+        }
+
+        factory {
+            SimpleBuyFlowNavigator(
+                simpleBuyModel = get(),
+                tierService = get(),
+                custodialWalletManager = get(),
+                simpleBuyPrefs = get(),
+                currencyPrefs = get()
+            )
+        }
+
+        bean {
+            val inflateAdapter = SimpleBuyInflateAdapter(
+                prefs = get(),
+                gson = get()
+            )
+
+            SimpleBuySyncFactory(
+                custodialWallet = get(),
+                availabilityChecker = get(),
+                localStateAdapter = inflateAdapter
+            )
+        }
+
+        factory {
+            BalanceAnalyticsReporter(
+                analytics = get()
             )
         }
 
@@ -785,19 +722,7 @@ val applicationModule = applicationContext {
                 xlmDataManager = get(),
                 environmentSettings = get(),
                 currencyState = get(),
-                fiatExchangeRates = get()
-            )
-        }
-
-        factory { TransactionHelper(get(), get()) }
-
-        factory {
-            ManualPairingPresenter(
-                /* appUtil = */ get(),
-                /* authDataManager = */ get(),
-                /* payloadDataManager = */ get(),
-                /* prefs = */ get(),
-                /* analytics = */ get()
+                exchangeRates = get()
             )
         }
 
@@ -812,13 +737,15 @@ val applicationModule = applicationContext {
                 /* stringUtils = */ get(),
                 /* prefs = */ get(),
                 /* accessState = */ get(),
+                /* custodialWalletManager = */ get(),
                 /* swipeToReceiveHelper = */ get(),
                 /* notificationTokenManager = */ get(),
                 /* exchangeRateDataManager = */ get(),
-                /* currencyFormatManager = */ get(),
                 /* kycStatusHelper = */ get(),
                 /* pitLinking = */ get(),
-                /*featureFlag = */get("ff_pit_linking")
+                /* analytics = */ get(),
+                /*featureFlag = */get("ff_pit_linking"),
+                /*featureFlag = */get("ff_card_payments")
             )
         }
 
@@ -835,15 +762,8 @@ val applicationModule = applicationContext {
                 environmentSettings = get(),
                 prngFixer = get(),
                 mobileNoticeRemoteConfig = get(),
-                crashLogger = get()
-            )
-        }
-
-        factory {
-            LandingPresenter(
-                environmentSettings = get(),
-                prefs = get(),
-                rootUtil = get()
+                crashLogger = get(),
+                analytics = get()
             )
         }
 
@@ -877,8 +797,8 @@ val applicationModule = applicationContext {
                 nabu = get(),
                 nabuToken = get(),
                 pitLinking = get(),
-                prefs = get(),
-                abTestExperiment = get()
+                analytics = get(),
+                prefs = get()
             )
         }
 
@@ -887,15 +807,6 @@ val applicationModule = applicationContext {
                 nabuToken = get(),
                 nabu = get(),
                 emailSyncUpdater = get()
-            )
-        }
-
-        factory {
-            LoginPresenter(
-                _payloadDataManager = lazy { get<PayloadDataManager>() },
-                appUtil = get(),
-                analytics = get(),
-                prefs = get()
             )
         }
 
@@ -911,7 +822,8 @@ val applicationModule = applicationContext {
                 swipeToReceiveHelper = get(),
                 dynamicFeeCache = get(),
                 environmentSettings = get(),
-                currencyFormatManager = get(),
+                analytics = get(),
+                exchangeRates = get(),
                 coinSelectionRemoteConfig = get()
             )
         }
@@ -939,17 +851,57 @@ val applicationModule = applicationContext {
                 deepLinkPersistence = get(),
                 accessState = get(),
                 settingsDataManager = get(),
-                notificationTokenManager = get()
+                notificationTokenManager = get(),
+                envSettings = get(),
+                featureFlag = get("ff_simple_buy"),
+                custodialWalletManager = get(),
+                currencyPrefs = get(),
+                analytics = get(),
+                crashLogger = get(),
+                prerequisites = get()
             )
         }
 
-        bean {
-            AnnouncementQueries(
-                nabuToken = get(),
-                settings = get(),
-                nabu = get()
+        factory {
+            Prerequisites(
+                metadataManager = get(),
+                settingsDataManager = get(),
+                coincore = get(),
+                crashLogger = get(),
+                dynamicFeeCache = get(),
+                feeDataManager = get(),
+                simpleBuySync = get(),
+                walletApi = get(),
+                addressGenerator = get(),
+                payloadDataManager = get(),
+                rxBus = get()
             )
         }
+
+        factory {
+            AirdropCentrePresenter(
+                nabuToken = get(),
+                nabu = get(),
+                crashLogger = get()
+            )
+        }
+
+        factory("BTC") { BtcAccountListAdapter(get()) }.bind(AccountList::class)
+        factory("BCH") { BchAccountListAdapter(get()) }.bind(AccountList::class)
+        factory("ETH") { EthAccountListAdapter(get()) }.bind(AccountList::class)
+        factory("PAX") { PaxAccountListAdapter(get(), get()) }.bind(AccountList::class)
+
+        factory {
+            AsyncAllAccountListImplementation(
+                mapOf(
+                    CryptoCurrency.BTC to get("BTC"),
+                    CryptoCurrency.ETHER to get("ETH"),
+                    CryptoCurrency.BCH to get("BCH"),
+                    CryptoCurrency.XLM to get("XLM"),
+                    CryptoCurrency.PAX to get("PAX")
+                )
+            )
+        }.bind(AsyncAllAccountList::class)
     }
 
     factory {
@@ -992,4 +944,6 @@ val applicationModule = applicationContext {
     bean {
         SSLVerifyUtil(rxBus = get(), connectionApi = get())
     }
+
+    factory { ResourceDefaultLabels(get()) as DefaultLabels }
 }

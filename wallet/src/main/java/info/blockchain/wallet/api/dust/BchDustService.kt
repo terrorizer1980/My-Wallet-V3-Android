@@ -13,5 +13,5 @@ interface DustService {
 internal class BchDustService(private val api: DustApi, private val apiCode: ApiCode) : DustService {
 
     override fun getDust(cryptoCurrency: CryptoCurrency): Single<DustInput> =
-        api.getDust(cryptoCurrency.symbol.toLowerCase(), apiCode.apiCode)
+        api.getDust(cryptoCurrency.networkTicker.toLowerCase(), apiCode.apiCode)
 }

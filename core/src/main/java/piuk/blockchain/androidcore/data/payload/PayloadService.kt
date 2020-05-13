@@ -11,7 +11,6 @@ import info.blockchain.wallet.payload.data.Wallet
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.exceptions.Exceptions
-import okhttp3.ResponseBody
 import org.bitcoinj.core.ECKey
 import org.bitcoinj.core.NetworkParameters
 import piuk.blockchain.androidcore.utils.annotations.WebRequest
@@ -289,43 +288,4 @@ class PayloadService(private val payloadManager: PayloadManager) {
     // /////////////////////////////////////////////////////////////////////////
     // CONTACTS/METADATA/IWCS/CRYPTO-MATRIX METHODS
     // /////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Loads previously saved nodes from the Metadata service. If none are found, the [Observable]
-     * returns false.
-     *
-     * @return An [Observable] object wrapping a boolean value, representing successfully
-     * loaded nodes
-     */
-    @WebRequest
-    internal fun loadNodes(): Observable<Boolean> =
-        Observable.fromCallable { payloadManager.loadNodes() }
-
-    /**
-     * Generates the metadata and shared metadata nodes if necessary.
-     *
-     * @return A [Completable] object, ie an asynchronous void operation
-     */
-    @WebRequest
-    internal fun generateNodes(): Completable = Completable.fromCallable {
-        payloadManager.generateNodes()
-    }
-
-    /**
-     * Registers the user's MDID with the metadata service.
-     *
-     * @return An [Observable] wrapping a [ResponseBody]
-     */
-    @WebRequest
-    internal fun registerMdid(): Observable<ResponseBody> =
-        payloadManager.registerMdid(payloadManager.metadataNodeFactory.sharedMetadataNode)
-
-    /**
-     * Unregisters the user's MDID from the metadata service.
-     *
-     * @return An [Observable] wrapping a [ResponseBody]
-     */
-    @WebRequest
-    internal fun unregisterMdid(): Observable<ResponseBody> =
-        payloadManager.unregisterMdid(payloadManager.metadataNodeFactory.sharedMetadataNode)
 }

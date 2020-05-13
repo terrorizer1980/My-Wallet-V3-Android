@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.blockchain.logging.CrashLogger;
+import com.blockchain.notifications.analytics.Analytics;
+
 import info.blockchain.wallet.api.Environment;
 import info.blockchain.wallet.api.data.UpdateType;
 import info.blockchain.wallet.exceptions.AccountLockedException;
@@ -46,7 +48,7 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcore.utils.PrngFixer;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper;
-import piuk.blockchain.androidcoreui.utils.AppUtil;
+import piuk.blockchain.android.util.AppUtil;
 import piuk.blockchain.android.util.DialogButtonCallback;
 import piuk.blockchain.android.util.StringUtils;
 
@@ -99,6 +101,8 @@ public class PinEntryPresenterTest {
     private MobileNoticeRemoteConfig mobileNoticeRemoteConfig;
     @Mock
     private CrashLogger crashLogger;
+    @Mock
+    private Analytics analytics;
 
     @Before
     public void setUp() {
@@ -108,9 +112,9 @@ public class PinEntryPresenterTest {
         when(activity.getPinBoxList())
                 .thenReturn(Arrays.asList(mockImageView, mockImageView, mockImageView, mockImageView));
         when(stringUtils.getString(anyInt())).thenReturn("string resource");
-        when(activity.getLocale()).thenReturn(Locale.US);
 
-        subject = new PinEntryPresenter(authDataManager,
+        subject = new PinEntryPresenter(analytics,
+                authDataManager,
                 appUtil,
                 prefsUtil,
                 payloadManager,
@@ -828,7 +832,7 @@ public class PinEntryPresenterTest {
         verify(activity).showProgressDialog(anyInt(), isNull());
         verify(payloadManager).initializeAndDecrypt(anyString(), anyString(), anyString());
         verify(appUtil).setSharedKey(anyString());
-        verify(appUtil).restartAppWithVerifiedPin(LauncherActivity.class);
+        verify(activity).restartAppWithVerifiedPin();
         verify(activity).dismissProgressDialog();
         assertTrue(subject.getCanShowFingerprintDialog());
     }

@@ -81,10 +81,10 @@ private class OkHttpWebSocket(
             listener?.onClose()
         }
 
-        override fun onMessage(webSocket: okhttp3.WebSocket, message: String) {
-            super.onMessage(webSocket, message)
-            subject.onNext(message)
-            listener?.onMessage(message)
+        override fun onMessage(webSocket: okhttp3.WebSocket, text: String) {
+            super.onMessage(webSocket, text)
+            subject.onNext(text)
+            listener?.onMessage(text)
         }
 
         override fun onFailure(webSocket: okhttp3.WebSocket, t: Throwable, response: Response?) {

@@ -8,8 +8,10 @@ class CryptoValuePartsTest {
 
     @Test
     fun `extract BTC parts in UK`() {
+        Locale.setDefault(Locale.UK)
+
         1.2.bitcoin()
-            .toStringParts(Locale.UK).apply {
+            .toStringParts().apply {
                 symbol `should equal` "BTC"
                 major `should equal` "1"
                 minor `should equal` "2"
@@ -19,8 +21,10 @@ class CryptoValuePartsTest {
 
     @Test
     fun `extract ETH parts in US`() {
+        Locale.setDefault(Locale.US)
+
         9.89.ether()
-            .toStringParts(Locale.US).apply {
+            .toStringParts().apply {
                 symbol `should equal` "ETH"
                 major `should equal` "9"
                 minor `should equal` "89"
@@ -30,8 +34,10 @@ class CryptoValuePartsTest {
 
     @Test
     fun `extract max DP ETHER parts in UK`() {
+        Locale.setDefault(Locale.UK)
+
         5.12345678.ether()
-            .toStringParts(Locale.UK).apply {
+            .toStringParts().apply {
                 symbol `should equal` "ETH"
                 major `should equal` "5"
                 minor `should equal` "12345678"
@@ -41,8 +47,10 @@ class CryptoValuePartsTest {
 
     @Test
     fun `extract parts from large number in UK`() {
+        Locale.setDefault(Locale.UK)
+
         5345678.ether()
-            .toStringParts(Locale.UK).apply {
+            .toStringParts().apply {
                 symbol `should equal` "ETH"
                 major `should equal` "5,345,678"
                 minor `should equal` "0"
@@ -52,8 +60,10 @@ class CryptoValuePartsTest {
 
     @Test
     fun `extract parts from large number in France`() {
+        Locale.setDefault(Locale.FRANCE)
+
         5345678.987.ether()
-            .toStringParts(Locale.FRANCE).apply {
+            .toStringParts().apply {
                 symbol `should equal` "ETH"
                 major `should equal` "5 345 678"
                 minor `should equal` "987"
@@ -63,8 +73,10 @@ class CryptoValuePartsTest {
 
     @Test
     fun `extract parts from large number in Italy`() {
+        Locale.setDefault(Locale.ITALY)
+
         9345678.987.ether()
-            .toStringParts(Locale.ITALY).apply {
+            .toStringParts().apply {
                 symbol `should equal` "ETH"
                 major `should equal` "9.345.678"
                 minor `should equal` "987"

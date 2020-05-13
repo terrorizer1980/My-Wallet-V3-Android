@@ -60,7 +60,6 @@ dependencies {
     api Libraries.cardView
     api Libraries.gridLayout
     api Libraries.design
-    api Libraries.v13
     api Libraries.v14
     api Libraries.dynamicAnims
     api Libraries.constraintLayout

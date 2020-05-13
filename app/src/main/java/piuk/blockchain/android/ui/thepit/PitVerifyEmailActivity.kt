@@ -1,9 +1,9 @@
 package piuk.blockchain.android.ui.thepit
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.Toolbar
+import androidx.appcompat.widget.Toolbar
 import kotlinx.android.synthetic.main.activity_pit_verify_email_layout.*
 import org.koin.android.ext.android.get
 import piuk.blockchain.android.R
@@ -18,7 +18,7 @@ class PitVerifyEmailActivity : BaseMvpActivity<PitVerifyEmailView, PitVerifyEmai
         setContentView(R.layout.activity_pit_verify_email_layout)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar_general)
-        setupToolbar(toolbar, R.string.pit_verify_email_title)
+        setupToolbar(toolbar, R.string.the_exchange_verify_email_title)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
         val email = intent.getStringExtra(ARGUMENT_EMAIL) ?: ""
@@ -61,7 +61,7 @@ class PitVerifyEmailActivity : BaseMvpActivity<PitVerifyEmailView, PitVerifyEmai
     companion object {
         private const val ARGUMENT_EMAIL = "email"
 
-        fun start(ctx: Activity, email: String, requestCode: Int) {
+        fun start(ctx: AppCompatActivity, email: String, requestCode: Int) {
             val intent = Intent(ctx, PitVerifyEmailActivity::class.java).apply {
                 putExtra(ARGUMENT_EMAIL, email)
             }

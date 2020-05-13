@@ -2,7 +2,7 @@ package piuk.blockchain.android.ui.thepit
 
 import android.os.Bundle
 import piuk.blockchain.android.R
-import com.blockchain.ui.dialog.ErrorBottomDialog
+import piuk.blockchain.android.ui.customviews.ErrorBottomDialog
 
 class PitEmailVerifiedBottomDialog : ErrorBottomDialog() {
     override val layout: Int

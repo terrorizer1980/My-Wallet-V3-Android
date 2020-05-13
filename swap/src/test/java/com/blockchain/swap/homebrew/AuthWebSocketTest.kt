@@ -1,7 +1,7 @@
 package com.blockchain.swap.homebrew
 
 import com.blockchain.swap.nabu.Authenticator
-import com.blockchain.swap.nabu.models.NabuSessionTokenResponse
+import com.blockchain.swap.nabu.models.tokenresponse.NabuSessionTokenResponse
 import com.blockchain.network.websocket.ConnectionEvent
 import com.blockchain.network.websocket.WebSocket
 import com.blockchain.network.websocket.WebSocketConnection

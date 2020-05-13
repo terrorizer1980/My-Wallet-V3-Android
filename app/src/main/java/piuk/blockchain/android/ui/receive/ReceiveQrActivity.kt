@@ -1,23 +1,19 @@
 package piuk.blockchain.android.ui.receive
 
-import android.annotation.TargetApi
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ShortcutManager
 import android.graphics.Bitmap
-import android.os.Build
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v7.app.AlertDialog
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_receive_qr.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.shortcuts.LauncherShortcutHelper
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.AndroidUtils
 
 internal class ReceiveQrActivity :
     BaseMvpActivity<ReceiveQrView, ReceiveQrPresenter>(), ReceiveQrView {
@@ -94,15 +90,8 @@ internal class ReceiveQrActivity :
         return this
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     private fun logShortcutUse() {
-        if (AndroidUtils.is25orHigher()) {
-            val launcherShortcutHelper = LauncherShortcutHelper(this,
-                presenter.payloadDataManager,
-                getSystemService(ShortcutManager::class.java))
-
-            launcherShortcutHelper.logShortcutUsed(LauncherShortcutHelper.SHORTCUT_ID_QR)
-        }
+        LauncherShortcutHelper(this).logShortcutUsed(LauncherShortcutHelper.SHORTCUT_ID_QR)
     }
 
     companion object {

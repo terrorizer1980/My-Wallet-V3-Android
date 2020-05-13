@@ -1,8 +1,8 @@
 package piuk.blockchain.android.ui.adapters
 
-import android.support.v4.util.SparseArrayCompat
-import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import androidx.collection.SparseArrayCompat
+import androidx.recyclerview.widget.RecyclerView
 
 /**
  * This class manages the [AdapterDelegate] objects and delegates functions to the appropriate
@@ -28,15 +28,6 @@ class AdapterDelegatesManager<T> {
         }
 
         delegates.put(viewType, delegate)
-    }
-
-    /**
-     * Removes an [AdapterDelegate] from the current list of delegates and returns this
-     * [AdapterDelegatesManager].
-     */
-    fun removeAdapterDelegate(delegate: AdapterDelegate<T>) {
-        val index = delegates.indexOfValue(delegate)
-        delegates.removeAt(index)
     }
 
     /**
@@ -102,7 +93,7 @@ class AdapterDelegatesManager<T> {
                 "No delegate found for item at position $position for view type  ${viewHolder.itemViewType}"
             )
 
-        delegate.onBindViewHolder(items, position, viewHolder, payloads ?: arrayList)
+        delegate.onBindViewHolder(items, position, viewHolder)
     }
 
     /**
@@ -125,19 +116,4 @@ class AdapterDelegatesManager<T> {
      * @return A suitable [AdapterDelegate] for the View type, or null if not found
      */
     fun getDelegateForViewType(viewType: Int): AdapterDelegate<T>? = delegates.get(viewType)
-
-    /**
-     * Returns the view type for a given [AdapterDelegate]
-     *
-     * @param delegate An [AdapterDelegate]
-     *
-     * @return An [Int] representing the View type, or -1 if not found
-     */
-    fun getViewType(delegate: AdapterDelegate<T>): Int {
-        val index = delegates.indexOfValue(delegate)
-        if (index == -1) {
-            return -1
-        }
-        return delegates.keyAt(index)
-    }
 }

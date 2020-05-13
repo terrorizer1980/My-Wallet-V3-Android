@@ -14,15 +14,17 @@ import timber.log.Timber
  * Applies standard Schedulers to an [Observable], ie IO for subscription, Main Thread for
  * onNext/onComplete/onError
  */
-fun <T> Observable<T>.applySchedulers(): Observable<T> = this.subscribeOn(Schedulers.io())
-    .observeOn(AndroidSchedulers.mainThread())
-    .doOnError(Timber::e)
+fun <T> Observable<T>.applySchedulers(): Observable<T> =
+    this.subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnError(Timber::e)
 
 /**
  * Applies standard Schedulers to a [Single], ie IO for subscription, Main Thread for
  * onNext/onComplete/onError
  */
-fun <T> Single<T>.applySchedulers(): Single<T> = this.subscribeOn(Schedulers.io())
+fun <T> Single<T>.applySchedulers(): Single<T> =
+    this.subscribeOn(Schedulers.io())
     .observeOn(AndroidSchedulers.mainThread())
     .doOnError(Timber::e)
 
@@ -30,7 +32,8 @@ fun <T> Single<T>.applySchedulers(): Single<T> = this.subscribeOn(Schedulers.io(
  * Applies standard Schedulers to a [Completable], ie IO for subscription,
  * Main Thread for onNext/onComplete/onError
  */
-fun Completable.applySchedulers(): Completable = this.subscribeOn(Schedulers.io())
+fun Completable.applySchedulers(): Completable =
+    this.subscribeOn(Schedulers.io())
     .observeOn(AndroidSchedulers.mainThread())
     .doOnError(Timber::e)
 
@@ -38,6 +41,7 @@ fun Completable.applySchedulers(): Completable = this.subscribeOn(Schedulers.io(
  * Applies standard Schedulers to an [Observable], ie IO for subscription, Main Thread for
  * onNext/onComplete/onError
  */
-fun <T> Maybe<T>.applySchedulers(): Maybe<T> = this.subscribeOn(Schedulers.io())
+fun <T> Maybe<T>.applySchedulers(): Maybe<T> =
+    this.subscribeOn(Schedulers.io())
     .observeOn(AndroidSchedulers.mainThread())
     .doOnError(Timber::e)

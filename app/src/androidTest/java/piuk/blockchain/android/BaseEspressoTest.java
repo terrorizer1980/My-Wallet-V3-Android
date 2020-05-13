@@ -3,8 +3,9 @@ package piuk.blockchain.android;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.annotation.CallSuper;
-import android.support.test.InstrumentationRegistry;
+import androidx.annotation.CallSuper;
+import androidx.test.InstrumentationRegistry;
+
 import android.view.MotionEvent;
 
 import org.junit.After;

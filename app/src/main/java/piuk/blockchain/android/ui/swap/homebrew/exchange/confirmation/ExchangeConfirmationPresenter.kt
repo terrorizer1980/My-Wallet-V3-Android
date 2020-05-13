@@ -1,10 +1,9 @@
 package piuk.blockchain.android.ui.swap.homebrew.exchange.confirmation
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.datamanagers.TransactionExecutorWithoutFees
-import com.blockchain.logging.CrashLogger
+import com.blockchain.logging.SwapDiagnostics
 import com.blockchain.morph.CoinPair
-import com.blockchain.swap.common.exchange.SwapFailureDiagnostics
 import com.blockchain.swap.nabu.service.Quote
 import com.blockchain.swap.nabu.service.TradeExecutionService
 import com.blockchain.swap.nabu.service.TradeTransaction
@@ -12,6 +11,7 @@ import com.blockchain.swap.common.trade.MorphTrade
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.AnalyticsEvent
+import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.serialization.fromMoshiJson
 import com.blockchain.transactions.Memo
@@ -41,19 +41,18 @@ import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.ethereum.exceptions.TransactionInProgressException
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import com.blockchain.ui.dialog.ErrorBottomDialog
+import piuk.blockchain.android.ui.customviews.ErrorBottomDialog
 import retrofit2.HttpException
 import timber.log.Timber
-import java.util.Locale
 
 class ExchangeConfirmationPresenter internal constructor(
     private val transactionExecutor: TransactionExecutorWithoutFees,
     private val tradeExecutionService: TradeExecutionService,
     private val payloadDecrypt: PayloadDecrypt,
     private val stringUtils: StringUtils,
-    private val locale: Locale,
     private val analytics: Analytics,
-    private val crashLogger: CrashLogger
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    val diagnostics: SwapDiagnostics
 ) : BasePresenter<ExchangeConfirmationView>() {
 
     private var showPaxAirdropBottomDialog: Boolean = false
@@ -62,12 +61,15 @@ class ExchangeConfirmationPresenter internal constructor(
     private var maxSpendable: CryptoValue? = null
     private var executeTradeSingle: Single<TradeTransaction>? = null
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    val diagnostics = SwapFailureDiagnostics()
-
     override fun onViewReady() {
         // Ensure user hasn't got a double encrypted wallet
         subscribeToViewState()
+        diagnostics.log("confirm screen enter")
+    }
+
+    override fun onViewDestroyed() {
+        diagnostics.log("confirm screen destroy")
+        super.onViewDestroyed()
     }
 
     private fun subscribeToViewState() {
@@ -81,7 +83,7 @@ class ExchangeConfirmationPresenter internal constructor(
                     minSpendableFiatValue = state.minTradeLimit
                     maxSpendable = state.maxSpendable
 
-                    diagnostics.maxSpendable = maxSpendable
+                    diagnostics.logMaxSpendable(maxSpendable)
 
                     showPaxAirdropBottomDialog = state.isPowerPaxTagged
                     if (!payloadDecrypt.isDoubleEncrypted) {
@@ -106,7 +108,7 @@ class ExchangeConfirmationPresenter internal constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onSuccess = {
-                        diagnostics.fee = it
+                        // This fee is never used in a calculation, just displayed.
                         view.updateFee(it)
                     },
                     onError = {
@@ -122,15 +124,15 @@ class ExchangeConfirmationPresenter internal constructor(
         receivingAccount: AccountReference
     ): Single<TradeTransaction> {
 
-        diagnostics.quote = quote
-
         return deriveAddressPair(sendingAccount, receivingAccount)
             .subscribeOn(Schedulers.io())
             .flatMap { (destination, refund) ->
                 tradeExecutionService.executeTrade(quote, destination, refund)
                     .subscribeOn(Schedulers.io())
                     .flatMap { transaction ->
-                        sendFundsForTrade(transaction, sendingAccount, diagnostics)
+                        diagnostics.log("Sending funds for swap")
+                        diagnostics.logQuote(quote)
+                        sendFundsForTrade(transaction, sendingAccount)
                             .subscribeOn(Schedulers.io())
                     }
             }
@@ -139,9 +141,10 @@ class ExchangeConfirmationPresenter internal constructor(
             .doOnEvent { _, _ -> view.dismissProgressDialog() }
             .doOnError { onExecuteTradeFailed(it) }
             .doOnSuccess {
-                view.onTradeSubmitted(it.toTrade(locale),
+                view.onTradeSubmitted(it.toTrade(),
                     showPaxAirdropBottomDialog && receivingAccount.cryptoCurrency == CryptoCurrency.PAX
                 )
+                analytics.logEvent(SwapAnalyticsEvents.SwapSummaryConfirmSuccess)
             }
     }
 
@@ -155,7 +158,7 @@ class ExchangeConfirmationPresenter internal constructor(
                 )
             )
         } else {
-            val rawError = (t as?HttpException)?.response()?.errorBody()?.string()
+            val rawError = (t as? HttpException)?.response()?.errorBody()?.string()
             rawError?.takeIf { !it.isBlank() }?.let { error ->
                 val swapErrorResponse = SwapErrorResponse::class.fromMoshiJson(error)
                 val errorType = swapErrorResponse.toErrorType()
@@ -172,32 +175,36 @@ class ExchangeConfirmationPresenter internal constructor(
                 )
             )
         }
+        analytics.logEvent(SwapAnalyticsEvents.SwapSummaryConfirmFailure)
     }
 
     private fun sendFundsForTrade(
         transaction: TradeTransaction,
-        sendingAccount: AccountReference,
-        diagnostics: SwapFailureDiagnostics
-    ): Single<TradeTransaction> {
-
-        return transactionExecutor.executeTransaction(
+        sendingAccount: AccountReference
+    ): Single<TradeTransaction> = transactionExecutor.executeTransaction(
             transaction.deposit,
             transaction.depositAddress,
             sendingAccount,
             memo = transaction.memo(),
             diagnostics = diagnostics
-        ).flatMap {
-            Single.just(transaction)
-        }.onErrorResumeNext {
-            Timber.e(it, "Transaction execution error, telling nabu")
-            analytics.logEvent(AnalyticsEvents.ExchangeExecutionError)
-            val hash = (it as? TransactionHashApiException)?.hashString ?: (it as? SendException)?.hash
+        ).flatMap { Single.just(transaction) }
+            .onErrorResumeNext { onSendFundsFailed(transaction, it) }
+            .doOnSuccess { onSendFundsSucceeded(it) }
 
-            crashLogger.logException(diagnostics.toLoggable())
+    private fun onSendFundsSucceeded(transaction: TradeTransaction) {
+        triggerPaxTradeEvent(transaction)
+        diagnostics.logSuccess(transaction.hashOut)
+    }
 
-            tradeExecutionService.putTradeFailureReason(transaction, hash, it.message)
-                .andThen(Single.error(it))
-        }.doOnSuccess { triggerPaxTradeEvent(it) }
+    private fun onSendFundsFailed(transaction: TradeTransaction, e: Throwable): Single<TradeTransaction> {
+        Timber.e(e, "Transaction execution error, telling nabu")
+        analytics.logEvent(AnalyticsEvents.ExchangeExecutionError)
+        val hash = (e as? TransactionHashApiException)?.hashString ?: (e as? SendException)?.hash
+
+        diagnostics.logFailure(hash, e.message)
+
+        return tradeExecutionService.putTradeFailureReason(transaction, hash, e.message)
+            .andThen(Single.error(e))
     }
 
     private fun triggerPaxTradeEvent(transaction: TradeTransaction) {
@@ -251,81 +258,81 @@ class ExchangeConfirmationPresenter internal constructor(
         when (this) {
             SwapErrorType.ORDER_BELOW_MIN_LIMIT -> SwapErrorDialogContent(
                 ErrorBottomDialog.Content(
-                stringUtils.getString(R.string.markets_are_moving),
-                stringUtils.getFormattedString(R.string.markets_movement_markets_below_required,
-                    minAmountFiat?.formatOrSymbolForZero() ?: ""), R.string.update_order,
-                R.string.more_info, 0),
+                    stringUtils.getString(R.string.markets_are_moving),
+                    stringUtils.getFormattedString(R.string.markets_movement_markets_below_required,
+                        minAmountFiat?.formatOrSymbolForZero() ?: ""), R.string.update_order,
+                    R.string.more_info, 0),
                 { view?.goBack() },
                 { view?.openMoreInfoLink(URL_BLOCKCHAIN_ORDER_FAILED_BELOW_MIN) })
             SwapErrorType.ORDER_ABOVE_MAX_LIMIT ->
                 SwapErrorDialogContent(
                     ErrorBottomDialog.Content(stringUtils.getString(
-                    R.string.markets_are_moving),
-                    stringUtils.getFormattedString(R.string.markets_movement_markets_above_required,
-                        maxAmountFiat?.formatOrSymbolForZero() ?: ""), R.string.update_order,
-                    R.string.more_info, 0),
+                        R.string.markets_are_moving),
+                        stringUtils.getFormattedString(R.string.markets_movement_markets_above_required,
+                            maxAmountFiat?.formatOrSymbolForZero() ?: ""), R.string.update_order,
+                        R.string.more_info, 0),
                     { view?.goBack() },
                     { view?.openMoreInfoLink(URL_BLOCKCHAIN_ORDER_ABOVE_MAX) })
             SwapErrorType.DAILY_LIMIT_EXCEEDED,
             SwapErrorType.WEEKLY_LIMIT_EXCEEDED ->
                 SwapErrorDialogContent(
                     ErrorBottomDialog.Content(stringUtils.getString(
-                    R.string.hold_your_horses),
-                    stringUtils.getFormattedString(R.string.above_limit_description,
-                        maxAmountFiat?.formatOrSymbolForZero() ?: ""),
-                    R.string.update_order,
-                    R.string.more_info,
-                    0), { view.goBack() },
+                        R.string.hold_your_horses),
+                        stringUtils.getFormattedString(R.string.above_limit_description,
+                            maxAmountFiat?.formatOrSymbolForZero() ?: ""),
+                        R.string.update_order,
+                        R.string.more_info,
+                        0), { view.goBack() },
                     { view?.openMoreInfoLink(URL_BLOCKCHAIN_ORDER_LIMIT_EXCEED) })
             SwapErrorType.ANNUAL_LIMIT_EXCEEDED ->
                 SwapErrorDialogContent(
                     ErrorBottomDialog.Content(stringUtils.getString(
-                    R.string.hold_your_horses),
-                    stringUtils.getFormattedString(R.string.above_limit_description,
-                        maxAmountFiat?.formatOrSymbolForZero() ?: ""),
-                    R.string.update_order,
-                    R.string.increase_limits,
-                    0),
+                        R.string.hold_your_horses),
+                        stringUtils.getFormattedString(R.string.above_limit_description,
+                            maxAmountFiat?.formatOrSymbolForZero() ?: ""),
+                        R.string.update_order,
+                        R.string.increase_limits,
+                        0),
                     { view.goBack() },
                     { view.openTiersCard() })
             SwapErrorType.CONFIRMATION_ETH_PENDING ->
                 SwapErrorDialogContent(
                     ErrorBottomDialog.Content(stringUtils.getString(
-                    R.string.ops_something_went_wrong),
-                    stringUtils.getString(R.string.morph_confirmation_eth_pending),
-                    R.string.try_again, 0, 0),
+                        R.string.card_error_title),
+                        stringUtils.getString(R.string.morph_confirmation_eth_pending),
+                        R.string.try_again, 0, 0),
                     { view.goBack() },
                     { })
             SwapErrorType.ALBERT_EXECUTION_ERROR ->
                 SwapErrorDialogContent(
                     ErrorBottomDialog.Content(stringUtils.getString(
-                    R.string.ops_something_went_wrong),
-                    stringUtils.getString(R.string.something_went_wrong_description),
-                    R.string.try_again,
-                    R.string.more_info,
-                    0),
+                        R.string.card_error_title),
+                        stringUtils.getString(R.string.something_went_wrong_description),
+                        R.string.try_again,
+                        R.string.more_info,
+                        0),
                     { view.goBack() },
                     { view?.openMoreInfoLink(URL_BLOCKCHAIN_ORDER_EXPIRED) })
             else ->
                 SwapErrorDialogContent(
                     ErrorBottomDialog.Content(stringUtils.getString(
-                    R.string.ops_something_went_wrong),
-                    stringUtils.getString(R.string.something_went_wrong_description),
-                    R.string.try_again, 0, 0),
+                        R.string.card_error_title),
+                        stringUtils.getString(R.string.something_went_wrong_description),
+                        R.string.try_again, 0, 0),
                     { view?.goBack() },
                     { })
         }
 }
 
-private fun TradeTransaction.toTrade(locale: Locale): Trade {
+private fun TradeTransaction.toTrade(): Trade {
     return Trade(
         id = id,
         state = MorphTrade.Status.IN_PROGRESS,
-        currency = pair.to.symbol,
-        price = fiatValue.toStringWithSymbol(locale),
-        fee = fee.toStringWithSymbol(locale),
+        currency = pair.to.displayTicker,
+        price = fiatValue.toStringWithSymbol(),
+        fee = fee.toStringWithSymbol(),
         pair = pair.pairCode,
-        quantity = withdrawal.toStringWithSymbol(locale),
+        quantity = withdrawal.toStringWithSymbol(),
         createdAt = createdAt,
         depositQuantity = deposit.toStringWithSymbol()
     )
@@ -339,3 +346,16 @@ private class PaxTradeEvent : AnalyticsEvent {
     override val event = "pax_swap_traded"
     override val params = emptyMap<String, String>()
 }
+
+private fun SwapDiagnostics.logQuote(quote: Quote) {
+    with(quote) {
+        logStateVariable("QUOTE_CONFIRM_FIX", fix.toString())
+        logStateVariable("QUOTE_CONFIRM_VAL_FROM", from.toLogString())
+        logStateVariable("QUOTE_CONFIRM_VAL_TO", to.toLogString())
+        logStateVariable("QUOTE_CONFIRM_RATE_BASE_2_FIAT", baseToFiatRate.toEngineeringString())
+        logStateVariable("QUOTE_CONFIRM_RATE_BASE_2_COUNTER", baseToCounterRate.toEngineeringString())
+        logStateVariable("QUOTE_CONFIRM_RATE_COUNTER_2_FIAT", counterToFiatRate.toEngineeringString())
+    }
+}
+
+private fun Quote.Value.toLogString() = "${cryptoValue.toStringWithSymbol()} : ${fiatValue.toStringWithSymbol()}"

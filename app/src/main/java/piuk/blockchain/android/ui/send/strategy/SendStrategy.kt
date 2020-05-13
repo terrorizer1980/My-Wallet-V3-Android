@@ -1,23 +1,25 @@
 package piuk.blockchain.android.ui.send.strategy
 
-import android.support.annotation.CallSuper
+import androidx.annotation.CallSuper
+import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.transactions.Memo
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.api.data.FeeOptions
 import io.reactivex.Observable
+import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.send.SendView
-import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcoreui.ui.base.BasePresenter
+import piuk.blockchain.android.data.currency.CurrencyState
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.logging.Logging
-import piuk.blockchain.androidcoreui.utils.logging.PaymentSentEvent
 import java.math.BigInteger
 import java.text.DecimalFormatSymbols
 
 abstract class SendStrategy<View : SendView>(
-    protected val currencyState: CurrencyState
-) : BasePresenter<View>() {
+    protected val currencyState: CurrencyState,
+    private val currencyPrefs: CurrencyPrefs
+) : MvpPresenter<View>() {
 
     @CallSuper
     open fun reset() {
@@ -88,5 +90,9 @@ abstract class SendStrategy<View : SendView>(
                 .putSuccess(success)
                 .putAmountForRange(CryptoValue(currency, amount))
         )
+    }
+
+    protected val fiatCurrency: String by unsafeLazy {
+        currencyPrefs.selectedFiatCurrency
     }
 }

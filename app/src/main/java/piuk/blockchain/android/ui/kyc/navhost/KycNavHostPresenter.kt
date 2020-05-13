@@ -2,31 +2,32 @@ package piuk.blockchain.android.ui.kyc.navhost
 
 import piuk.blockchain.android.ui.kyc.BaseKycPresenter
 import com.blockchain.exceptions.MetadataNotFoundException
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.KycState
-import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.kyc.models.nabu.UserState
-import com.blockchain.kyc.services.nabu.TierUpdater
+import com.blockchain.swap.nabu.models.nabu.KycState
+import com.blockchain.swap.nabu.models.nabu.NabuUser
+import com.blockchain.swap.nabu.models.nabu.UserState
 import piuk.blockchain.android.ui.kyc.logging.KycResumedEvent
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.kyc.profile.models.ProfileModel
 import piuk.blockchain.android.ui.kyc.reentry.KycNavigator
 import piuk.blockchain.android.ui.kyc.reentry.ReentryDecision
 import com.blockchain.swap.nabu.NabuToken
-import com.blockchain.sunriver.SunriverCampaignSignUp
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.service.TierUpdater
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
+import piuk.blockchain.android.campaign.CampaignRegistration
+import piuk.blockchain.android.campaign.SunriverCampaignRegistration
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
 
 class KycNavHostPresenter(
     nabuToken: NabuToken,
     private val nabuDataManager: NabuDataManager,
-    private val sunriverCampaignSignUp: SunriverCampaignSignUp,
+    private val sunriverCampaign: SunriverCampaignRegistration,
     private val reentryDecision: ReentryDecision,
     private val kycNavigator: KycNavigator,
     private val tierUpdater: TierUpdater
@@ -41,7 +42,7 @@ class KycNavHostPresenter(
                 .doOnSubscribe { view.displayLoading(true) }
                 .subscribeBy(
                     onSuccess = {
-                        registerForCampaignIfNeeded()
+                        registerForCampaignsIfNeeded()
                         updateTier2SelectedTierIfNeeded()
                         redirectUserFlow(it)
                     },
@@ -58,20 +59,21 @@ class KycNavHostPresenter(
     }
 
     /**
-     * Registers the user to the sunriver campaign if they are not yet registered and the view campaignType is Sunriver
+     * Registers the user to the various campaigns if they are not yet registered with them, on completion of Gold
      */
-    private fun registerForCampaignIfNeeded() {
-        // Check if Sunriver campaign
-        if (view.campaignType != CampaignType.Sunriver) {
-            return
+    private fun registerForCampaignsIfNeeded() {
+        if (view.campaignType == CampaignType.Sunriver) {
+            checkAndRegisterForCampaign(sunriverCampaign)
         }
+    }
 
-        compositeDisposable += sunriverCampaignSignUp.userIsInSunRiverCampaign()
+    private fun checkAndRegisterForCampaign(campaign: CampaignRegistration) {
+        compositeDisposable += campaign.userIsInCampaign()
             .flatMapCompletable { isInCampaign ->
                 if (isInCampaign) {
                     Completable.complete()
                 } else {
-                    sunriverCampaignSignUp.registerSunRiverCampaign()
+                    campaign.registerCampaign()
                 }
             }
             .subscribeOn(Schedulers.io())
@@ -80,7 +82,7 @@ class KycNavHostPresenter(
     }
 
     private fun updateTier2SelectedTierIfNeeded() {
-        if (view.campaignType != CampaignType.Sunriver || view.campaignType != CampaignType.BuySell) {
+        if (view.campaignType != CampaignType.Sunriver) {
             return
         }
 
@@ -91,11 +93,15 @@ class KycNavHostPresenter(
     }
 
     private fun redirectUserFlow(user: NabuUser) {
-        if (view.campaignType == CampaignType.BuySell) {
-            view.navigateToKycSplash()
-        } else if (view.campaignType == CampaignType.Resubmission || user.isMarkedForResubmission) {
+        if (view.campaignType == CampaignType.Resubmission || user.isMarkedForResubmission) {
             view.navigateToResubmissionSplash()
-        } else if (user.state != UserState.None && user.kycState == KycState.None && !view.isFromSettingsLimits) {
+        } else if (view.campaignType == CampaignType.Blockstack || view.campaignType == CampaignType.SimpleBuy) {
+            compositeDisposable += kycNavigator.findNextStep()
+                .subscribeBy(
+                    onError = { Timber.e(it) },
+                    onSuccess = { view.navigate(it) }
+                )
+        } else if (user.state != UserState.None && user.kycState == KycState.None && !view.showTiersLimitsSplash) {
             val current = user.tiers?.current
             if (current == null || current == 0) {
                 val reentryPoint = reentryDecision.findReentryPoint(user)

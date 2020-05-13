@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name" translatable="false">Blockchain</string>
-    <string name="cannot_launch_app">Blockchain Wallet cannot be run on this device.</string>
 
     <string name="exit">Exit</string>
     <string name="screen_overlay_warning">Screen overlay detected!</string>
@@ -15,18 +14,17 @@
     <string name="imported_addresses">Imported Addresses</string>
     <string name="contacts_title">Contacts</string>
 
-    <string name="bitcoin">Bitcoin</string>
-    <string name="ether">Ether</string>
-
-    <string name="ethereum" translatable="false">Ethereum</string>
+    <string name="bitcoin" translatable="false">Bitcoin</string>
+    <string name="ether" translatable="false">Ether</string>
+    <string name="ethereum" translatable="false">Ether</string>
     <string name="bitcoin_cash" translatable="false">Bitcoin Cash</string>
     <string name="lumens" translatable="false">Stellar</string>
-    <string name="usd_pax" translatable="false">USD PAX</string>
-
-    <string name="contacts_no_confirmed_contacts_found">No confirmed contacts found!</string>
+    <string name="usd_pax_1" translatable="true">USD Digital</string>
+    <string name="stacks_1" translatable="false">Stacks</string>
 
     <!-- Country Selection Dialog -->
     <string name="search_country">Search Country</string>
+    <string name="search">Search</string>
 
     <string name="please_wait">Please wait</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
@@ -35,67 +33,5 @@
 
     <string name="YESTERDAY">Yesterday</string>
     <string name="unexpected_error">Unexpected error, please try again later.</string>
-
-    <string name="transaction_submitted">Transaction complete</string>
-    <string name="transaction_failed">Transaction failed</string>
-    <string name="insufficient_funds">Insufficient funds</string>
-    <string name="insufficient_funds_with_max">Insufficient funds, the most you can send is %1$s</string>
-    <string name="insufficient_eth_for_fees">Not enough ETH for transaction fees</string>
-
-    <string name="not_enough_funds_with_currency">Not enough %1$s</string>
-
-    <string name="invalid_address">Invalid address</string>
-
-    <string name="transaction_failed_min_send">The minimum you can send is %1$s</string>
-
-    <string name="xlm_transaction_failed_min_balance_new_account">Minimum of %1$s needed for new accounts</string>
-
-    <string name="xlm_memo_text">Memo Text</string>
-    <string name="xlm_memo">Memo</string>
-    <string name="xlm_memo_sending_exchange">Sending to an exchange?</string>
-    <string name="xlm_memo_sending_exchange_description">Add a Memo to avoid losing funds or use Swap to exchange in this wallet.</string>
-    <string name="memo_required">Required</string>
-    <string name="xlm_memo_id">Memo ID</string>
-    <string name="xlm_memo_hash">Memo Hash</string>
-    <string name="xlm_memo_return">Memo Return Hash</string>
-
-    <string name="xlm_memo_toolbar_title">Add Memo</string>
-
-    <string name="xlm_memo_explain">Memos are used to communicate optional information to the recipient.</string>
-
-    <string name="xlm_memo_text_hint">Memo</string>
-    <string name="xlm_memo_id_hint">Numeric ID</string>
-    <string name="xlm_memo_hash_hint">32 Byte Hexadecimal Hash</string>
-
-    <string-array name="xlm_memo_types_manual">
-        <item>@string/xlm_memo_text</item>
-        <item>@string/xlm_memo_id</item>
-    </string-array>
-
-    <string-array name="xlm_memo_types_all">
-        <item>@string/xlm_memo_text</item>
-        <item>@string/xlm_memo_id</item>
-        <item>@string/xlm_memo_hash</item>
-        <item>@string/xlm_memo_return</item>
-    </string-array>
-
-    <string name="get_free_xlm">Get Free XLM</string>
-    <string name="get_free_xlm_body">Complete your profile to start instantly trading crypto from the security of your wallet. Pro tip: Gold level gets you higher limits and future airdrops.</string>
-
-    <string name="maybe_later">Maybe later</string>
-
-    <string name="claim_crypto_success_title">Success!</string>
-    <string name="claim_crypto_success_body">You’re now eligible for future Airdrops.</string>
-    <string name="claim_crypto_success_cta">Share</string>
-    <string name="claim_crypto_success_dismiss">Dismiss</string>
-
-    <!-- Help -->
-    <string name="help">Help</string>
-    <string name="need_some_help">Need some help?</string>
-    <string name="contact_support">Contact Support</string>
-
-    <!--More eth needed-->
-    <string name="pax_need_more_eth_error_body">You\'ll need ETH to send your ERC20 Token, USD PAX. <annotation link="pax_faq">Learn more.</annotation></string>
-    <string name="pax_need_more_eth_error_title">More ETH Needed</string>
 
 </resources>

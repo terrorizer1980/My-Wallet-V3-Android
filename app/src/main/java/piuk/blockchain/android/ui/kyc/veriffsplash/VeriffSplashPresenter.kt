@@ -1,9 +1,9 @@
 package piuk.blockchain.android.ui.kyc.veriffsplash
 
 import piuk.blockchain.android.ui.kyc.BaseKycPresenter
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.NabuApiException
-import com.blockchain.kyc.models.nabu.NabuErrorStatusCodes
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.models.nabu.NabuApiException
+import com.blockchain.swap.nabu.models.nabu.NabuErrorStatusCodes
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvent
@@ -12,6 +12,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.UiState
@@ -34,7 +35,15 @@ class VeriffSplashPresenter(
 
         compositeDisposable +=
             view.nextClick
-                .subscribe { view.continueToVeriff(applicantToken!!) }
+                .subscribe {
+                    @Suppress("ConstantConditionIf")
+                    // In some DEBUG builds - but ONLY in DEBUG builds - it can be useful to skip the veriff kyc steps:
+                    if (BuildConfig.DEBUG && BuildConfig.SKIP_VERIFF_KYC) {
+                        view.continueToCompletion()
+                    } else {
+                        view.continueToVeriff(applicantToken!!)
+                    }
+                }
 
         compositeDisposable +=
             view.swapClick

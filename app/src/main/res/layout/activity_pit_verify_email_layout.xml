@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="25dp"
         android:gravity="center"
-        android:text="@string/pit_verify_email_description"
+        android:text="@string/the_exchange_verify_email_description"
         android:textColor="@color/pit_email_veriff_description"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="3dp"
         android:layout_marginBottom="32dp"
-        android:text="@string/pit_did_not_get_email"
+        android:text="@string/the_exchange_did_not_get_email"
         android:textColor="@color/pit_email_veriff_description"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/open_app"
@@ -61,7 +61,7 @@
         android:layout_marginStart="3dp"
         android:layout_marginBottom="32dp"
         android:fontFamily="@font/inter_medium"
-        android:text="@string/pit_send_again"
+        android:text="@string/the_exchange_send_again"
         android:textColor="@color/mobile_notice_dialog_button_background"
         app:layout_constraintBottom_toTopOf="@+id/open_app"
         app:layout_constraintEnd_toEndOf="parent"
@@ -74,7 +74,7 @@
         android:layout_margin="25dp"
         android:background="@drawable/mobile_notice_dialog_button_background"
         android:fontFamily="@font/inter_medium"
-        android:text="@string/pit_open_email_app"
+        android:text="@string/the_exchange_open_email_app"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="16sp"
@@ -82,4 +82,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

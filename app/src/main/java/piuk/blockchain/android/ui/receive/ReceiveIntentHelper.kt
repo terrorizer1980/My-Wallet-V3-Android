@@ -6,9 +6,10 @@ import android.content.Intent
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.support.v4.content.FileProvider
 import android.util.Pair
 import android.webkit.MimeTypeMap
+import androidx.core.content.FileProvider
+import com.blockchain.extensions.exhaustive
 import com.blockchain.sunriver.StellarPayment
 import com.blockchain.sunriver.fromStellarUri
 import com.crashlytics.android.answers.ShareEvent
@@ -16,7 +17,7 @@ import info.blockchain.balance.CryptoCurrency
 import org.bitcoinj.uri.BitcoinURI
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.BitcoinLinkGenerator
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
 import java.io.File
@@ -61,7 +62,8 @@ class ReceiveIntentHelper(private val context: Context, private val appUtil: App
                 CryptoCurrency.BCH -> emailIntent.setupIntentForEmailBch(uri)
                 CryptoCurrency.XLM -> emailIntent.setupIntentForEmailXlm(payment = uri.fromStellarUri())
                 CryptoCurrency.PAX -> emailIntent.setupIntentForEmailPax(uri)
-            }
+                CryptoCurrency.STX -> TODO("STX is not fully supported yet")
+            }.exhaustive
 
             val imageIntent = Intent().apply { setupIntentForImage(type, file) }
 
@@ -163,10 +165,10 @@ class ReceiveIntentHelper(private val context: Context, private val appUtil: App
 
     private fun Intent.setupIntentForEmailPax(uri: String) {
         val address = uri.removePrefix("ethereum:")
-        val body = String.format(context.getString(R.string.email_request_body_pax), address)
+        val body = String.format(context.getString(R.string.email_request_body_pax_1), address)
 
         putExtra(Intent.EXTRA_TEXT, body)
-        putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.email_request_subject_pax))
+        putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.email_request_subject_pax_1))
     }
 
     private fun Intent.setupIntentForEmailXlm(payment: StellarPayment) {

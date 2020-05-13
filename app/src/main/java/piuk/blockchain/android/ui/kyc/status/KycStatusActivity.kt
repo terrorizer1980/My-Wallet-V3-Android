@@ -3,12 +3,12 @@ package piuk.blockchain.android.ui.kyc.status
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.constraint.ConstraintSet
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintSet
 import com.blockchain.activities.StartSwap
 import com.blockchain.extensions.px
-import com.blockchain.kyc.models.nabu.KycState
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import com.blockchain.swap.nabu.models.nabu.KycState
+import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import org.koin.android.ext.android.inject
@@ -45,9 +45,10 @@ class KycStatusActivity : BaseMvpActivity<KycStatusView, KycStatusPresenter>(), 
         logEvent(AnalyticsEvents.KycComplete)
 
         val title = when (campaignType) {
-            CampaignType.BuySell -> R.string.buy_sell_splash_title
             CampaignType.Swap -> R.string.kyc_splash_title
             CampaignType.Sunriver,
+            CampaignType.Blockstack,
+            CampaignType.SimpleBuy,
             CampaignType.Resubmission -> R.string.sunriver_splash_title
         }
         setupToolbar(toolBar, title)
@@ -87,9 +88,10 @@ class KycStatusActivity : BaseMvpActivity<KycStatusView, KycStatusPresenter>(), 
         textViewStatus.setText(R.string.kyc_status_title_in_progress)
         displayNotificationButton()
         val message = when (campaignType) {
-            CampaignType.BuySell,
             CampaignType.Swap,
             CampaignType.Resubmission -> R.string.kyc_status_message_in_progress
+            CampaignType.Blockstack,
+            CampaignType.SimpleBuy,
             CampaignType.Sunriver -> R.string.sunriver_status_message
         }
         textViewMessage.setText(message)

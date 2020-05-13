@@ -3,26 +3,6 @@
 package com.blockchain.koin
 
 import android.preference.PreferenceManager
-import com.blockchain.accounts.AccountList
-import com.blockchain.accounts.AllAccountList
-import com.blockchain.accounts.AllAccountsImplementation
-import com.blockchain.accounts.AsyncAccountList
-import com.blockchain.accounts.AsyncAllAccountList
-import com.blockchain.accounts.AsyncAllAccountListImplementation
-import com.blockchain.accounts.BchAccountListAdapter
-import com.blockchain.accounts.BchAsyncAccountListAdapter
-import com.blockchain.accounts.BtcAccountListAdapter
-import com.blockchain.accounts.BtcAsyncAccountListAdapter
-import com.blockchain.accounts.EthAccountListAdapter
-import com.blockchain.accounts.EthAsyncAccountListAdapter
-import com.blockchain.accounts.PaxAccountListAdapter
-import com.blockchain.accounts.PaxAsyncAccountList
-import com.blockchain.balance.AsyncAccountBalanceReporter
-import com.blockchain.balance.AsyncAddressBalanceReporter
-import com.blockchain.balance.BchBalanceAdapter
-import com.blockchain.balance.BtcBalanceAdapter
-import com.blockchain.balance.EthBalanceAdapter
-import com.blockchain.balance.plus
 import com.blockchain.datamanagers.AccountLookup
 import com.blockchain.datamanagers.AddressResolver
 import com.blockchain.datamanagers.DataManagerPayloadDecrypt
@@ -40,17 +20,19 @@ import com.blockchain.metadata.MetadataRepository
 import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.preferences.NotificationPrefs
-import com.blockchain.preferences.OnBoardingPrefs
+import com.blockchain.preferences.DashboardPrefs
+import com.blockchain.preferences.SecurityPrefs
+import com.blockchain.preferences.SimpleBuyPrefs
 import com.blockchain.preferences.ThePitLinkingPrefs
 import com.blockchain.preferences.WalletStatus
 import com.blockchain.sunriver.XlmHorizonUrlFetcher
 import com.blockchain.sunriver.XlmTransactionTimeoutFetcher
-import com.blockchain.wallet.DefaultLabels
-import com.blockchain.wallet.ResourceDefaultLabels
 import com.blockchain.wallet.SeedAccess
 import com.blockchain.wallet.SeedAccessWithoutPrompt
 import info.blockchain.api.blockexplorer.BlockExplorer
+import info.blockchain.wallet.metadata.MetadataDerivation
 import info.blockchain.wallet.util.PrivateKeyFactory
+import org.bitcoinj.params.BitcoinMainNetParams
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.util.RootUtil
 import piuk.blockchain.androidcore.BuildConfig
@@ -60,15 +42,11 @@ import piuk.blockchain.androidcore.data.access.LogoutTimer
 import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.androidcore.data.auth.AuthService
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataStore
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatUtil
-import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.erc20.datastores.Erc20DataStore
 import piuk.blockchain.androidcore.data.ethereum.EthereumAccountWrapper
 import piuk.blockchain.androidcore.data.ethereum.datastores.EthDataStore
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateService
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.datastore.ExchangeRateDataStore
 import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
@@ -90,13 +68,11 @@ import piuk.blockchain.androidcore.data.settings.SettingsService
 import piuk.blockchain.androidcore.data.settings.applyFlag
 import piuk.blockchain.androidcore.data.settings.datastore.SettingsDataStore
 import piuk.blockchain.androidcore.data.settings.datastore.SettingsMemoryStore
-import piuk.blockchain.androidcore.data.transactions.TransactionListStore
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsState
 import piuk.blockchain.androidcore.utils.AESUtilWrapper
 import piuk.blockchain.androidcore.utils.DeviceIdGenerator
 import piuk.blockchain.androidcore.utils.DeviceIdGeneratorImpl
-import piuk.blockchain.androidcore.utils.MetadataUtils
 import piuk.blockchain.androidcore.utils.PrefsUtil
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.UUIDGenerator
@@ -107,8 +83,6 @@ val coreModule = applicationContext {
     bean { RxBus() }
 
     factory { AuthService(get(), get()) }
-
-    factory { MetadataUtils() }
 
     factory { PrivateKeyFactory() }
 
@@ -126,7 +100,14 @@ val coreModule = applicationContext {
             .bind(SeedAccessWithoutPrompt::class)
             .bind(SeedAccess::class)
 
-        bean { MetadataManager(get(), get(), get()) }
+        bean {
+            MetadataManager(
+                payloadDataManager = get(),
+                metadataInteractor = get(),
+                metadataDerivation = MetadataDerivation(BitcoinMainNetParams.get()),
+                crashLogger = get()
+            )
+        }
 
         bean { MoshiMetadataRepositoryAdapter(get(), get()) as MetadataRepository }
 
@@ -176,52 +157,6 @@ val coreModule = applicationContext {
             get<TransactionExecutorWithoutFees>("Priority") as MaximumSpendableCalculator
         }
 
-        factory("BTC") { BtcAccountListAdapter(get()) as AccountList }
-        factory("BCH") { BchAccountListAdapter(get()) as AccountList }
-        factory("ETH") { EthAccountListAdapter(get()) as AccountList }
-        factory("PAX") { PaxAccountListAdapter(get(), get()) as AccountList }
-
-        factory("BTC") { BtcAsyncAccountListAdapter(get()) as AsyncAccountList }
-        factory("BCH") { BchAsyncAccountListAdapter(get()) as AsyncAccountList }
-        factory("ETH") { EthAsyncAccountListAdapter(EthAccountListAdapter(get())) as AsyncAccountList }
-        factory("PAX") { PaxAsyncAccountList(ethDataManager = get(), stringUtils = get()) as AsyncAccountList }
-
-        factory("BTC") { BtcBalanceAdapter(get()) }
-            .bind(AsyncAddressBalanceReporter::class)
-            .bind(AsyncAccountBalanceReporter::class)
-        factory("BCH") { BchBalanceAdapter(get()) }
-            .bind(AsyncAddressBalanceReporter::class)
-            .bind(AsyncAccountBalanceReporter::class)
-        factory("ETH") { EthBalanceAdapter(get()) }
-            .bind(AsyncAddressBalanceReporter::class)
-            .bind(AsyncAccountBalanceReporter::class)
-
-        factory("all") {
-            get<AsyncAccountBalanceReporter>("BTC") +
-                    get("BCH") + get("ETH") + get("XLM")
-        }
-
-        factory {
-            AllAccountsImplementation(
-                btcAccountList = get("BTC"),
-                bchAccountList = get("BCH"),
-                etherAccountList = get("ETH"),
-                paxAccountList = get("PAX")
-            ) as AllAccountList
-        }
-
-        factory {
-            AsyncAllAccountListImplementation(
-                listOf(
-                    get("BTC"),
-                    get("ETH"),
-                    get("BCH"),
-                    get("XLM"),
-                    get("PAX")
-                )
-            ) as AsyncAllAccountList
-        }
-
         bean { EthDataStore() }
 
         bean { Erc20DataStore() }
@@ -230,7 +165,7 @@ val coreModule = applicationContext {
 
         bean { WalletOptionsState() }
 
-        bean { SettingsDataManager(get(), get(), get()) }
+        bean { SettingsDataManager(get(), get(), get(), get()) }
 
         bean { SettingsService(get()) }
 
@@ -245,18 +180,7 @@ val coreModule = applicationContext {
 
         bean { ExchangeRateDataStore(get(), get()) }
 
-        factory {
-            FiatExchangeRates(
-                exchangeRates = get(),
-                currencyPrefs = get()
-            )
-        }
-
-        factory { FeeDataManager(get(), get(), get()) }
-
-        bean { TransactionListStore() }
-
-        factory { CurrencyFormatManager(get(), get(), get(), get(), get()) }
+        bean { FeeDataManager(get(), get(), get()) }
 
         factory {
             AuthDataManager(
@@ -299,22 +223,26 @@ val coreModule = applicationContext {
 
     bean {
         PrefsUtil(
-            store = PreferenceManager.getDefaultSharedPreferences(/* context = */ get()),
+            store = get(),
             idGenerator = get(),
             uuidGenerator = get()
         )
     }.bind(PersistentPrefs::class)
         .bind(CurrencyPrefs::class)
-        .bind(ThePitLinkingPrefs::class)
-        .bind(WalletStatus::class)
         .bind(NotificationPrefs::class)
-        .bind(OnBoardingPrefs::class)
-
-    factory { CurrencyFormatUtil() }
-
-    bean { CurrencyState(get()) }
+        .bind(DashboardPrefs::class)
+        .bind(SecurityPrefs::class)
+        .bind(ThePitLinkingPrefs::class)
+        .bind(SimpleBuyPrefs::class)
+        .bind(WalletStatus::class)
 
     factory { PaymentService(get(), get(), get()) }
+
+    factory {
+        PreferenceManager.getDefaultSharedPreferences(
+            /* context = */ get()
+        )
+    }
 
     bean {
         if (BuildConfig.DEBUG)
@@ -348,6 +276,4 @@ val coreModule = applicationContext {
     }
 
     factory { AESUtilWrapper() }
-
-    factory { ResourceDefaultLabels(get()) as DefaultLabels }
 }

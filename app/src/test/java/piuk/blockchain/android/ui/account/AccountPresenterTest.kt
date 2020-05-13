@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.account
 
 import android.annotation.SuppressLint
+import com.blockchain.extensions.exhaustive
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.verify
@@ -16,8 +17,9 @@ import info.blockchain.wallet.payload.data.Wallet
 import info.blockchain.wallet.util.PrivateKeyFactory
 import io.reactivex.Completable
 import io.reactivex.Observable
+import junit.framework.Assert.assertFalse
+import junit.framework.Assert.assertTrue
 import org.amshove.kluent.mock
-import org.apache.commons.lang3.tuple.Triple
 import org.bitcoinj.core.ECKey
 import org.junit.Before
 import org.junit.Test
@@ -33,18 +35,20 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import piuk.blockchain.android.BlockchainTestApplication
 import piuk.blockchain.android.R
+import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrategy
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
+import piuk.blockchain.android.data.datamanagers.TransferableFundTransactionList
 import piuk.blockchain.android.ui.account.AccountPresenter.Companion.KEY_WARN_TRANSFER_ALL
 import piuk.blockchain.android.ui.send.PendingTransaction
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
-import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import java.math.BigInteger
 import java.util.Locale
 
@@ -66,7 +70,8 @@ class AccountPresenterTest {
     private val environmentSettings: EnvironmentConfig = mock()
     private val privateKeyFactory = PrivateKeyFactory()
     private val currencyState: CurrencyState = mock()
-    private val currencyFormatManager: CurrencyFormatManager = mock()
+    private val coinsWebSocketStrategy: CoinsWebSocketStrategy = mock()
+    private val exchangeRates: ExchangeRateDataManager = mock()
 
     @Before
     fun setUp() {
@@ -82,7 +87,9 @@ class AccountPresenterTest {
             privateKeyFactory,
             environmentSettings,
             currencyState,
-            currencyFormatManager
+            mock(),
+            coinsWebSocketStrategy,
+            exchangeRates
         )
 
         subject.initView(activity)
@@ -99,6 +106,7 @@ class AccountPresenterTest {
             label = "LABEL"
             xpub = "X_PUB"
         }
+
         whenever(payloadDataManager.accounts).thenReturn(listOf(btcAccount))
         whenever(payloadDataManager.legacyAddresses).thenReturn(mutableListOf())
         whenever(bchDataManager.getAccountMetadataList()).thenReturn(listOf(bchAccount))
@@ -111,15 +119,23 @@ class AccountPresenterTest {
     @Test
     fun checkTransferableLegacyFundsWarnTransferAllTrue() {
         // Arrange
-        val triple = Triple.of(listOf(PendingTransaction()), 1L, 2L)
+        val result = TransferableFundTransactionList(
+            pendingTransactions = listOf(PendingTransaction()),
+            totalToSend = 1.toBigInteger(),
+            totalFee = 2.toBigInteger()
+        )
+
         whenever(fundsDataManager.transferableFundTransactionListForDefaultAccount)
-            .thenReturn(Observable.just(triple))
+            .thenReturn(Observable.just(result))
+
         val mockPayload = mock(Wallet::class.java)
         whenever(mockPayload.isUpgraded).thenReturn(true)
         whenever(payloadDataManager.wallet).thenReturn(mockPayload)
         whenever(prefs.getValue(KEY_WARN_TRANSFER_ALL, true)).thenReturn(true)
+
         // Act
-        subject.checkTransferableLegacyFunds(false, true)
+        subject.checkTransferableLegacyFunds(isAutoPopup = false, showWarningDialog = true)
+
         // Assert
         verify(activity).onSetTransferLegacyFundsMenuItemVisible(true)
         verify(activity).onShowTransferableLegacyFundsWarning(false)
@@ -130,15 +146,21 @@ class AccountPresenterTest {
     @Test
     fun checkTransferableLegacyFundsWarnTransferAllTrueDontShowDialog() {
         // Arrange
-        val triple = Triple.of(listOf(PendingTransaction()), 1L, 2L)
+        val result = TransferableFundTransactionList(
+            pendingTransactions = listOf(PendingTransaction()),
+            totalToSend = 1.toBigInteger(),
+            totalFee = 2.toBigInteger()
+        )
+
         whenever(fundsDataManager.transferableFundTransactionListForDefaultAccount)
-            .thenReturn(Observable.just(triple))
+            .thenReturn(Observable.just(result))
+
         val mockPayload = mock(Wallet::class.java)
         whenever(mockPayload.isUpgraded).thenReturn(true)
         whenever(payloadDataManager.wallet).thenReturn(mockPayload)
         whenever(prefs.getValue(KEY_WARN_TRANSFER_ALL, true)).thenReturn(true)
         // Act
-        subject.checkTransferableLegacyFunds(false, false)
+        subject.checkTransferableLegacyFunds(isAutoPopup = false, showWarningDialog = false)
         // Assert
         verify(activity).onSetTransferLegacyFundsMenuItemVisible(true)
         verify(activity).dismissProgressDialog()
@@ -148,14 +170,22 @@ class AccountPresenterTest {
     @Test
     fun checkTransferableLegacyFundsNoFundsAvailable() {
         // Arrange
-        val triple = Triple.of(emptyList<PendingTransaction>(), 1L, 2L)
+        val result = TransferableFundTransactionList(
+            pendingTransactions = emptyList(),
+            totalToSend = 1.toBigInteger(),
+            totalFee = 2.toBigInteger()
+        )
+
         whenever(fundsDataManager.transferableFundTransactionListForDefaultAccount)
-            .thenReturn(Observable.just<Triple<List<PendingTransaction>, Long, Long>>(triple))
+            .thenReturn(Observable.just(result))
+
         val mockPayload = mock(Wallet::class.java)
         whenever(mockPayload.isUpgraded).thenReturn(true)
         whenever(payloadDataManager.wallet).thenReturn(mockPayload)
+
         // Act
-        subject.checkTransferableLegacyFunds(true, true)
+        subject.checkTransferableLegacyFunds(isAutoPopup = true, showWarningDialog = true)
+
         // Assert
         verify(activity).onSetTransferLegacyFundsMenuItemVisible(false)
         verify(activity).dismissProgressDialog()
@@ -168,7 +198,7 @@ class AccountPresenterTest {
         whenever(fundsDataManager.transferableFundTransactionListForDefaultAccount)
             .thenReturn(Observable.error(Throwable()))
         // Act
-        subject.checkTransferableLegacyFunds(true, true)
+        subject.checkTransferableLegacyFunds(isAutoPopup = true, showWarningDialog = true)
         // Assert
         verify(activity).onSetTransferLegacyFundsMenuItemVisible(false)
         verify(activity).dismissProgressDialog()
@@ -194,7 +224,7 @@ class AccountPresenterTest {
         verify(activity).showProgressDialog(anyInt())
         verify(activity).dismissProgressDialog()
         verify(activity).showToast(anyInt(), eq(ToastCustom.TYPE_OK))
-        verify(activity).broadcastIntent(any())
+        verify(coinsWebSocketStrategy).subscribeToXpubBtc("xpub")
     }
 
     @Test
@@ -242,7 +272,9 @@ class AccountPresenterTest {
     @Test
     fun updateLegacyAddressSuccessful() {
         // Arrange
-        val legacyAddress = LegacyAddress()
+        val legacyAddress = LegacyAddress().apply {
+            address = "address1"
+        }
         whenever(payloadDataManager.updateLegacyAddress(legacyAddress))
             .thenReturn(Completable.complete())
         // Act
@@ -252,7 +284,6 @@ class AccountPresenterTest {
         verify(activity).showProgressDialog(anyInt())
         verify(activity).dismissProgressDialog()
         verify(activity).showToast(anyInt(), eq(ToastCustom.TYPE_OK))
-        verify(activity).broadcastIntent(any())
     }
 
     @Test
@@ -469,9 +500,6 @@ class AccountPresenterTest {
         whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
         whenever(currencyState.displayMode).thenReturn(CurrencyState.DisplayMode.Crypto)
         whenever(currencyState.isDisplayingCryptoCurrency).thenReturn(true)
-        whenever(
-            currencyFormatManager.getFormattedSelectedCoinValueWithUnit(BigInteger.ZERO)
-        ).thenReturn("")
 
         // Act
         subject.handlePrivateKey(mockECKey, null)
@@ -493,5 +521,26 @@ class AccountPresenterTest {
         // Assert
         verify(activity).showToast(anyInt(), eq(ToastCustom.TYPE_ERROR))
         verifyNoMoreInteractions(activity)
+    }
+
+    @Test
+    fun checkDisplayListIsValid() {
+        // Arrange
+
+        // Act
+        val displayable = subject.getDisplayableCurrencies()
+
+        // Assert
+        // We want to catch new, unhandled, CryptoCurrencies so test in a loop:
+        CryptoCurrency.values().forEach {
+            when (it) {
+                CryptoCurrency.BTC -> assertTrue(it in displayable)
+                CryptoCurrency.BCH -> assertTrue(it in displayable)
+                CryptoCurrency.ETHER -> assertFalse(it in displayable)
+                CryptoCurrency.XLM -> assertFalse(it in displayable)
+                CryptoCurrency.PAX -> assertFalse(it in displayable)
+                CryptoCurrency.STX -> assertFalse(it in displayable)
+            }.exhaustive
+        }
     }
 }

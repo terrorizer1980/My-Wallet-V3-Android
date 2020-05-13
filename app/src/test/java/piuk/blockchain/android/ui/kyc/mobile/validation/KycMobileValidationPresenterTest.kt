@@ -41,7 +41,8 @@ class KycMobileValidationPresenterTest {
     fun setUp() {
         subject = KycMobileValidationPresenter(
             nabuUserSync,
-            phoneNumberUpdater
+            phoneNumberUpdater,
+            mock()
         )
         subject.initView(view)
     }

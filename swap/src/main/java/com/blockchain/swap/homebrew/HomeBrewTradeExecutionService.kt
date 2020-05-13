@@ -4,7 +4,7 @@ import com.blockchain.swap.nabu.service.Quote
 import com.blockchain.swap.nabu.service.TradeExecutionService
 import com.blockchain.swap.nabu.service.TradeTransaction
 import com.blockchain.swap.nabu.api.QuoteJson
-import com.blockchain.swap.nabu.api.TradeRequest
+import com.blockchain.swap.nabu.api.trade.TradeRequest
 import com.blockchain.swap.nabu.service.NabuMarketsService
 import io.reactivex.Completable
 import io.reactivex.Single

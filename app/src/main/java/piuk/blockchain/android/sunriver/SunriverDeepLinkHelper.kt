@@ -2,7 +2,7 @@ package piuk.blockchain.android.sunriver
 
 import android.content.Intent
 import android.net.Uri
-import com.blockchain.kyc.models.nabu.CampaignData
+import com.blockchain.swap.nabu.models.nabu.CampaignData
 import com.blockchain.notifications.links.PendingLink
 import io.reactivex.Maybe
 import io.reactivex.Single

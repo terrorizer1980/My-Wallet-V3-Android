@@ -16,7 +16,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_layout_morph_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -267,20 +267,18 @@
 
             <Button
                 android:id="@+id/button_request_refund"
+                style="@style/CtaButton.Blue"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/status_request_refund"
-                android:theme="@style/LightBlueButtonTheme"
                 android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 tools:visibility="visible" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 </LinearLayout>

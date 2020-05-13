@@ -1,5 +1,38 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <style name="BaseTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <!-- Common styles across all res qualifiers resides here, anything specific can inherit from this -->
+        <item name="colorPrimary">@color/primary_navy_medium</item>
+        <item name="colorPrimaryDark">@color/primary_navy_dark</item>
+        <item name="colorAccent">@color/primary_blue_accent</item>
+
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+
+        <item name="android:windowBackground">@color/white</item>
+
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeBackground">@color/primary_navy_medium</item>
+
+        <item name="colorControlActivated">@color/primary_blue_accent</item>
+        <item name="colorControlHighlight">@color/primary_blue_accent</item>
+    </style>
+
+    <style name="AppTheme" parent="BaseTheme">
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="toolbarStyle">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialog</item>
+    </style>
+
+    <style name="AppTheme.MainActivity">
+        <!-- This style allows the navigation drawer to be visible under the status bar -->
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
     <style name="NoDisplay" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/primary_navy_medium</item>
         <item name="colorPrimaryDark">@color/primary_navy_medium</item>
@@ -10,6 +43,17 @@
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:windowDisablePreview">true</item>
         <item name="android:windowNoDisplay">true</item>
+
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialog</item>
+    </style>
+
+    <style name="StackedAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/primary_navy_medium</item>
+        <item name="buttonBarButtonStyle">@style/StackedButtonBarButtonStyle</item>
+    </style>
+
+    <style name="StackedButtonBarButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:layout_gravity">left</item>
     </style>
 
     <style name="AppTheme.ReceiveQrWindow">
@@ -19,23 +63,19 @@
         <item name="android:windowCloseOnTouchOutside">true</item>
     </style>
 
-    <style name="AppTheme.ChartsWindow">
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
-        <item name="android:backgroundDimEnabled">true</item>
-        <item name="android:windowCloseOnTouchOutside">true</item>
-    </style>
-
     <style name="BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="bottomSheetStyle">@style/BottomSheetModalStyle</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:colorBackground">@android:color/transparent</item>
         <item name="android:backgroundDimEnabled">true</item>
         <item name="android:backgroundDimAmount">0.5</item>
         <item name="android:windowFrame">@null</item>
         <item name="android:windowIsFloating">true</item>
+    </style>
+
+    <style name="BottomSheetModalStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bkgd_dialog_rounder_corners</item>
     </style>
 
     <style name="PasswordChangeDialogEditText">
@@ -70,11 +110,11 @@
     <style name="CustomDialogButton" parent="Widget.AppCompat.Button.Borderless">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">48dp</item>
-        <item name="android:textAllCaps">true</item>
+        <item name="textAllCaps">true</item>
         <item name="android:minWidth">64dp</item>
         <item name="android:paddingLeft">16dp</item>
         <item name="android:paddingRight">16dp</item>
-        <item name="android:theme">@style/PlainTheme</item>
+        <item name="theme">@style/PlainTheme</item>
     </style>
 
     <style name="CustomDialogButtonContainer">
@@ -90,26 +130,8 @@
         <item name="android:gravity">center_vertical|right</item>
     </style>
 
-    <style name="MegaButtonAccentBlue">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">48dp</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:gravity">center</item>
-        <item name="android:background">@drawable/selector_accent_blue</item>
-        <item name="android:textAllCaps">true</item>
-    </style>
-
-    <style name="SpinnerWhite">
-        <item name="colorControlNormal">@color/white</item>
-    </style>
-
     <style name="SpinnerBlack">
         <item name="colorControlNormal">@color/black</item>
-    </style>
-
-    <style name="BaseTextStyle">
-        <item name="android:fontFamily">@font/inter</item>
     </style>
 
     <style name="RecoveryPhraseEditText">
@@ -122,8 +144,6 @@
         <item name="android:textColor">@color/primary_grey_dark</item>
         <item name="android:textColorHint">@color/product_gray_hint</item>
     </style>
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="PinEntryButtonLayout">
         <item name="android:layout_width">0dp</item>
@@ -199,7 +219,7 @@
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
         <item name="android:textColor">@color/black</item>
-        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="fontFamily">@font/inter_medium</item>
     </style>
 
     <style name="CryptoCurrencySelectorTextView">
@@ -211,24 +231,10 @@
         <item name="android:padding">8dp</item>
         <item name="android:layout_marginLeft">8dp</item>
         <item name="android:layout_marginRight">8dp</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:textAllCaps">true</item>
+        <item name="background">?attr/selectableItemBackground</item>
+        <item name="textAllCaps">true</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">16sp</item>
-    </style>
-
-    <style name="DashboardCoinTitle">
-        <item name="android:textColor">@color/primary_grey_dark</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
-    <style name="DashboardCoinTitle.LayoutMatchParentWidth">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
-    <style name="DashboardCoinTitle.Small">
-        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="DashboardCoinAmounts">
@@ -238,41 +244,14 @@
         <item name="android:maxLines">1</item>
     </style>
 
-    <style name="DashboardCoinAmounts.LayoutMatchParentWidth">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
     <style name="DashboardCoinAmounts.NonSpendable">
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
-        <item name="android:background">@drawable/rounded_non_spendable_button</item>
+        <item name="background">@drawable/rounded_non_spendable_button</item>
         <item name="android:paddingBottom">5dp</item>
-        <item name="android:paddingEnd">10dp</item>
-        <item name="android:paddingStart">10dp</item>
+        <item name="paddingEnd">10dp</item>
+        <item name="paddingStart">10dp</item>
         <item name="android:paddingTop">5dp</item>
-    </style>
-
-
-    <style name="ExchangeBitcoinTitle">
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/primary_grey_dark</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
-    <style name="EditTextNumberField">
-        <item name="android:background">@null</item>
-        <item name="android:focusable">true</item>
-        <item name="android:focusableInTouchMode">true</item>
-        <item name="android:imeOptions">actionDone</item>
-        <item name="android:inputType">numberDecimal|number</item>
-        <item name="android:maxLength">17</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:selectAllOnFocus">true</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="ConfirmPaymentTitle">
@@ -290,19 +269,6 @@
         <item name="android:gravity">right</item>
         <item name="android:paddingBottom">8dp</item>
         <item name="android:textColor">@color/black</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
-    <style name="ExchangeTextViewButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:paddingBottom">8dp</item>
-        <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:paddingRight">16dp</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/primary_blue_accent</item>
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -326,44 +292,6 @@
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">16sp</item>
-    </style>
-
-    <style name="SwitchGreen" parent="Theme.AppCompat.Light">
-        <item name="colorSwitchThumbNormal">@color/product_green_medium</item>
-        <item name="colorAccent">@color/product_green_medium</item>
-    </style>
-
-    <style name="BaseCenteredText">
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="android:gravity">center</item>
-    </style>
-
-    <style name="PitTitleText" parent="BaseCenteredText">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/pit_text_title</item>
-        <item name="android:layout_marginStart">39dp</item>
-        <item name="android:layout_marginEnd">38dp</item>
-    </style>
-
-    <style name="PitHeadingText" parent="BaseCenteredText">
-        <item name="android:fontFamily">@font/inter_bold</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/pit_text_heading</item>
-        <item name="android:layout_marginStart">88dp</item>
-        <item name="android:layout_marginEnd">87dp</item>
-    </style>
-
-    <style name="PitBodyText" parent="BaseCenteredText">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/pit_text_body</item>
-        <item name="android:layout_marginStart">48dp</item>
-        <item name="android:layout_marginEnd">48dp</item>
-        <item name="android:layout_marginTop">11dp</item>
-    </style>
-
-    <style name="BuySellButtonText">
-        <item name="android:textColor">@color/primary_navy_medium</item>
-        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="BuySellDetailTitle">
@@ -422,7 +350,7 @@
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
-        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="fontFamily">@font/inter_medium</item>
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -443,7 +371,7 @@
     </style>
 
     <style name="TierVerification">
-        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="fontFamily">@font/inter_medium</item>
         <item name="android:textColor">#3558A8</item>
         <item name="android:textSize">14sp</item>
         <item name="android:lineSpacingMultiplier">1.29</item>
@@ -451,7 +379,7 @@
     </style>
 
     <style name="TierLimit">
-        <item name="android:fontFamily">Montserrat</item>
+        <item name="fontFamily">Montserrat</item>
         <item name="android:textColor">#004A7C</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">32sp</item>
@@ -459,41 +387,61 @@
     </style>
 
     <style name="AnnualSwapLimit">
-        <item name="android:fontFamily">Montserrat</item>
+        <item name="fontFamily">Montserrat</item>
         <item name="android:textColor">#3B3A3E</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="Takes10Min">
-        <item name="android:fontFamily">Montserrat</item>
-        <item name="android:textColor">#9D9C9E</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
     <style name="TierAvailableFiat">
-        <item name="android:fontFamily">Montserrat</item>
+        <item name="fontFamily">Montserrat</item>
         <item name="android:textColor">#FF004A7C</item>
         <item name="android:textSize">32sp</item>
     </style>
 
     <style name="TierApproved">
-        <item name="android:fontFamily">Montserrat</item>
+        <item name="fontFamily">Montserrat</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/kyc_progress_green</item>
         <item name="android:textSize">14sp</item>
     </style>
 
     <style name="ContactSupport">
-        <item name="android:fontFamily">Montserrat</item>
+        <item name="fontFamily">Montserrat</item>
         <item name="android:textColor">#FF10ADE4</item>
         <item name="android:textSize">17sp</item>
     </style>
 
     <style name="TierRequires">
-        <item name="android:fontFamily">Montserrat</item>
+        <item name="fontFamily">Montserrat</item>
         <item name="android:textColor">#FF3B3A3E</item>
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="Separator">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_marginStart">@dimen/standard_margin</item>
+        <item name="android:layout_marginEnd">@dimen/standard_margin</item>
+        <item name="android:background">@color/grey_000</item>
+    </style>
+
+    <style name="SeparatorWithoutMargins">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/grey_000</item>
+    </style>
+
+    <style name="ErrorText" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="CardDataInputLayoutAppearance" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
+        <item name="colorControlNormal">@color/grey_200</item>
+        <item name="boxBackgroundColor">@color/grey_000</item>
+        <item name="colorControlActivated">@color/blue_600</item>
+        <item name="colorControlHighlight">@color/blue_600</item>
+        <item name="errorTextAppearance">@style/ErrorText</item>
+    </style>
 </resources>

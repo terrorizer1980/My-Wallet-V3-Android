@@ -31,8 +31,8 @@ android {
         archivesBaseName = "blockchain-$versionName"
 
         // Flag to hide or show the Contacts feature
-        buildConfigBoolean "SHOW_LOCKBOX_BALANCE", false
         buildConfigBoolean "LOG_KOIN_STARTUP", false
+        buildConfigBoolean "SKIP_VERIFF_KYC", false
         buildConfigLong "EXIT_APP_COOLDOWN_MILLIS", 2 * 1000
 
         buildConfigString "SHAPE_SHIFT_API_KEY", buildProperties.secrets['shapeShiftApiKey']
@@ -71,6 +71,7 @@ android {
         }
         debug {
             multiDexEnabled true
+            buildConfigBoolean "SKIP_VERIFF_KYC", false
         }
     }
     bundle {
@@ -103,6 +104,7 @@ android {
             ]
             buildConfigString "EXPLORER_URL", buildProperties.secrets['prodExplorer']
             buildConfigString "API_URL", buildProperties.secrets['prodApiServer']
+            buildConfigString "EVERYPAY_HOST_URL", buildProperties.secrets['prodEverypayHost']
             buildConfigString "BITCOIN_WEBSOCKET_URL", buildProperties.secrets['prodBtcWebsocket']
             buildConfigString "ETHEREUM_WEBSOCKET_URL", buildProperties.secrets['prodEthWebsocket']
             buildConfigString "BITCOIN_CASH_WEBSOCKET_URL", buildProperties.secrets['prodBchWebsocket']
@@ -122,6 +124,7 @@ android {
             ]
             buildConfigString "EXPLORER_URL", buildProperties.secrets['devExplorer']
             buildConfigString "API_URL", buildProperties.secrets['devApiServer']
+            buildConfigString "EVERYPAY_HOST_URL", buildProperties.secrets['stagingEverypayHost']
             buildConfigString "BITCOIN_WEBSOCKET_URL", buildProperties.secrets['devBtcWebsocket']
             buildConfigString "ETHEREUM_WEBSOCKET_URL", buildProperties.secrets['devEthWebsocket']
             buildConfigString "BITCOIN_CASH_WEBSOCKET_URL", buildProperties.secrets['devBchWebsocket']
@@ -142,6 +145,7 @@ android {
             ]
             buildConfigString "EXPLORER_URL", buildProperties.secrets['stagingExplorer']
             buildConfigString "API_URL", buildProperties.secrets['stagingApiServer']
+            buildConfigString "EVERYPAY_HOST_URL", buildProperties.secrets['stagingEverypayHost']
             buildConfigString "BITCOIN_WEBSOCKET_URL", buildProperties.secrets['stagingBtcWebsocket']
             buildConfigString "ETHEREUM_WEBSOCKET_URL", buildProperties.secrets['stagingEthWebsocket']
             buildConfigString "BITCOIN_CASH_WEBSOCKET_URL", buildProperties.secrets['stagingBchWebsocket']
@@ -164,6 +168,7 @@ android {
             ]
             buildConfigString "EXPLORER_URL", buildProperties.secrets['testnetExplorer']
             buildConfigString "API_URL", buildProperties.secrets['testnetApiServer']
+            buildConfigString "EVERYPAY_HOST_URL", buildProperties.secrets['stagingEverypayHost']
             buildConfigString "BITCOIN_WEBSOCKET_URL", buildProperties.secrets['testnetBtcWebsocket']
             buildConfigString "ETHEREUM_WEBSOCKET_URL", buildProperties.secrets['testnetEthWebsocket']
             buildConfigString "BITCOIN_CASH_WEBSOCKET_URL", buildProperties.secrets['testnetBchWebsocket']
@@ -230,22 +235,17 @@ androidExtensions {
 dependencies {
     implementation project(':coreui')
     implementation project(':notifications')
-    implementation project(':kyc')
+    implementation project(':nabu')
     implementation project(':swap')
     implementation project(':sunriver')
     implementation project(':lockbox')
 
-    api project(':buysell')
     api project(':coreui')
     api project(':notifications')
-    api project(':nabu')
     implementation project(':veriff')
 
     implementation Libraries.multidex
-    // Utils
 
-    // Dagger
-    kapt Libraries.daggerKapt
     implementation Libraries.koin
     implementation Libraries.koinAndroid
     implementation Libraries.koinAndroidArchitecture
@@ -257,6 +257,8 @@ dependencies {
     implementation Libraries.circleIndicator
     implementation Libraries.charts
     implementation Libraries.gson
+    implementation Libraries.sparkline
+    implementation Libraries.cardForm
 
     // Google core
     implementation Libraries.googlePlayCore
@@ -285,6 +287,8 @@ dependencies {
     implementation Libraries.navigationControllerFragments
     // RxJava
     implementation Libraries.rxReplayShare
+    implementation Libraries.rxRelay
+
     // Custom Views
     implementation Libraries.materialDatePicker
 
@@ -313,8 +317,8 @@ dependencies {
     }
 
     // For AS running of robolectric
-    testImplementation Libraries.testRunner
-    testImplementation Libraries.testRules
+    androidTestImplementation Libraries.testRunner
+    androidTestImplementation Libraries.testRules
 
     testImplementation Libraries.json
     testImplementation project(':testutils-android')

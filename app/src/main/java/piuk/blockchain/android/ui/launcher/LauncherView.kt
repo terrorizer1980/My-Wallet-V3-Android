@@ -2,7 +2,7 @@ package piuk.blockchain.android.ui.launcher
 
 import android.content.Intent
 import android.net.Uri
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
@@ -20,7 +20,15 @@ interface LauncherView : View {
 
     fun onStartMainActivity(uri: Uri?)
 
+    fun startSimpleBuy()
+
     fun onReEnterPassword()
 
     fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String)
+
+    fun showMetadataNodeFailure()
+
+    fun showSecondPasswordDialog()
+
+    fun updateProgressVisibility(show: Boolean)
 }

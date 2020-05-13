@@ -1,10 +1,9 @@
 package piuk.blockchain.android.ui.swap.homebrew.exchange.history
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.swap.common.trade.MorphTrade
 import com.blockchain.swap.common.trade.MorphTradeDataHistoryList
 import piuk.blockchain.android.ui.swap.homebrew.exchange.model.Trade
-import info.blockchain.balance.formatWithUnit
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -51,13 +50,13 @@ class TradeHistoryPresenter(
     private fun MorphTrade.map(): Trade = Trade(
         id = this.quote.orderId,
         state = this.status,
-        currency = this.quote.pair.to.symbol,
-        price = this.quote.fiatValue?.toStringWithSymbol(view.locale) ?: "",
+        currency = this.quote.pair.to.displayTicker,
+        price = this.quote.fiatValue?.toStringWithSymbol() ?: "",
         pair = this.quote.pair.pairCode,
-        quantity = this.quote.withdrawalAmount.formatWithUnit(view.locale),
+        quantity = this.quote.withdrawalAmount.toStringWithSymbol(),
         createdAt = dateUtil.formatted(this.timestamp),
-        depositQuantity = this.quote.depositAmount.formatWithUnit(view.locale),
-        fee = this.quote.minerFee.formatWithUnit(view.locale)
+        depositQuantity = this.quote.depositAmount.toStringWithSymbol(),
+        fee = this.quote.minerFee.toStringWithSymbol()
     )
 }
 

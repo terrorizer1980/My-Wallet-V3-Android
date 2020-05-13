@@ -2,7 +2,7 @@ package piuk.blockchain.android.ui.receive
 
 import android.content.Intent
 import android.graphics.Bitmap
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom

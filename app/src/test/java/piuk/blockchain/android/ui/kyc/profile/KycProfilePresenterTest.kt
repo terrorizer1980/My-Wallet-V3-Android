@@ -2,16 +2,16 @@ package piuk.blockchain.android.ui.kyc.profile
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.exceptions.MetadataNotFoundException
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.KycState
-import com.blockchain.kyc.models.nabu.NabuApiException
-import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.kyc.models.nabu.UserState
-import com.blockchain.kyc.util.toISO8601DateString
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.models.nabu.KycState
+import com.blockchain.swap.nabu.models.nabu.NabuApiException
+import com.blockchain.swap.nabu.models.nabu.NabuUser
+import com.blockchain.swap.nabu.models.nabu.UserState
+import com.blockchain.swap.nabu.util.toISO8601DateString
 import com.blockchain.metadata.MetadataRepository
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.metadata.NabuCredentialsMetadata
-import com.blockchain.swap.nabu.models.mapFromMetadata
+import com.blockchain.swap.nabu.models.tokenresponse.mapFromMetadata
 import com.blockchain.testutils.date
 import piuk.blockchain.android.ui.validOfflineToken
 import piuk.blockchain.android.ui.validOfflineTokenMetadata

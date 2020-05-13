@@ -65,7 +65,7 @@ class XlmDataManagerTest {
     @Test
     fun `balanceOf with reference - there should be no interactions before subscribe`() {
         verifyNoInteractionsBeforeSubscribe {
-            balanceOf(AccountReference.Xlm("", "ANY"))
+            getBalance(AccountReference.Xlm("", "ANY"))
         }
     }
 
@@ -83,28 +83,8 @@ class XlmDataManagerTest {
         givenXlmDataManager(
             givenBalances("ANY" to 456.lumens())
         )
-            .balanceOf(AccountReference.Xlm("", "ANY"))
-            .testSingle() `should equal` 456.lumens()
-    }
-
-    @Test
-    fun `balanceOf a non-xlm account reference should be empty`() {
-        givenXlmDataManager(
-            givenBalances("ANY" to 456.lumens())
-        )
-            .balanceOf(AccountReference.Ethereum("", "ANY"))
-            .test()
-            .assertComplete()
-            .assertValueCount(0)
-    }
-
-    @Test
-    fun `get balance for an address`() {
-        givenXlmDataManager(
-            givenBalances("ANY" to 123.lumens())
-        )
-            .getBalance("ANY")
-            .testSingle() `should equal` 123.lumens()
+        .getBalance(AccountReference.Xlm("", "ANY"))
+        .testSingle() `should equal` 456.lumens()
     }
 
     @Test

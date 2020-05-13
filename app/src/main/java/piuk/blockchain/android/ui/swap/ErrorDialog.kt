@@ -1,9 +1,9 @@
 package piuk.blockchain.android.ui.swap
 
-import android.support.v4.app.FragmentManager
-import com.blockchain.balance.errorIcon
+import androidx.fragment.app.FragmentManager
+import piuk.blockchain.android.util.errorIcon
 import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeMenuState
-import com.blockchain.ui.dialog.ErrorBottomDialog
+import piuk.blockchain.android.ui.customviews.ErrorBottomDialog
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.android.R
 
@@ -20,5 +20,4 @@ internal fun showErrorDialog(fragmentManager: FragmentManager, error: ExchangeMe
 }
 
 private fun ExchangeMenuState.ExchangeMenuError.toContent(): ErrorBottomDialog.Content =
-    ErrorBottomDialog.Content(
-        title, message, 0, R.string.ok_cap, errorType.icon(fromCrypto, tier))
+    ErrorBottomDialog.Content(title, message, 0, R.string.ok_cap, errorType.icon(fromCrypto, tier))

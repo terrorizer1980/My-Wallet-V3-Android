@@ -1,12 +1,11 @@
 @file:Suppress("USELESS_CAST")
+
 package piuk.blockchain.android.ui.kyc.koin
 
 import piuk.blockchain.android.ui.kyc.splash.KycSplashPresenter
-import com.blockchain.sunriver.SunriverCampaignSignUp
 import com.blockchain.swap.nabu.CurrentTier
 import com.blockchain.swap.nabu.EthEligibility
 import com.blockchain.swap.nabu.StartKyc
-import com.blockchain.swap.nabu.StartKycForBuySell
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.ui.kyc.address.CurrentTierAdapter
 import piuk.blockchain.android.ui.kyc.address.EligibilityForFreeEthAdapter
@@ -21,14 +20,12 @@ import piuk.blockchain.android.ui.kyc.mobile.entry.KycMobileEntryPresenter
 import piuk.blockchain.android.ui.kyc.mobile.validation.KycMobileValidationPresenter
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostPresenter
 import piuk.blockchain.android.ui.kyc.navhost.KycStarter
-import piuk.blockchain.android.ui.kyc.navhost.KycStarterBuySell
 import piuk.blockchain.android.ui.kyc.profile.KycProfilePresenter
 import piuk.blockchain.android.ui.kyc.reentry.KycNavigator
 import piuk.blockchain.android.ui.kyc.reentry.ReentryDecision
 import piuk.blockchain.android.ui.kyc.reentry.ReentryDecisionKycNavigator
 import piuk.blockchain.android.ui.kyc.reentry.TiersReentryDecision
 import piuk.blockchain.android.ui.kyc.status.KycStatusPresenter
-import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import piuk.blockchain.android.ui.kyc.tiersplash.KycTierSplashPresenter
 import piuk.blockchain.android.ui.kyc.veriffsplash.VeriffSplashPresenter
 
@@ -36,26 +33,34 @@ val kycUiModule = applicationContext {
 
     factory { KycStarter() as StartKyc }
 
-    factory { KycStarterBuySell() as StartKycForBuySell }
-
     factory { TiersReentryDecision() as ReentryDecision }
 
     context("Payload") {
 
-        factory { ReentryDecisionKycNavigator(get(), get(), get()) as KycNavigator }
+        factory {
+            ReentryDecisionKycNavigator(
+                token = get(),
+                dataManager = get(),
+                reentryDecision = get()
+            ) as KycNavigator
+        }
 
         factory {
             KycTierSplashPresenter(
-                get(),
-                get(),
-                get(),
-                get("ff_sunriver_has_large_backlog")
+                tierUpdater = get(),
+                tierService = get(),
+                kycNavigator = get()
             )
         }
 
-        factory { KycSplashPresenter(get(), get(), get(), get(), get()) }
+        factory {
+            KycSplashPresenter(
+                nabuToken = get(),
+                kycNavigator = get()
+            )
+        }
 
-        factory { KycCountrySelectionPresenter(get(), get()) }
+        factory { KycCountrySelectionPresenter(nabuDataManager = get()) }
 
         factory {
             KycProfilePresenter(nabuToken = get(),
@@ -69,13 +74,19 @@ val kycUiModule = applicationContext {
                 nabuToken = get(),
                 nabuDataManager = get(),
                 tier2Decision = get(),
-                phoneVerificationQuery = get(),
-                nabuCoinifyAccountCreator = get())
+                phoneVerificationQuery = get()
+            )
         }
 
-        factory { KycMobileEntryPresenter(get(), get()) }
+        factory { KycMobileEntryPresenter(phoneNumberUpdater = get(), nabuUserSync = get()) }
 
-        factory { KycMobileValidationPresenter(get(), get()) }
+        factory {
+            KycMobileValidationPresenter(
+                nabuUserSync = get(),
+                phoneNumberUpdater = get(),
+                analytics = get()
+            )
+        }
 
         factory { KycEmailEntryPresenter(get()) }
 
@@ -92,7 +103,15 @@ val kycUiModule = applicationContext {
 
         factory { KycStatusPresenter(get(), get(), get()) }
 
-        factory { KycNavHostPresenter(get(), get(), get(), get(), get(), get()) }
+        factory { KycNavHostPresenter(
+            nabuToken = get(),
+            nabuDataManager = get(),
+            sunriverCampaign = get(),
+            reentryDecision = get(),
+            tierUpdater = get(),
+            kycNavigator = get()
+            )
+        }
 
         factory { KycInvalidCountryPresenter(get(), get()) }
     }
@@ -116,8 +135,5 @@ val kycUiNabuModule = applicationContext {
                 nabuDataManager = get()
             ) as EthEligibility
         }
-
-        factory { SunriverCampaignHelper(get("sunriver"), get(), get(), get(), get()) }
-            .bind(SunriverCampaignSignUp::class)
     }
 }

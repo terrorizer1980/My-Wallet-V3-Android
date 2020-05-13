@@ -1,36 +1,36 @@
 package piuk.blockchain.android.ui.receive
 
-import android.app.Activity
-import android.content.BroadcastReceiver
+import androidx.appcompat.app.AppCompatActivity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.design.widget.BottomSheetDialog
-import android.support.design.widget.CoordinatorLayout
-import android.support.v4.content.LocalBroadcastManager
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.RecyclerView
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.blockchain.extensions.exhaustive
+import com.blockchain.notifications.analytics.RequestAnalyticsEvents
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.ui.chooser.AccountChooserActivity
 import com.blockchain.ui.chooser.AccountMode
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.coin.GenericMetadataAccount
 import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.alert_watch_only_spend.view.confirm_cancel
 import kotlinx.android.synthetic.main.alert_watch_only_spend.view.confirm_continue
@@ -59,19 +59,20 @@ import kotlinx.android.synthetic.main.include_to_row.toArrowImage
 import kotlinx.android.synthetic.main.view_expanding_currency_header.textview_selected_currency
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.customviews.callbacks.OnTouchOutsideViewListener
-import piuk.blockchain.android.ui.home.HomeFragment
+import piuk.blockchain.android.ui.home.HomeScreenMvpFragment
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.util.EditTextFormatUtil
-import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.android.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.extensions.emptySubscribe
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
 import piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboardCallback
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.extensions.disableSoftKeyboard
 import piuk.blockchain.androidcoreui.utils.extensions.getTextString
 import piuk.blockchain.androidcoreui.utils.extensions.gone
@@ -81,18 +82,19 @@ import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 import java.text.DecimalFormatSymbols
-import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
+class ReceiveFragment : HomeScreenMvpFragment<ReceiveView, ReceivePresenter>(),
     ReceiveView,
     NumericKeyboardCallback {
 
-    override val locale: Locale = Locale.getDefault()
+    override val presenter: ReceivePresenter by inject()
+    override val view: ReceiveView = this
 
     private val currencyState: CurrencyState by inject()
     private val appUtil: AppUtil by inject()
-    private val receivePresenter: ReceivePresenter by inject()
+
+    private val rxBus: RxBus by inject()
 
     private var bottomSheetDialog: BottomSheetDialog? = null
 
@@ -101,28 +103,19 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     private var selectedAccountPosition = -1
     private var handlingActivityResult = false
 
-    private val intentFilter = IntentFilter(BalanceFragment.ACTION_INTENT)
     private val defaultDecimalSeparator = DecimalFormatSymbols.getInstance().decimalSeparator.toString()
 
     private val receiveIntentHelper by unsafeLazy {
         ReceiveIntentHelper(context!!, appUtil)
     }
 
-    private val broadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == BalanceFragment.ACTION_INTENT) {
-                presenter?.apply {
-                    // Update UI with new Address + QR
-                    onResume(selectedAccountPosition)
-                }
-            }
-        }
+    private val event by unsafeLazy {
+        rxBus.register(ActionEvent::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
         arguments?.run {
             selectedAccountPosition = getInt(ARG_SELECTED_ACCOUNT_POSITION)
         }
@@ -137,7 +130,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        activity?.apply {
+        activity.apply {
             (activity as MainActivity).setOnTouchOutsideViewListener(
                 currency_header,
                 object : OnTouchOutsideViewListener {
@@ -156,12 +149,13 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
         currency_header.setSelectionListener { currency ->
             when (currency) {
-                CryptoCurrency.BTC -> presenter?.onSelectDefault(selectedAccountPosition)
-                CryptoCurrency.ETHER -> presenter?.onEthSelected()
-                CryptoCurrency.BCH -> presenter?.onSelectBchDefault()
-                CryptoCurrency.XLM -> presenter?.onXlmSelected()
-                CryptoCurrency.PAX -> presenter?.onPaxSelected()
-            }
+                CryptoCurrency.BTC -> presenter.onSelectDefault(selectedAccountPosition)
+                CryptoCurrency.ETHER -> presenter.onEthSelected()
+                CryptoCurrency.BCH -> presenter.onSelectBchDefault()
+                CryptoCurrency.XLM -> presenter.onXlmSelected()
+                CryptoCurrency.PAX -> presenter.onPaxSelected()
+                CryptoCurrency.STX -> TODO("STUB Asset. Not implemented")
+            }.exhaustive
         }
     }
 
@@ -169,7 +163,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
         val supportActionBar = (activity as AppCompatActivity).supportActionBar
         if (supportActionBar != null) {
             (activity as ToolBarActivity).setupToolbar(
-                supportActionBar, R.string.request
+                supportActionBar, R.string.receive
             )
         } else {
             finishPage()
@@ -206,7 +200,10 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
         // QR Code
         image_qr.apply {
-            setOnClickListener { showClipboardWarning() }
+            setOnClickListener {
+                showClipboardWarning()
+                analytics.logEvent(RequestAnalyticsEvents.QrAddressClicked)
+            }
             setOnLongClickListener { consume { onShareClicked() } }
         }
 
@@ -238,6 +235,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
         button_request.setOnClickListener {
             onShareClicked()
+            analytics.logEvent(RequestAnalyticsEvents.RequestPaymentClicked)
         }
     }
 
@@ -317,9 +315,16 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
         closeKeypad()
         setupToolbar()
-        LocalBroadcastManager.getInstance(context!!)
-            .registerReceiver(broadcastReceiver, intentFilter)
+
+        compositeDisposable += event.subscribe {
+            presenter?.apply {
+                // Update UI with new Address + QR
+                onResume(selectedAccountPosition)
+            }
+        }
     }
+
+    private val compositeDisposable = CompositeDisposable()
 
     override fun showQrLoading() {
         image_qr.invisible()
@@ -387,6 +392,10 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
         }
     }
 
+    private fun displayStxLayout() {
+        TODO("STX not implemented")
+    }
+
     override fun setSelectedCurrency(cryptoCurrency: CryptoCurrency) {
         currency_header.setCurrentlySelectedCurrency(cryptoCurrency)
         when (cryptoCurrency) {
@@ -395,7 +404,8 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
             CryptoCurrency.BCH -> displayBitcoinCashLayout()
             CryptoCurrency.XLM -> displayXlmLayout()
             CryptoCurrency.PAX -> displayERC20Layout()
-        }
+            CryptoCurrency.STX -> displayStxLayout()
+        }.exhaustive
         updateUnits()
     }
 
@@ -407,7 +417,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
         handlingActivityResult = true
 
         // Set receiving account
-        if (resultCode == Activity.RESULT_OK &&
+        if (resultCode == AppCompatActivity.RESULT_OK &&
             requestCode == REQUEST_CODE_RECEIVE_BITCOIN &&
             data != null
         ) {
@@ -416,7 +426,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
                 is Account -> presenter.onAccountBtcSelected(account)
                 else -> presenter.onSelectDefault(selectedAccountPosition)
             }
-        } else if (resultCode == Activity.RESULT_OK &&
+        } else if (resultCode == AppCompatActivity.RESULT_OK &&
             requestCode == REQUEST_CODE_RECEIVE_BITCOIN_CASH &&
             data != null
         ) {
@@ -459,7 +469,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     }
 
     private fun onShareClicked() {
-        activity?.run {
+        activity.run {
             AlertDialog.Builder(this, R.style.AlertDialogStyle)
                 .setTitle(R.string.app_name)
                 .setMessage(R.string.receive_address_to_share)
@@ -471,7 +481,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     }
 
     override fun showWatchOnlyWarning() {
-        activity?.run {
+        activity.run {
             val dialogView = layoutInflater.inflate(R.layout.alert_watch_only_spend, null)
             val alertDialog = AlertDialog.Builder(this, R.style.AlertDialogStyle)
                 .setView(dialogView.rootView)
@@ -503,7 +513,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
     private fun showClipboardWarning() {
         val address = textview_receiving_address.text
-        activity?.run {
+        activity.run {
             AlertDialog.Builder(this, R.style.AlertDialogStyle)
                 .setTitle(R.string.app_name)
                 .setMessage(R.string.receive_address_to_clipboard)
@@ -534,7 +544,8 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
     override fun onPause() {
         super.onPause()
-        LocalBroadcastManager.getInstance(context!!).unregisterReceiver(broadcastReceiver)
+        rxBus.unregister(ActionEvent::class.java, event)
+        compositeDisposable.clear()
         currency_header?.close()
     }
 
@@ -563,15 +574,11 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
     private fun isKeyboardVisible(): Boolean = custom_keyboard.isVisible
 
-    override fun createPresenter() = receivePresenter
-
-    override fun getMvpView() = this
-
     override fun onKeypadClose() {
         // Show bottom nav if applicable
         navigator().showNavigation()
 
-        val height = activity!!.resources.getDimension(R.dimen.action_bar_height).toInt()
+        val height = activity.resources.getDimension(R.dimen.action_bar_height).toInt()
         // Resize activity to default
         scrollview.apply {
             setPadding(0, 0, 0, 0)
@@ -591,7 +598,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
     override fun onKeypadOpenCompleted() {
         // Resize activity around view
-        val height = activity!!.resources.getDimension(R.dimen.action_bar_height).toInt()
+        val height = activity.resources.getDimension(R.dimen.action_bar_height).toInt()
         scrollview.apply {
             setPadding(0, 0, 0, custom_keyboard.height)
             layoutParams = CoordinatorLayout.LayoutParams(

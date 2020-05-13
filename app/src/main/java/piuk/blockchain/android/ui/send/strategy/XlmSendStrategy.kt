@@ -1,11 +1,15 @@
 package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
+import android.content.res.Resources
 import com.blockchain.fees.FeeType
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.NabuApiException
-import com.blockchain.kyc.models.nabu.NabuErrorCodes
-import com.blockchain.kyc.models.nabu.State
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.models.nabu.NabuApiException
+import com.blockchain.swap.nabu.models.nabu.NabuErrorCodes
+import com.blockchain.swap.nabu.models.nabu.State
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SendAnalytics
+import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.XlmDataManager
@@ -14,7 +18,6 @@ import com.blockchain.sunriver.fromStellarUri
 import com.blockchain.transactions.Memo
 import com.blockchain.transactions.SendDetails
 import com.blockchain.transactions.SendFundsResult
-import com.blockchain.transactions.SendFundsResultLocalizer
 import com.blockchain.transactions.TransactionSender
 import com.blockchain.transactions.sendFundsOrThrow
 import com.blockchain.ui.extensions.sampleThrottledClicks
@@ -34,11 +37,10 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.account.PitAccount
 import piuk.blockchain.android.ui.send.SendView
-import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
+import piuk.blockchain.android.ui.send.SendConfirmationDetails
 import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.android.util.extensions.addToCompositeDisposable
-import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
+import piuk.blockchain.android.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
@@ -51,34 +53,42 @@ class XlmSendStrategy(
     private val xlmFeesFetcher: XlmFeesFetcher,
     private val xlmTransactionSender: TransactionSender,
     private val walletOptionsDataManager: WalletOptionsDataManager,
-    private val fiatExchangeRates: FiatExchangeRates,
+    private val exchangeRates: ExchangeRateDataManager,
     private val sendFundsResultLocalizer: SendFundsResultLocalizer,
     private val stringUtils: StringUtils,
     private val nabuToken: NabuToken,
     private val pitLinking: PitLinking,
-    private val nabuDataManager: NabuDataManager
-) : SendStrategy<SendView>(currencyState) {
+    private val analytics: Analytics,
+    private val nabuDataManager: NabuDataManager,
+    prefs: CurrencyPrefs
+) : SendStrategy<SendView>(currencyState, prefs) {
+
+    override fun onViewAttached() { }
+    override fun onViewDetached() { }
+
+    override val alwaysDisableScreenshots = false
+    override val enableLogoutTimer = false
 
     private var pitAccount: PitAccount? = null
 
     override fun onPitAddressSelected() {
         pitAccount?.let {
-            view.updateReceivingAddress(it.label)
+            view?.updateReceivingAddress(it.label)
             addressSubject.onNext(it.address)
             addressToLabel.onNext(it.label)
             it.memo?.let { memo ->
                 onMemoChange(Memo(value = memo, type = "text"))
-                view.enableMemo(false)
+                view?.enableMemo(false)
             }
         }
     }
 
     override fun onPitAddressCleared() {
         addressSubject.onNext("")
-        view.updateReceivingAddress("")
+        view?.updateReceivingAddress("")
         addressToLabel.onNext("")
         onMemoChange(Memo.None)
-        view.enableMemo(true)
+        view?.enableMemo(true)
     }
 
     private val currency: CryptoCurrency by lazy { currencyState.cryptoCurrency }
@@ -140,8 +150,8 @@ class XlmSendStrategy(
                 SendConfirmationDetails(
                     sendDetails = sendDetails,
                     fees = fees,
-                    fiatAmount = sendDetails.value.toFiat(fiatExchangeRates),
-                    fiatFees = fees.toFiat(fiatExchangeRates)
+                    fiatAmount = sendDetails.value.toFiat(exchangeRates, currencyState.fiatUnit),
+                    fiatFees = fees.toFiat(exchangeRates, currencyState.fiatUnit)
                 )
             }
 
@@ -156,7 +166,7 @@ class XlmSendStrategy(
     private var autoClickAmount: CryptoValue? = null
 
     override fun onSpendMaxClicked() {
-        view.updateCryptoAmount(autoClickAmount ?: max)
+        view?.updateCryptoAmount(autoClickAmount ?: max)
     }
 
     override fun onBroadcastReceived() {}
@@ -186,9 +196,8 @@ class XlmSendStrategy(
 
     @SuppressLint("CheckResult")
     private fun calculateMax() {
-        xlmDataManager.getMaxSpendableAfterFees(FeeType.Regular)
+        compositeDisposable += xlmDataManager.getMaxSpendableAfterFees(FeeType.Regular)
             .observeOn(AndroidSchedulers.mainThread())
-            .addToCompositeDisposable(this)
             .subscribeBy {
                 updateMaxAvailable(it)
             }
@@ -196,18 +205,18 @@ class XlmSendStrategy(
 
     private fun updateMaxAvailable(balanceAfterFee: CryptoValue) {
         max = balanceAfterFee
-        view.updateMaxAvailable(balanceAfterFee, CryptoValue.ZeroXlm)
+        view?.updateMaxAvailable(balanceAfterFee, CryptoValue.ZeroXlm)
     }
 
     override fun processURIScanAddress(address: String) {
         val (public, cryptoValue, memo) = address.fromStellarUri()
-        val fiatValue = cryptoValue.toFiat(fiatExchangeRates)
-        view.updateCryptoAmount(cryptoValue)
-        view.updateFiatAmount(fiatValue)
+        val fiatValue = cryptoValue.toFiat(exchangeRates, currencyState.fiatUnit)
+        view?.updateCryptoAmount(cryptoValue)
+        view?.updateFiatAmount(fiatValue)
         cryptoTextSubject.onNext(cryptoValue)
         addressSubject.onNext(public.accountId)
         onMemoChange(memo)
-        view.updateReceivingAddress(public.accountId)
+        view?.updateReceivingAddress(public.accountId)
     }
 
     override fun handlePrivxScan(scanData: String?) {}
@@ -222,13 +231,13 @@ class XlmSendStrategy(
         compositeDisposable += xlmDataManager.defaultAccount()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
-                onSuccess = { view.updateSendingAddress(it.label) },
+                onSuccess = { view?.updateSendingAddress(it.label) },
                 onError = { Timber.e(it) }
             )
         compositeDisposable += xlmFeesFetcher.operationFee(FeeType.Regular)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
-                onSuccess = { view.updateFeeAmount(it, it.toFiat(fiatExchangeRates)) },
+                onSuccess = { view?.updateFeeAmount(it, it.toFiat(exchangeRates, currencyState.fiatUnit)) },
                 onError = { Timber.e(it) }
             )
     }
@@ -247,7 +256,7 @@ class XlmSendStrategy(
 
     override fun onMemoChange(memo: Memo) {
         memoSubject.onNext(memo)
-        view.displayMemo(memo)
+        view?.displayMemo(memo)
     }
 
     override fun memoRequired(): Observable<Boolean> =
@@ -267,18 +276,19 @@ class XlmSendStrategy(
 
     @SuppressLint("CheckResult")
     override fun onViewReady() {
-        view.setSendButtonEnabled(false)
+        view?.setSendButtonEnabled(false)
         resetAccountList()
 
-        confirmationDetails
-            .addToCompositeDisposable(this)
+        compositeDisposable += confirmationDetails
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(onError = { Timber.e(it) }) { details ->
-                view.showPaymentDetails(details)
-            }
+            .subscribeBy(
+                onError = { Timber.e(it) },
+                onNext = { details ->
+                    view?.showPaymentDetails(details)
+                }
+            )
 
-        memoIsRequired
-            .addToCompositeDisposable(this)
+        compositeDisposable += memoIsRequired
             .subscribe {
                 if (it) {
                     view?.hideInfoLink()
@@ -287,25 +297,24 @@ class XlmSendStrategy(
                 }
             }
 
-        allSendRequests
+        compositeDisposable += allSendRequests
             .debounce(200, TimeUnit.MILLISECONDS)
             .withLatestFrom(memoValid)
-            .addToCompositeDisposable(this)
             .flatMapSingle { (sendDetails, validMemo) ->
                 xlmTransactionSender.dryRunSendFunds(sendDetails)
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSuccess {
-                        view.setSendButtonEnabled(it.success && validMemo)
+                        view?.setSendButtonEnabled(it.success && validMemo)
                         if (!it.success && sendDetails.toAddress.isNotEmpty()) {
                             autoClickAmount = it.errorValue
-                            view.updateWarning(sendFundsResultLocalizer.localize(it))
+                            view?.updateWarning(sendFundsResultLocalizer.localize(it))
                         } else {
                             autoClickAmount = null
-                            view.clearWarning()
+                            view?.clearWarning()
                         }
                     }
                     .doOnError {
-                        view.hideMaxAvailable()
+                        view?.hideMaxAvailable()
                     }
                     .onErrorReturnItem(
                         SendFundsResult(
@@ -319,8 +328,7 @@ class XlmSendStrategy(
             .subscribeBy(onError =
             { Timber.e(it) })
 
-        submitConfirmationDetails
-            .addToCompositeDisposable(this)
+        compositeDisposable += submitConfirmationDetails
             .observeOn(AndroidSchedulers.mainThread())
             .flatMapCompletable { confirmationDetails ->
                 val sendDetails = confirmationDetails.sendDetails
@@ -329,17 +337,20 @@ class XlmSendStrategy(
                 )
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe {
-                        view.showProgressDialog(R.string.app_name)
+                        view?.showProgressDialog(R.string.app_name)
                     }
                     .doFinally {
-                        view.dismissProgressDialog()
-                        view.dismissConfirmationDialog()
+                        view?.dismissProgressDialog()
+                        view?.dismissConfirmationDialog()
                     }
                     .doOnSuccess {
-                        view.showTransactionSuccess(confirmationDetails.amount.currency)
+                        analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.XLM))
+
+                        view?.showTransactionSuccess(confirmationDetails.amount.currency)
                     }
                     .doOnError {
-                        view.showTransactionFailed()
+                        view?.showTransactionFailed()
+                        analytics.logEvent(SendAnalytics.SummarySendFailure(CryptoCurrency.XLM))
                     }
                     .ignoreElement()
                     .onErrorComplete()
@@ -351,26 +362,57 @@ class XlmSendStrategy(
     private fun resetAccountList() {
         compositeDisposable += pitLinking.isPitLinked().filter { it }.flatMapSingle { nabuToken.fetchNabuToken() }
             .flatMap {
-                nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.XLM.symbol)
+                nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.XLM)
             }.applySchedulers().doOnSubscribe {
-                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, false)
+                view?.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, false)
             }.subscribeBy(onError = {
-                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM,
+                view?.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM,
                     1,
                     it is NabuApiException && it.getErrorCode() == NabuErrorCodes.Bad2fa
-                ) { view.show2FANotAvailableError() }
+                ) { view?.show2FANotAvailableError() }
             }) {
                 val components = it.address.split(":")
                 pitAccount = PitAccount(
                     label = stringUtils.getFormattedString(
-                        R.string.pit_default_account_label,
-                        CryptoCurrency.XLM.symbol
+                        R.string.exchange_default_account_label,
+                        CryptoCurrency.XLM.displayTicker
                     ),
                     address = components[0],
                     memo = components[1]
                 )
-                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1,
-                    it.state == State.ACTIVE && it.address.isNotEmpty()) { view.fillOrClearAddress() }
+                view?.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1,
+                    it.state == State.ACTIVE && it.address.isNotEmpty()) { view?.fillOrClearAddress() }
             }
+    }
+}
+
+interface SendFundsResultLocalizer {
+    fun localize(sendFundsResult: SendFundsResult): String
+}
+
+internal class ResourceSendFundsResultLocalizer(private val resources: Resources) : SendFundsResultLocalizer {
+
+    override fun localize(sendFundsResult: SendFundsResult): String =
+        if (sendFundsResult.success) {
+            resources.getString(R.string.transaction_submitted)
+        } else
+            localizeXlmSend(sendFundsResult) ?: resources.getString(R.string.transaction_failed)
+
+    private fun localizeXlmSend(sendFundsResult: SendFundsResult): String? {
+        val cryptoCurrency = sendFundsResult.sendDetails.from.cryptoCurrency
+        if (cryptoCurrency != CryptoCurrency.XLM) return null
+        return when (sendFundsResult.errorCode) {
+            2 -> resources.getString(
+                R.string.transaction_failed_min_send,
+                sendFundsResult.errorValue?.toStringWithSymbol()
+            )
+            3 -> resources.getString(
+                R.string.xlm_transaction_failed_min_balance_new_account,
+                sendFundsResult.errorValue?.toStringWithSymbol()
+            )
+            4 -> resources.getString(R.string.not_enough_funds_with_currency, cryptoCurrency)
+            5 -> resources.getString(R.string.invalid_address)
+            else -> null
+        }
     }
 }

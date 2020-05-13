@@ -2,10 +2,9 @@ package piuk.blockchain.android.ui.settings.preferences
 
 import android.content.Context
 import android.graphics.Typeface
-import android.support.v7.preference.Preference
-import android.support.v7.preference.R
 import android.util.AttributeSet
-import piuk.blockchain.androidcoreui.utils.extensions.applyFont
+import androidx.preference.Preference
+import piuk.blockchain.android.R
 import piuk.blockchain.androidcoreui.utils.helperfunctions.CustomFont
 import piuk.blockchain.androidcoreui.utils.helperfunctions.loadFont
 

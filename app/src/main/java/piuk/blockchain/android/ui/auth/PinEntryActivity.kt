@@ -1,21 +1,19 @@
 package piuk.blockchain.android.ui.auth
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.view.ViewPager
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
 import android.view.MotionEvent
 import android.view.Window
+import androidx.databinding.DataBindingUtil
+import androidx.viewpager.widget.ViewPager
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.coinswebsocket.service.CoinsWebSocketService
-import piuk.blockchain.android.data.websocket.WebSocketService
 import piuk.blockchain.android.databinding.ActivityPinEntryBinding
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveFragment
 import piuk.blockchain.android.util.OSUtil
@@ -23,6 +21,7 @@ import piuk.blockchain.android.util.start
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.annotations.Thunk
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseAuthActivity
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
@@ -40,7 +39,11 @@ class PinEntryActivity : BaseAuthActivity(), PinEntryFragment.OnPinEntryFragment
 
     private var backPressed: Long = 0
     private val pinEntryFragment: PinEntryFragment by lazy {
-        PinEntryFragment.newInstance(!shouldHideSwipeToReceive())
+        PinEntryFragment.newInstance(!shouldHideSwipeToReceive(), isAfterCreateWallet)
+    }
+
+    private val isAfterCreateWallet: Boolean by unsafeLazy {
+        intent.getBooleanExtra(EXTRA_IS_AFTER_WALLET_CREATION, false)
     }
 
     private val isCreatingNewPin: Boolean
@@ -90,22 +93,26 @@ class PinEntryActivity : BaseAuthActivity(), PinEntryFragment.OnPinEntryFragment
     }
 
     override fun onBackPressed() {
-        if (binding.viewpager.currentItem != 0) {
-            binding.viewpager.currentItem = 0
-        } else if (pinEntryFragment.isValidatingPinForResult) {
-            finishWithResultCanceled()
-        } else if (pinEntryFragment.allowExit()) {
-            if (backPressed + BuildConfig.EXIT_APP_COOLDOWN_MILLIS > System.currentTimeMillis()) {
-                loginState.logout()
-                return
-            } else {
-                ToastCustom.makeText(this,
-                    getString(R.string.exit_confirm),
-                    ToastCustom.LENGTH_SHORT,
-                    ToastCustom.TYPE_GENERAL)
+        when {
+            binding.viewpager.currentItem != 0 -> {
+                binding.viewpager.currentItem = 0
             }
+            pinEntryFragment.isValidatingPinForResult -> {
+                finishWithResultCanceled()
+            }
+            pinEntryFragment.allowExit() -> {
+                if (backPressed + BuildConfig.EXIT_APP_COOLDOWN_MILLIS > System.currentTimeMillis()) {
+                    loginState.logout()
+                    return
+                } else {
+                    ToastCustom.makeText(this,
+                        getString(R.string.exit_confirm),
+                        ToastCustom.LENGTH_SHORT,
+                        ToastCustom.TYPE_GENERAL)
+                }
 
-            backPressed = System.currentTimeMillis()
+                backPressed = System.currentTimeMillis()
+            }
         }
     }
 
@@ -123,7 +130,7 @@ class PinEntryActivity : BaseAuthActivity(), PinEntryFragment.OnPinEntryFragment
 
     private fun finishWithResultCanceled() {
         val intent = Intent()
-        setResult(Activity.RESULT_CANCELED, intent)
+        setResult(RESULT_CANCELED, intent)
         finish()
     }
 
@@ -139,7 +146,6 @@ class PinEntryActivity : BaseAuthActivity(), PinEntryFragment.OnPinEntryFragment
 
     private fun startWebSocketService() {
         CoinsWebSocketService::class.java.start(this, osUtil)
-        WebSocketService::class.java.start(this, osUtil)
     }
 
     private class SwipeToReceiveFragmentPagerAdapter internal constructor(
@@ -148,11 +154,10 @@ class PinEntryActivity : BaseAuthActivity(), PinEntryFragment.OnPinEntryFragment
         private val swipeToReceiveFragment: Fragment
     ) : FragmentPagerAdapter(fm) {
 
-        override fun getItem(position: Int): Fragment? {
+        override fun getItem(position: Int): Fragment {
             return when (position) {
                 0 -> pinEntryFragment
-                1 -> swipeToReceiveFragment
-                else -> null
+                else -> swipeToReceiveFragment
             }
         }
 
@@ -169,10 +174,17 @@ class PinEntryActivity : BaseAuthActivity(), PinEntryFragment.OnPinEntryFragment
     companion object {
 
         const val REQUEST_CODE_UPDATE = 188
+        private const val EXTRA_IS_AFTER_WALLET_CREATION = "piuk.blockchain.android.EXTRA_IS_AFTER_WALLET_CREATION"
 
         fun start(context: Context) {
             val intent = Intent(context, PinEntryActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        }
+
+        fun startAfterWalletCreation(context: Context) {
+            val intent = Intent(context, PinEntryActivity::class.java)
+            intent.putExtra(EXTRA_IS_AFTER_WALLET_CREATION, true)
             context.startActivity(intent)
         }
     }

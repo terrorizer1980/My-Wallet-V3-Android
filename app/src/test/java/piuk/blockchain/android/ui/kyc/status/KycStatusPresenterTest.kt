@@ -1,8 +1,8 @@
 package piuk.blockchain.android.ui.kyc.status
 
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.kyc.models.nabu.Kyc2TierState
-import com.blockchain.kyc.models.nabu.KycState
+import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
+import com.blockchain.swap.nabu.models.nabu.KycState
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.notifications.NotificationTokenManager
 import piuk.blockchain.android.ui.validOfflineToken
@@ -63,7 +63,7 @@ class KycStatusPresenterTest {
             nabuToken.fetchNabuToken()
         ).thenReturn(Single.just(validOfflineToken))
         whenever(kycStatusHelper.getKyc2TierStatus())
-            .thenReturn(Single.just(Kyc2TierState.Tier2InReview))
+            .thenReturn(Single.just(Kyc2TierState.Tier2InPending))
         // Act
         subject.onViewReady()
         // Assert

@@ -1,47 +1,43 @@
 package piuk.blockchain.android.ui.account
 
 import android.Manifest
-import android.annotation.SuppressLint
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ShortcutManager
-import android.databinding.DataBindingUtil
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v4.content.LocalBroadcastManager
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.AppCompatEditText
-import android.support.v7.widget.Toolbar
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import android.text.InputFilter
 import android.text.InputType
 import android.view.View
 import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.databinding.DataBindingUtil
+import com.blockchain.notifications.analytics.Analytics
 import com.karumi.dexter.Dexter
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.single.BasePermissionListener
 import com.karumi.dexter.listener.single.CompositePermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.websocket.WebSocketService
 import piuk.blockchain.android.databinding.ActivityAccountEditBinding
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentDialog
 import piuk.blockchain.android.ui.shortcuts.LauncherShortcutHelper
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import info.blockchain.balance.CryptoCurrency
-import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import com.blockchain.ui.password.SecondPasswordHandler
 import org.koin.android.ext.android.inject
 import com.blockchain.ui.dialog.MaterialProgressDialog
+import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.AndroidUtils
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
+import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.getTextString
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -59,8 +55,9 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
 
     @Suppress("MemberVisibilityCanBePrivate")
     private val accountEditPresenter: AccountEditPresenter by inject()
-    private val payloadDataManager: PayloadDataManager by inject()
     private val appUtil: AppUtil by inject()
+    private val analytics: Analytics by inject()
+    private val rxBus: RxBus by inject()
 
     private lateinit var binding: ActivityAccountEditBinding
     private var transactionSuccessDialog: AlertDialog? = null
@@ -98,6 +95,7 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
             inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
             filters = arrayOf<InputFilter>(InputFilter.LengthFilter(ADDRESS_LABEL_MAX_LENGTH))
             setHint(R.string.name)
+            contentDescription = resources.getString(R.string.content_desc_edit_account_label)
         }
         if (currentLabel != null && currentLabel.length <= ADDRESS_LABEL_MAX_LENGTH) {
             etLabel.setText(currentLabel)
@@ -105,8 +103,8 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
         }
 
         AlertDialog.Builder(this, R.style.AlertDialogStyle)
-            .setTitle(R.string.name)
-            .setMessage(R.string.assign_display_name)
+            .setTitle(R.string.edit_wallet_name)
+            .setMessage(R.string.edit_wallet_name_helper_text)
             .setView(ViewUtils.getAlertDialogPaddedView(this, etLabel))
             .setCancelable(false)
             .setPositiveButton(R.string.save_name) { _, _ ->
@@ -126,13 +124,12 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
         consume { onBackPressed() }
 
     override fun finishPage() {
-        setResult(Activity.RESULT_CANCELED)
+        setResult(AppCompatActivity.RESULT_CANCELED)
         finish()
     }
 
-    override fun sendBroadcast(key: String, data: String) {
-        val intent = Intent(WebSocketService.ACTION_INTENT).apply { putExtra(key, data) }
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+    override fun sendBroadcast(event: ActionEvent) {
+        rxBus.emitEvent(ActionEvent::class.java, event)
     }
 
     override fun startScanActivity() {
@@ -141,11 +138,9 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
             .withButton(android.R.string.ok) { startScanActivity() }
             .build()
 
-        val grantedPermissionListener = object : BasePermissionListener() {
-            override fun onPermissionGranted(response: PermissionGrantedResponse?) {
-                startCameraIfAvailable()
-            }
-        }
+        val grantedPermissionListener = CameraPermissionListener(analytics, {
+            startCameraIfAvailable()
+        })
 
         val compositePermissionListener =
             CompositePermissionListener(deniedPermissionListener, grantedPermissionListener)
@@ -303,11 +298,11 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
             .show()
     }
 
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         data?.let {
-            if (requestCode == SCAN_PRIVX && resultCode == Activity.RESULT_OK) {
+            if (requestCode == SCAN_PRIVX && resultCode == AppCompatActivity.RESULT_OK) {
                 presenter.handleIncomingScanIntent(data)
             }
         } ?: toast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
@@ -318,7 +313,7 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
         val dialogView = View.inflate(this, R.layout.modal_transaction_success, null)
         transactionSuccessDialog = dialogBuilder.setView(dialogView)
             .setPositiveButton(getString(R.string.done)) { dialog, _ -> dialog.dismiss() }
-            .setOnDismissListener { _ -> finish() }
+            .setOnDismissListener { finish() }
             .create()
 
         transactionSuccessDialog!!.show()
@@ -342,17 +337,8 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
         }
     }
 
-    @SuppressLint("NewApi")
     override fun updateAppShortcuts() {
-        if (AndroidUtils.is25orHigher() && presenter.areLauncherShortcutsEnabled()) {
-            val launcherShortcutHelper = LauncherShortcutHelper(
-                this,
-                payloadDataManager,
-                getSystemService(ShortcutManager::class.java)
-            )
-
-            launcherShortcutHelper.generateReceiveShortcuts()
-        }
+        LauncherShortcutHelper(this).generateReceiveShortcuts()
     }
 
     override fun createPresenter() = accountEditPresenter
@@ -369,7 +355,7 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
         private const val SCAN_PRIVX = 302
 
         fun startForResult(
-            activity: Activity,
+            activity: AppCompatActivity,
             accountIndex: Int,
             addressIndex: Int,
             cryptoCurrency: CryptoCurrency,

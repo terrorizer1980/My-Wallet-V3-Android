@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.upgrade
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom

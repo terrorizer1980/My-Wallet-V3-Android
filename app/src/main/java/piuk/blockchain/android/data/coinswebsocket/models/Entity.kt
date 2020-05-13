@@ -4,19 +4,23 @@ import com.google.gson.annotations.SerializedName
 
 enum class Entity {
     @SerializedName("height")
-    HEIGHT,
+    Height,
     @SerializedName("header")
-    HEADER,
+    Header,
     @SerializedName("confirmed_transaction")
-    CONFIRMED_TRANSACTION,
+    ConfirmedTransaction,
     @SerializedName("pending_transaction")
-    PENDING_TRANSACTION,
+    PendingTransaction,
     @SerializedName("account")
-    ACCOUNT,
+    Account,
+    @SerializedName("xpub")
+    Xpub,
     @SerializedName("token_transfer")
-    TOKEN_TRANSFER,
+    TokenTransfer,
     @SerializedName("token_account_delta")
-    TOKEN_ACCOUNT_DELTA,
+    TokenAccountDelta,
     @SerializedName("token_account")
-    TOKEN_ACCOUNT
+    TokenAccount,
+    @SerializedName("wallet")
+    Wallet
 }

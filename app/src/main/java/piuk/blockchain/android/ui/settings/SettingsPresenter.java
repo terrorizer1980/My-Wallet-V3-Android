@@ -1,12 +1,29 @@
 package piuk.blockchain.android.ui.settings;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
-import com.blockchain.kyc.models.nabu.NabuApiException;
-import com.blockchain.kyc.models.nabu.NabuErrorStatusCodes;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
+
+import info.blockchain.wallet.payment.Payment;
+import io.reactivex.Single;
+import io.reactivex.SingleSource;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper;
+
 import com.blockchain.notifications.NotificationTokenManager;
+import com.blockchain.notifications.analytics.Analytics;
+import com.blockchain.notifications.analytics.AnalyticsEvents;
+import com.blockchain.notifications.analytics.SettingsAnalyticsEvents;
 import com.blockchain.remoteconfig.FeatureFlag;
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager;
+import com.blockchain.swap.nabu.datamanagers.PaymentMethod;
+import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.CardStatus;
+import com.blockchain.swap.nabu.models.nabu.NabuApiException;
+import com.blockchain.swap.nabu.models.nabu.NabuErrorStatusCodes;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.payload.PayloadManager;
@@ -24,7 +41,6 @@ import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper;
 import piuk.blockchain.android.util.StringUtils;
 import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.auth.AuthDataManager;
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager;
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.settings.EmailSyncUpdater;
@@ -49,11 +65,13 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     private final SwipeToReceiveHelper swipeToReceiveHelper;
     private final NotificationTokenManager notificationTokenManager;
     private final ExchangeRateDataManager exchangeRateDataManager;
-    private final CurrencyFormatManager currencyFormatManager;
     private final KycStatusHelper kycStatusHelper;
+    private final CustodialWalletManager custodialWalletManager;
     @VisibleForTesting
     Settings settings;
     private final PitLinking pitLinking;
+    private final FeatureFlag cardsFeatureFlag;
+    private final Analytics analytics;
     private final FeatureFlag featureFlag;
     private PitLinkingState pitLinkState = new PitLinkingState();
 
@@ -68,13 +86,15 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
             StringUtils stringUtils,
             PersistentPrefs prefs,
             AccessState accessState,
+            CustodialWalletManager custodialWalletManager,
             SwipeToReceiveHelper swipeToReceiveHelper,
             NotificationTokenManager notificationTokenManager,
             ExchangeRateDataManager exchangeRateDataManager,
-            CurrencyFormatManager currencyFormatManager,
             KycStatusHelper kycStatusHelper,
             PitLinking pitLinking,
-            FeatureFlag featureFlag) {
+            Analytics analytics,
+            FeatureFlag featureFlag,
+            FeatureFlag cardsFeatureFlag) {
 
         this.fingerprintHelper = fingerprintHelper;
         this.authDataManager = authDataManager;
@@ -88,11 +108,12 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         this.swipeToReceiveHelper = swipeToReceiveHelper;
         this.notificationTokenManager = notificationTokenManager;
         this.exchangeRateDataManager = exchangeRateDataManager;
-        this.currencyFormatManager = currencyFormatManager;
         this.kycStatusHelper = kycStatusHelper;
         this.pitLinking = pitLinking;
+        this.analytics = analytics;
         this.featureFlag = featureFlag;
-
+        this.cardsFeatureFlag = cardsFeatureFlag;
+        this.custodialWalletManager = custodialWalletManager;
     }
 
     @Override
@@ -113,10 +134,29 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                                     // Warn error when updating
                                     getView().showToast(R.string.settings_error_updating, ToastCustom.TYPE_ERROR);
                                 }));
-
-        getCompositeDisposable().add(pitLinking.getState().subscribe(this::onPitStateUpdated));
+        updateCards();
+        getCompositeDisposable().add(pitLinking.getState().subscribe(this::onPitStateUpdated, throwable -> {
+        }));
         getCompositeDisposable().add(featureFlag.getEnabled().subscribe(this::showPitItem));
     }
+
+    private void updateCards() {
+        getCompositeDisposable().add(
+                cardsFeatureFlag.getEnabled().doOnSuccess(enabled -> {
+                    getView().cardsEnabled(enabled);
+                }).flatMap(enabled -> {
+                    if (enabled) {
+                        return custodialWalletManager.fetchUnawareLimitsCards(
+                                Arrays.asList(CardStatus.ACTIVE, CardStatus.EXPIRED));
+
+                    } else {
+                        return Single.just(Collections.<PaymentMethod.Card>emptyList());
+                    }
+                })
+                        .observeOn(AndroidSchedulers.mainThread()).doOnSubscribe(disposable ->
+                        onCardsUpdated(Collections.emptyList())).subscribe(this::onCardsUpdated));
+    }
+
 
     private void showPitItem(Boolean pitEnabled) {
         getView().isPitEnabled(pitEnabled);
@@ -127,13 +167,17 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         getView().setPitLinkingState(pitLinkState.isLinked());
     }
 
+    private void onCardsUpdated(List<PaymentMethod.Card> cards) {
+        getView().updateCards(cards);
+    }
+
     private void loadKyc2TierState() {
         getCompositeDisposable().add(
-            kycStatusHelper.getSettingsKycState2Tier()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    settingsKycState -> getView().setKycState(settingsKycState),
-                    Timber::e)
+                kycStatusHelper.getSettingsKycState2Tier()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                settingsKycState -> getView().setKycState(settingsKycState),
+                                Timber::e)
         );
     }
 
@@ -256,8 +300,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         }
     }
 
-    private boolean isStringValid(String string) {
-        return string != null && !string.isEmpty() && string.length() < 256;
+    private boolean isInvalidString(String string) {
+        return string == null || string.isEmpty() || string.length() >= 256;
     }
 
     /**
@@ -350,7 +394,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      * @param email The email address to be saved
      */
     void updateEmail(String email) {
-        if (!isStringValid(email)) {
+        if (isInvalidString(email)) {
             getView().setEmailSummary(stringUtils.getString(R.string.not_specified));
         } else {
             getCompositeDisposable().add(
@@ -370,7 +414,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      * @param sms The phone number to be saved
      */
     void updateSms(String sms) {
-        if (!isStringValid(sms)) {
+        if (isInvalidString(sms)) {
             getView().setSmsSummary(stringUtils.getString(R.string.not_specified));
         } else {
             getCompositeDisposable().add(
@@ -381,7 +425,9 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                             .subscribe(() -> {
                                 updateNotification(Settings.NOTIFICATION_TYPE_SMS, false);
                                 getView().showDialogVerifySms();
-                            }, throwable -> getView().showToast(R.string.update_failed, ToastCustom.TYPE_ERROR)));
+                            }, throwable -> {
+                                getView().showToast(R.string.update_failed, ToastCustom.TYPE_ERROR);
+                            }));
         }
     }
 
@@ -402,8 +448,12 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                             updateUi();
                         })
                         .subscribe(
-                                () -> getView().showDialogSmsVerified(),
-                                throwable -> getView().showWarningDialog(R.string.verify_sms_failed)));
+                                () -> {
+                                    getView().showDialogSmsVerified();
+                                },
+                                throwable -> {
+                                    getView().showWarningDialog(R.string.verify_sms_failed);
+                                }));
     }
 
     private Completable syncPhoneNumberWithNabu() {
@@ -528,7 +578,10 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                 .andThen(payloadDataManager.syncPayloadWithServer())
                 .compose(RxUtil.addCompletableToCompositeDisposable(this))
                 .subscribe(
-                        () -> getView().showToast(R.string.password_changed, ToastCustom.TYPE_OK),
+                        () -> {
+                            getView().showToast(R.string.password_changed, ToastCustom.TYPE_OK);
+                            analytics.logEvent(SettingsAnalyticsEvents.PasswordChanged.INSTANCE);
+                        },
                         throwable -> showUpdatePasswordFailed(fallbackPassword));
     }
 
@@ -548,16 +601,18 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                         .doAfterTerminate(this::updateUi)
                         .subscribe(
                                 settings -> {
+                                    if (prefs.getSelectedFiatCurrency().equals(fiatUnit))
+                                        analytics.logEvent(AnalyticsEvents.ChangeFiatCurrency);
                                     prefs.setSelectedFiatCurrency(fiatUnit);
-                                    currencyFormatManager.invalidateFiatCode();
                                     this.settings = settings;
+                                    analytics.logEvent(SettingsAnalyticsEvents.CurrencyChanged.INSTANCE);
                                 },
                                 throwable -> getView().showToast(R.string.update_failed, ToastCustom.TYPE_ERROR)));
     }
 
     void storeSwipeToReceiveAddresses() {
         getCompositeDisposable().add(
-                swipeToReceiveHelper.storeAll()
+                swipeToReceiveHelper.generateAddresses()
                         .subscribeOn(Schedulers.computation())
                         .doOnSubscribe(disposable -> getView().showProgressDialog(R.string.please_wait))
                         .doOnTerminate(() -> getView().hideProgressDialog())
@@ -602,7 +657,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     public void onThePitClicked() {
-        if(pitLinkState.isLinked()) {
+        if (pitLinkState.isLinked()) {
             getView().launchThePit();
         } else {
             getView().launchThePitLandingActivity();

@@ -6,47 +6,55 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.Single
 import piuk.blockchain.android.ui.account.ItemAccount
+import piuk.blockchain.android.ui.account.formatDisplayBalance
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
+import piuk.blockchain.android.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 
 class WalletAccountHelperAccountListingAdapter(
-    private val walletAccountHelper: WalletAccountHelper
+    private val walletAccountHelper: WalletAccountHelper,
+    private val currencyState: CurrencyState,
+    private val exchangeRates: ExchangeRateDataManager
 ) : AccountListing {
 
-    override fun accountList(cryptoCurrency: CryptoCurrency): Single<List<AccountChooserItem>> {
-        val single: Single<List<ItemAccount>> = when (cryptoCurrency) {
+    override fun accountList(cryptoCurrency: CryptoCurrency): Single<List<AccountChooserItem>> =
+        when (cryptoCurrency) {
             CryptoCurrency.BTC -> Single.just(walletAccountHelper.getHdAccounts())
             CryptoCurrency.BCH -> Single.just(walletAccountHelper.getHdBchAccounts())
             CryptoCurrency.ETHER -> Single.just(walletAccountHelper.getEthAccount())
             CryptoCurrency.XLM -> walletAccountHelper.getXlmAccount()
             CryptoCurrency.PAX -> Single.just(walletAccountHelper.getEthAccount())
+            CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+        }.map {
+            it.map { account -> mapAccountSummary(account) }
         }
-        return single.map { it.map { account -> mapAccountSummary(account) } }
-    }
 
     override fun importedList(cryptoCurrency: CryptoCurrency): Single<List<AccountChooserItem>> =
         Single.just(
             when (cryptoCurrency) {
-                CryptoCurrency.BTC -> walletAccountHelper.getLegacyAddresses()
+                CryptoCurrency.BTC -> walletAccountHelper.getLegacyBtcAddresses()
                 CryptoCurrency.BCH -> walletAccountHelper.getLegacyBchAddresses()
-                CryptoCurrency.ETHER -> emptyList()
-                CryptoCurrency.XLM -> emptyList()
-                CryptoCurrency.PAX -> emptyList()
+                CryptoCurrency.ETHER,
+                CryptoCurrency.XLM,
+                CryptoCurrency.PAX,
+                CryptoCurrency.STX -> emptyList()
             }.map(this::mapLegacyAddress)
         )
 
-    private fun mapAccountSummary(it: ItemAccount): AccountChooserItem =
+    private fun mapAccountSummary(itemAccount: ItemAccount): AccountChooserItem =
         AccountChooserItem.AccountSummary(
-            it.label ?: "",
-            it.displayBalance ?: "",
-            it.accountObject
+            label = itemAccount.label,
+            displayBalance = itemAccount.formatDisplayBalance(currencyState, exchangeRates),
+            accountObject = itemAccount.accountObject
         )
 
     private fun mapLegacyAddress(itemAccount: ItemAccount): AccountChooserItem {
         val legacyAddress = itemAccount.accountObject as? LegacyAddress
+
         return AccountChooserItem.LegacyAddress(
-            label = itemAccount.label ?: "",
+            label = itemAccount.label,
             address = if (legacyAddress == null) null else itemAccount.address,
-            displayBalance = itemAccount.displayBalance ?: "",
+            displayBalance = itemAccount.formatDisplayBalance(currencyState, exchangeRates),
             isWatchOnly = legacyAddress?.isWatchOnly ?: true,
             accountObject = itemAccount.accountObject
         )

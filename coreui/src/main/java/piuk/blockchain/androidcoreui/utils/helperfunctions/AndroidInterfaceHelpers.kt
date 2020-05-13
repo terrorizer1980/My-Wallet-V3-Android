@@ -1,10 +1,10 @@
 package piuk.blockchain.androidcoreui.utils.helperfunctions
 
-import android.support.design.widget.TabLayout
-import android.support.v4.view.ViewPager
 import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
+import androidx.viewpager.widget.ViewPager
+import com.google.android.material.tabs.TabLayout
 
 /**
  * Allow us to use a functional interface in place of implementing members that we might not need to.

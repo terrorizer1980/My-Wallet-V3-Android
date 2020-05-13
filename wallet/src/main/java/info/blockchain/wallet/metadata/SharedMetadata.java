@@ -35,7 +35,7 @@ import retrofit2.Response;
 public class SharedMetadata {
 
     private String token;
-    private MetadataEndpoints endpoints;
+    private MetadataService endpoints;
     private String address;
     private DeterministicKey node;
 
@@ -43,7 +43,7 @@ public class SharedMetadata {
         // Empty constructor
     }
 
-    public void setEndpoints(MetadataEndpoints endpoints) {
+    public void setEndpoints(MetadataService endpoints) {
         this.endpoints = endpoints;
     }
 
@@ -71,11 +71,11 @@ public class SharedMetadata {
         this.token = token;
     }
 
-    private MetadataEndpoints getApiInstance() {
+    private MetadataService getApiInstance() {
         if (endpoints == null) {
             endpoints = BlockchainFramework
                     .getRetrofitApiInstance()
-                    .create(MetadataEndpoints.class);
+                    .create(MetadataService.class);
         }
         return endpoints;
     }

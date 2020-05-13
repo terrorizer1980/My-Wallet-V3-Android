@@ -11,6 +11,7 @@ import info.blockchain.api.data.Balance
 import info.blockchain.balance.AccountReference
 import info.blockchain.wallet.coin.GenericMetadataAccount
 import info.blockchain.wallet.payload.data.Account
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.amshove.kluent.`should equal`
@@ -121,11 +122,12 @@ class SwipeToReceiveHelperTest {
         verify(prefsUtil).setValue(KEY_SWIPE_RECEIVE_BCH_ACCOUNT_NAME, "BCH Account")
         verify(prefsUtil).setValue(
             KEY_SWIPE_RECEIVE_BCH_ADDRESSES,
-            "1BpEi6DfDAUFd7GtittLSdBeYJvcoaVggu," +
-                "1BpEi6DfDAUFd7GtittLSdBeYJvcoaVggu," +
-                "1BpEi6DfDAUFd7GtittLSdBeYJvcoaVggu," +
-                "1BpEi6DfDAUFd7GtittLSdBeYJvcoaVggu," +
-                "1BpEi6DfDAUFd7GtittLSdBeYJvcoaVggu,"
+            "qpm2qsznhks23z7629mms6s4cwef74vcwvy22gdx6a," +
+                    "qpm2qsznhks23z7629mms6s4cwef74vcwvy22gdx6a," +
+                    "qpm2qsznhks23z7629mms6s4cwef74vcwvy22gdx6a," +
+                    "qpm2qsznhks23z7629mms6s4cwef74vcwvy22gdx6a," +
+                    "qpm2qsznhks23z7629mms6s4cwef74vcwvy22gdx6a,"
+
         )
     }
 
@@ -244,8 +246,10 @@ class SwipeToReceiveHelperTest {
         whenever(bchAccount.label).thenReturn("BCH Account")
         whenever(bchDataManager.getReceiveAddressAtPosition(eq(0), anyInt()))
             .thenReturn("1BpEi6DfDAUFd7GtittLSdBeYJvcoaVggu")
+        whenever(payloadDataManager.updateAllTransactions()).thenReturn(Completable.complete())
+        whenever(bchDataManager.getWalletTransactions(anyInt(), anyInt())).thenReturn(Observable.just(emptyList()))
         // Act
-        val testObserver = subject.storeAll().test()
+        val testObserver = subject.generateAddresses().test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
@@ -326,10 +330,10 @@ class SwipeToReceiveHelperTest {
         whenever(prefsUtil.getValue(KEY_SWIPE_RECEIVE_BCH_ADDRESSES, ""))
             .thenReturn(
                 "1BpEi6DfDAUFd7GtittLSdBeYJvcoaVggu," +
-                    "1KXrWXciRDZUpQwQmuM1DbwsKDLYAYsVLR," +
-                    "16w1D5WRVKJuZUsSRzdLp9w3YGcgoxDXb," +
-                    "1DJk1Feuabguw5CW9CGQRQ3U1pp5Pbn3HK," +
-                    "1ATy3ktyaYjzZZQQnhvPsuBVheUDYcUP7V"
+                        "1KXrWXciRDZUpQwQmuM1DbwsKDLYAYsVLR," +
+                        "16w1D5WRVKJuZUsSRzdLp9w3YGcgoxDXb," +
+                        "1DJk1Feuabguw5CW9CGQRQ3U1pp5Pbn3HK," +
+                        "1ATy3ktyaYjzZZQQnhvPsuBVheUDYcUP7V"
             )
         // Act
         val testObserver = subject.getNextAvailableBitcoinCashAddressSingle().test()
@@ -358,10 +362,10 @@ class SwipeToReceiveHelperTest {
         whenever(prefsUtil.getValue(KEY_SWIPE_RECEIVE_BCH_ADDRESSES, ""))
             .thenReturn(
                 "1BpEi6DfDAUFd7GtittLSdBeYJvcoaVggu," +
-                    "1KXrWXciRDZUpQwQmuM1DbwsKDLYAYsVLR," +
-                    "16w1D5WRVKJuZUsSRzdLp9w3YGcgoxDXb," +
-                    "1DJk1Feuabguw5CW9CGQRQ3U1pp5Pbn3HK," +
-                    "1ATy3ktyaYjzZZQQnhvPsuBVheUDYcUP7V"
+                        "1KXrWXciRDZUpQwQmuM1DbwsKDLYAYsVLR," +
+                        "16w1D5WRVKJuZUsSRzdLp9w3YGcgoxDXb," +
+                        "1DJk1Feuabguw5CW9CGQRQ3U1pp5Pbn3HK," +
+                        "1ATy3ktyaYjzZZQQnhvPsuBVheUDYcUP7V"
             )
         // Act
         val testObserver = subject.getNextAvailableBitcoinCashAddressSingle().test()
