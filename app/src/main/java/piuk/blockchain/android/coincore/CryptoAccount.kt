@@ -30,6 +30,8 @@ interface CryptoAccount {
     val hasTransactions: Boolean
 
     fun fiatBalance(fiat: String, exchangeRates: ExchangeRateDataManager): Single<FiatValue>
+
+    fun includes(cryptoAccount: CryptoSingleAccount) : Boolean
 }
 
 interface CryptoSingleAccount : CryptoAccount {
@@ -48,6 +50,7 @@ interface CryptoAccountGroup : CryptoAccount {
     val accounts: List<CryptoAccount>
 }
 
+// todo delete
 typealias CryptoAccountsList = List<CryptoAccount>
 typealias CryptoSingleAccountList = List<CryptoSingleAccount>
 

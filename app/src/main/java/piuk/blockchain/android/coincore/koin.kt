@@ -2,10 +2,10 @@ package piuk.blockchain.android.coincore
 
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.coincore.bch.BchTokens
-import piuk.blockchain.android.coincore.pax.PaxTokens
 import piuk.blockchain.android.coincore.btc.BtcTokens
 import piuk.blockchain.android.coincore.eth.EthTokens
 import piuk.blockchain.android.coincore.impl.AssetActivityRepo
+import piuk.blockchain.android.coincore.pax.PaxTokens
 import piuk.blockchain.android.coincore.stx.StxTokens
 import piuk.blockchain.android.coincore.xlm.XlmTokens
 
@@ -107,7 +107,9 @@ val coincoreModule = applicationContext {
         }
 
         bean {
-            AssetActivityRepo()
+            AssetActivityRepo(
+                coincore = get()
+            )
         }
     }
 }

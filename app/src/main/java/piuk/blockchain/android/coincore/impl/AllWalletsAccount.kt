@@ -10,6 +10,7 @@ import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.AvailableActions
 import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.CryptoAccount
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import timber.log.Timber
 
@@ -43,6 +44,8 @@ class AllWalletsAccount(
             .flatMapSingle { it.fiatBalance(fiat, exchangeRates) }
             .reduce { a, v -> a + v }
             .toSingle(FiatValue.zero(fiat))
+
+    override fun includes(cryptoAccount: CryptoSingleAccount): Boolean = true
 
     private fun allTokens() = CryptoCurrency.activeCurrencies().map { coincore[it] }
 
