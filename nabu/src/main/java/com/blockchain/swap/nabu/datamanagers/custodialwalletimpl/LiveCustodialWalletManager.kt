@@ -157,7 +157,7 @@ class LiveCustodialWalletManager(
 
     override fun isEligibleForSimpleBuy(fiatCurrency: String): Single<Boolean> =
         authenticator.authenticate {
-            nabuService.isEligibleForSimpleBuy(it, fiatCurrency)
+            nabuService.isEligibleForSimpleBuy(it, fiatCurrency, PAYMENT_METHODS)
         }.map {
             it.eligible
         }.onErrorReturn {
@@ -408,6 +408,10 @@ class LiveCustodialWalletManager(
             CardResponse.EXPIRED -> CardStatus.EXPIRED
             else -> CardStatus.UNKNOWN
         }
+
+    companion object {
+        private const val PAYMENT_METHODS = "BANK_ACCOUNT,PAYMENT_CARD"
+    }
 }
 
 private fun String.toSupportedPartner(): Partner =
