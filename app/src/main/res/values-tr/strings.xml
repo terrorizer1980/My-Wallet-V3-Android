@@ -1254,7 +1254,7 @@
   <string name="kyc_onfido_splash_header">Sizin Olduğunuzu Onaylayalım</string>
   <string name="kyc_onfido_splash_verification_error">Kimlik doğrulanırken hata oluştu, lütfen tekrar deneyin</string>
   <string name="kyc_veriff_splash_country_supported_header">Ülkem destekleniyor mu?</string>
-  <string name="kyc_veriff_splash_country_supported_subheader"><![CDATA[Şu anda tüm ülkeler desteklenmemektedir. <annotation link=\"country_list\"> etmeden önce güncel <annotation link=\"country_list\"> ülke listemize </annotation> .]]></string>
+  <string name="kyc_veriff_splash_country_supported_subheader">Şu anda tüm ülkeler desteklenmemektedir. <annotation link="country_list"> etmeden önce güncel </annotation> ülke listemize.</string>
   <string name="kyc_veriff_splash_title">\@ String / kyc_documents_needed</string>
   <string name="kyc_veriff_splash_error_silver">GÜMÜŞ DOĞRULANDI</string>
   <string name="kyc_veriff_splash_header">Sizin Olduğunuzu Onaylayalım</string>
@@ -1464,10 +1464,8 @@
   <string name="simple_buy_amount_to_send">Gönderilecek tutar</string>
   <string name="simple_buy_pending_buy_sheet_title">Bekleyen %1s Satın Al</string>
   <string name="recipient_name_must_match_eur">Aktarımınızın başarılı olması için yukarıdaki Alıcı adınızın hesap sahibinin banka hesabınızdaki adıyla eşleşmesi gerekir. Bir eşleşme yoksa transferiniz reddedilebilir.</string>
-  <string name="recipient_name_must_match_gbp"><![CDATA[Aktarımınızın başarılı olması için yukarıdaki Alıcı adınızın hesap sahibinin banka hesabınızdaki adıyla eşleşmesi gerekir. Bir eşleşme yoksa transferiniz reddedilebilir. 
-
- Bu hesaba para yatırarak, bankacılık ortağımız <annotation link=\"modular_terms_and_conditions\"> Şartlar ve Koşulları </annotation> anno <annotation link=\"modular_terms_and_conditions\"> kabul edersiniz.]]></string>
-  <string name="recipient_name_must_match">Yalnızca adınızdaki bir banka hesabından para gönderin. Aksi takdirde, depozitonuz ertelenebilir veya reddedilebilir.</string>
+  <string name="recipient_name_must_match_gbp">Aktarımınızın başarılı olması için yukarıdaki Alıcı adınızın hesap sahibinin banka hesabınızdaki adıyla eşleşmesi gerekir. Bir eşleşme yoksa transferiniz reddedilebilir.\n\nBu hesaba para yatırarak, bankacılık ortağımız <annotation link="modular_terms_and_conditions"> Şartlar ve Koşulları </annotation> anno kabul edersiniz.</string>
+ <string name="recipient_name_must_match">Yalnızca adınızdaki bir banka hesabından para gönderin. Aksi takdirde, depozitonuz ertelenebilir veya reddedilebilir.</string>
   <string name="simple_buy_no_currencies_available_title">Para birimi yok</string>
   <string name="simple_buy_no_currencies_available">Ne yazık ki, şu anda alım satım yapabileceğiniz herhangi bir para birimi yok :(</string>
   <string name="are_ypu_sure">Emin misiniz?</string>

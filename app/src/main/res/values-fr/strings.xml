@@ -1466,9 +1466,7 @@
   <string name="simple_buy_amount_to_send">Montant à envoyer</string>
   <string name="simple_buy_pending_buy_sheet_title">%1s attente d\'achat</string>
   <string name="recipient_name_must_match_eur">Votre nom de destinataire ci-dessus doit correspondre au nom du titulaire du compte sur votre compte bancaire pour que votre transfert soit réussi. Votre transfert pourrait être rejeté s\'il n\'y a pas de correspondance.</string>
-  <string name="recipient_name_must_match_gbp">Votre nom de destinataire ci-dessus doit correspondre au nom du titulaire du compte sur votre compte bancaire pour que votre transfert soit réussi. Votre transfert pourrait être rejeté s\'il n\'y a pas de correspondance. 
-
- En déposant des fonds sur ce compte, vous acceptez les <annotation link="modular_terms_and_conditions"> Conditions générales de Modulr </annotation> , notre partenaire bancaire.</string>
+  <string name="recipient_name_must_match_gbp">Votre nom de destinataire ci-dessus doit correspondre au nom du titulaire du compte sur votre compte bancaire pour que votre transfert soit réussi. Votre transfert pourrait être rejeté s\'il n\'y a pas de correspondance.\n\nEn déposant des fonds sur ce compte, vous acceptez les <annotation link="modular_terms_and_conditions"> Conditions générales de Modulr </annotation> , notre partenaire bancaire.</string>
   <string name="recipient_name_must_match">N\'envoyez des fonds qu\'à partir d\'un compte bancaire à votre nom. Sinon, votre dépôt pourrait être retardé ou rejeté.</string>
   <string name="simple_buy_no_currencies_available_title">Aucune devise disponible</string>
   <string name="simple_buy_no_currencies_available">Malheureusement, il n\'y a actuellement aucune devise que vous pouvez échanger :(</string>

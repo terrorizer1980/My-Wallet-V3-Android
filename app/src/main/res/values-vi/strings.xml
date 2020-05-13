@@ -151,7 +151,7 @@
   <string name="restoring_wallet">Khôi phục ví tiền.</string>
   <string name="password">Mật khẩu</string>
   <string name="email">Email của bạn</string>
-  <string name="you_agree_terms_of_service"><![CDATA[Bằng cách tạo tài khoản, bạn đồng ý với <annotation link=\"terms\"> Điều khoản dịch vụ </annotation> & <annotation link=\"privacy\"> Privacy <annotation link=\"privacy\"> Chính sách bảo mật </annotation> của Blockchain.]]></string>
+  <string name="you_agree_terms_of_service">Bằng cách tạo tài khoản, bạn đồng ý với <annotation link="terms"> Điều khoản dịch vụ</annotation> &amp; <annotation link="privacy"> Chính sách bảo mật </annotation> của Blockchain.</string>
   <string name="new_account_cta_text">Tiếp tục</string>
   <string name="new_account_title">Tạo một tài khoản</string>
   <string name="strength_weak">Yếu</string>

@@ -1465,9 +1465,7 @@
   <string name="simple_buy_amount_to_send">Suma de trimis</string>
   <string name="simple_buy_pending_buy_sheet_title">%1s cumpărare</string>
   <string name="recipient_name_must_match_eur">Numele destinatarului de mai sus trebuie să se potrivească cu numele titularului contului în contul dvs. bancar pentru ca transferul dvs. să aibă succes. Transferul dvs. ar putea fi respins dacă nu există o potrivire.</string>
-  <string name="recipient_name_must_match_gbp">Numele destinatarului de mai sus trebuie să se potrivească cu numele titularului contului în contul dvs. bancar pentru ca transferul dvs. să aibă succes. Transferul dvs. ar putea fi respins dacă nu există o potrivire. 
-
- Depunând fonduri în acest cont, sunteți de acord să <annotation link="modular_terms_and_conditions"> Termeni și condiții ale Modulr </annotation> , partenerul nostru bancar.</string>
+  <string name="recipient_name_must_match_gbp">Numele destinatarului de mai sus trebuie să se potrivească cu numele titularului contului în contul dvs. bancar pentru ca transferul dvs. să aibă succes. Transferul dvs. ar putea fi respins dacă nu există o potrivire.\n\nDepunând fonduri în acest cont, sunteți de acord să <annotation link="modular_terms_and_conditions"> Termeni și condiții ale Modulr </annotation> , partenerul nostru bancar.</string>
   <string name="recipient_name_must_match">Trimiteți numai fonduri dintr-un cont bancar pe numele dvs. În caz contrar, depunerea dvs. poate fi amânată sau respinsă.</string>
   <string name="simple_buy_no_currencies_available_title">Nu există valute disponibile</string>
   <string name="simple_buy_no_currencies_available">Din păcate, în prezent nu există monede pe care le puteți tranzacționa :(</string>

@@ -1466,9 +1466,7 @@
   <string name="simple_buy_amount_to_send">Hoeveelheid om te versturen</string>
   <string name="simple_buy_pending_buy_sheet_title">In afwachting van %1s kopen</string>
   <string name="recipient_name_must_match_eur">Uw naam van de ontvanger hierboven moet overeenkomen met de naam van de rekeninghouder op uw bankrekening om uw overboeking te laten slagen. Uw overboeking kan worden afgewezen als er geen overeenkomst is.</string>
-  <string name="recipient_name_must_match_gbp">Uw naam van de ontvanger hierboven moet overeenkomen met de naam van de rekeninghouder op uw bankrekening om uw overboeking te laten slagen. Uw overboeking kan worden afgewezen als er geen overeenkomst is. 
-
- Door geld op deze rekening te storten, gaat u akkoord met <annotation link="modular_terms_and_conditions"> Algemene voorwaarden van Modulr </annotation> , onze bankpartner.</string>
+  <string name="recipient_name_must_match_gbp">Uw naam van de ontvanger hierboven moet overeenkomen met de naam van de rekeninghouder op uw bankrekening om uw overboeking te laten slagen. Uw overboeking kan worden afgewezen als er geen overeenkomst is.\n\nDoor geld op deze rekening te storten, gaat u akkoord met <annotation link="modular_terms_and_conditions"> Algemene voorwaarden van Modulr </annotation> , onze bankpartner.</string>
   <string name="recipient_name_must_match">Maak alleen geld over van een bankrekening op uw naam. Zo niet, dan kan uw aanbetaling worden vertraagd of geweigerd.</string>
   <string name="simple_buy_no_currencies_available_title">Geen valuta beschikbaar</string>
   <string name="simple_buy_no_currencies_available">Helaas zijn er momenteel geen valuta\'s die u kunt verhandelen :(</string>
