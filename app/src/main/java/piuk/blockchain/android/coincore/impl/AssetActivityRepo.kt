@@ -1,5 +1,6 @@
 package piuk.blockchain.android.coincore.impl
 
+import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
@@ -52,4 +53,9 @@ class AssetActivityRepo {
             }
         }
     }
+
+    fun findCachedItem(cryptoCurrency: CryptoCurrency, txHash: String): ActivitySummaryItem? =
+        transactionCache.values.flatten().find {
+            it.cryptoCurrency == cryptoCurrency && it.txId == txHash
+        }
 }
