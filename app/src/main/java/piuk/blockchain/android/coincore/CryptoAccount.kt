@@ -24,7 +24,7 @@ interface CryptoAccount {
 
     fun fiatBalance(fiat: String, exchangeRates: ExchangeRateDataManager): Single<FiatValue>
 
-    fun includes(cryptoAccount: CryptoSingleAccount) : Boolean
+    fun includes(cryptoAccount: CryptoSingleAccount): Boolean
 }
 
 interface CryptoSingleAccount : CryptoAccount {

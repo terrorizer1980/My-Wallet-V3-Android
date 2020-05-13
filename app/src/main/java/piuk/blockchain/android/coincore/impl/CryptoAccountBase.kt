@@ -38,7 +38,7 @@ abstract class CryptoSingleAccountBase : CryptoSingleAccount {
     final override fun fiatBalance(fiat: String, exchangeRates: ExchangeRateDataManager): Single<FiatValue> =
         balance.map { it.toFiat(exchangeRates, fiat) }
 
-    override fun includes(cryptoAccount: CryptoSingleAccount) : Boolean =
+    override fun includes(cryptoAccount: CryptoSingleAccount): Boolean =
         cryptoAccount == this
 
     fun setHasTransactions(hasTransactions: Boolean) {
