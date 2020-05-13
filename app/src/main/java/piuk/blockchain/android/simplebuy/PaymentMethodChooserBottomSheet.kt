@@ -12,6 +12,7 @@ import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import kotlinx.android.synthetic.main.layout_payment_method_chooser_item.view.*
 import kotlinx.android.synthetic.main.simple_buy_crypto_currency_chooser.view.*
 import piuk.blockchain.android.R
+import piuk.blockchain.android.cards.icon
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.extensions.gone
@@ -133,7 +134,7 @@ private class BottomSheetPaymentMethodsAdapter(
     private fun configureUIforCard(paymentMethod: PaymentMethod.Card, holder: ViewHolder) {
         with(holder) {
             addIcon.gone()
-            icon.setImageResource(paymentMethod.cardType.frontResource)
+            icon.setImageResource(paymentMethod.cardType.icon())
             title.text = paymentMethod.uiLabel()
             limit.text = paymentMethod.limits.max.toStringWithSymbol()
             cardNumber.text = paymentMethod.dottedEndDigits()

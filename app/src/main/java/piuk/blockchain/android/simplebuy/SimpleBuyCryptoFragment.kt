@@ -23,6 +23,7 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.cards.CardDetailsActivity
 import piuk.blockchain.android.cards.CardDetailsActivity.Companion.ADD_CARD_REQUEST_CODE
+import piuk.blockchain.android.cards.icon
 import piuk.blockchain.android.ui.base.ErrorSlidingBottomDialog
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
@@ -247,7 +248,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     }
 
     private fun renderCardPayment(selectedPaymentMethod: PaymentMethod.Card) {
-        payment_method_icon.setImageResource(selectedPaymentMethod.cardType.frontResource)
+        payment_method_icon.setImageResource(selectedPaymentMethod.cardType.icon())
         payment_method_title.text = selectedPaymentMethod.uiLabelWithDigits()
         payment_method_limit.text =
             getString(R.string.payment_method_limit, selectedPaymentMethod.limits.max.toStringWithSymbol())
