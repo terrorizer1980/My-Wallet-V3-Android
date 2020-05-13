@@ -14,9 +14,9 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import piuk.blockchain.android.R
+import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.android.coincore.impl.fetchLastPrice
-import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
@@ -25,7 +25,6 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import java.lang.IllegalArgumentException
 
 internal class EthTokens(
     private val ethDataManager: EthDataManager,
@@ -54,8 +53,7 @@ internal class EthTokens(
                 EthCryptoAccountNonCustodial(
                     ethDataManager,
                     ethDataManager.getEthWallet()?.account ?: throw Exception("No ether wallet found"),
-                    exchangeRates,
-                    txActivityCache
+                    exchangeRates
                 )
             )
         )
@@ -66,8 +64,7 @@ internal class EthTokens(
                 EthCryptoAccountCustodial(
                     labels.getDefaultCustodialWalletLabel(asset),
                     custodialWalletManager,
-                    exchangeRates,
-                    txActivityCache
+                    exchangeRates
                 )
             )
         )

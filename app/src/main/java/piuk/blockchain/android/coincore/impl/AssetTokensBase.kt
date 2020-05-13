@@ -15,7 +15,6 @@ import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.AssetTokens
 import piuk.blockchain.android.coincore.AvailableActions
-import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
@@ -38,8 +37,6 @@ internal abstract class AssetTokensBase(
         .subscribeBy(onNext = ::onLogoutSignal)
 
     private val accounts = mutableListOf<CryptoSingleAccount>()
-
-    protected val txActivityCache = TxCacheImpl()
 
     // Init token, set up accounts and fetch a few activities
     fun init(): Completable =
@@ -146,9 +143,6 @@ internal abstract class AssetTokensBase(
             AssetFilter.Wallet -> true
             AssetFilter.Custodial -> isNonCustodialConfigured.get()
         }
-
-    final override fun findCachedActivityItem(txId: String): ActivitySummaryItem? =
-        txActivityCache[txId]
 
     // These are constant ATM, but may need to change this so hardcode here
     protected val transactionFetchCount = 50

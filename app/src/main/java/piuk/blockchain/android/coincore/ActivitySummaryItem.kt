@@ -21,15 +21,17 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
     abstract val txId: String
     abstract val timeStampMs: Long
 
-    abstract val totalCrypto: CryptoValue
+    abstract val cryptoValue: CryptoValue
 
-    fun totalFiat(selectedFiat: String): FiatValue =
-        totalCrypto.toFiat(exchangeRates, selectedFiat)
+    fun fiatValue(selectedFiat: String): FiatValue =
+        cryptoValue.toFiat(exchangeRates, selectedFiat)
 
     fun totalFiatWhenExecuted(selectedFiat: String): Single<FiatValue> =
-        exchangeRates.getHistoricPrice(totalCrypto, selectedFiat, timeStampMs / 1000) // API uses seconds
+        exchangeRates.getHistoricPrice(cryptoValue, selectedFiat, timeStampMs / 1000) // API uses seconds
 
     override operator fun compareTo(other: ActivitySummaryItem) = (other.timeStampMs - timeStampMs).sign
+
+    abstract val account: CryptoSingleAccount
 }
 
 data class CustodialActivitySummaryItem(
@@ -37,7 +39,8 @@ data class CustodialActivitySummaryItem(
     override val cryptoCurrency: CryptoCurrency,
     override val txId: String,
     override val timeStampMs: Long,
-    override val totalCrypto: CryptoValue,
+    override val cryptoValue: CryptoValue,
+    override val account: CryptoSingleAccount,
     val fundedFiat: FiatValue,
     val status: OrderState,
     val fee: FiatValue
@@ -64,7 +67,7 @@ abstract class NonCustodialActivitySummaryItem : ActivitySummaryItem() {
     override fun toString(): String = "cryptoCurrency = $cryptoCurrency" +
             "direction  = $direction " +
             "timeStamp  = $timeStampMs " +
-            "total  = ${totalCrypto.toStringWithSymbol()} " +
+            "total  = ${cryptoValue.toStringWithSymbol()} " +
             "txId (hash)  = $txId " +
             "inputsMap  = $inputsMap " +
             "outputsMap  = $outputsMap " +
@@ -82,7 +85,7 @@ abstract class NonCustodialActivitySummaryItem : ActivitySummaryItem() {
         return this.cryptoCurrency == that?.cryptoCurrency &&
                 this.direction == that.direction &&
                 this.timeStampMs == that.timeStampMs &&
-                this.totalCrypto == that.totalCrypto &&
+                this.cryptoValue == that.cryptoValue &&
                 this.txId == that.txId &&
                 this.inputsMap == that.inputsMap &&
                 this.outputsMap == that.outputsMap &&
@@ -99,7 +102,7 @@ abstract class NonCustodialActivitySummaryItem : ActivitySummaryItem() {
         result = 31 * result + cryptoCurrency.hashCode()
         result = 31 * result + direction.hashCode()
         result = 31 * result + JavaHashCode.hashCode(timeStampMs)
-        result = 31 * result + totalCrypto.hashCode()
+        result = 31 * result + cryptoValue.hashCode()
         result = 31 * result + txId.hashCode()
         result = 31 * result + inputsMap.hashCode()
         result = 31 * result + outputsMap.hashCode()

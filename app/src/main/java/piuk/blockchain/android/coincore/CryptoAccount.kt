@@ -7,12 +7,6 @@ import io.reactivex.Single
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 
-interface TxCache {
-    fun addToCache(txList: ActivitySummaryList)
-    fun asActivityList(): List<ActivitySummaryItem>
-    val hasTransactions: Boolean
-}
-
 interface CryptoAccount {
     val label: String
 
@@ -29,6 +23,8 @@ interface CryptoAccount {
     val hasTransactions: Boolean
 
     fun fiatBalance(fiat: String, exchangeRates: ExchangeRateDataManager): Single<FiatValue>
+
+    fun includes(cryptoAccount: CryptoSingleAccount): Boolean
 }
 
 interface CryptoSingleAccount : CryptoAccount {
@@ -47,6 +43,7 @@ interface CryptoAccountGroup : CryptoAccount {
     val accounts: List<CryptoAccount>
 }
 
+// todo delete
 typealias CryptoAccountsList = List<CryptoAccount>
 typealias CryptoSingleAccountList = List<CryptoSingleAccount>
 

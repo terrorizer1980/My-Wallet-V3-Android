@@ -36,20 +36,28 @@ class ActivitiesModel(
     initialState,
     mainScheduler
 ) {
-    override fun performAction(previousState: ActivitiesState, intent: ActivitiesIntent): Disposable? {
+    override fun performAction(
+        previousState: ActivitiesState,
+        intent: ActivitiesIntent
+    ): Disposable? {
         Timber.d("***> performAction: ${intent.javaClass.simpleName}")
 
         return when (intent) {
             is AccountSelectedIntent ->
-                interactor.getActivityForAccount(intent.account)
+                interactor.getActivityForAccount(intent.account, intent.isRefreshRequested)
                     .subscribeBy(
-                        onSuccess = { process(ActivityListUpdatedIntent(it)) },
+                        onNext = {
+                            process(ActivityListUpdatedIntent(it))
+                        },
+                        onComplete = {
+                            // do nothing
+                        },
                         onError = { process(ActivityListUpdatedErrorIntent) }
                     )
             is SelectDefaultAccountIntent ->
                 interactor.getDefaultAccount()
                     .subscribeBy(
-                        onSuccess = { process(AccountSelectedIntent(it)) },
+                        onSuccess = { process(AccountSelectedIntent(it, true)) },
                         onError = { process(ActivityListUpdatedErrorIntent) }
                     )
             is CancelSimpleBuyOrderIntent -> interactor.cancelSimpleBuyOrder(intent.orderId)

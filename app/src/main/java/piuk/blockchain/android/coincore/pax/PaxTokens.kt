@@ -13,10 +13,10 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.impl.AssetTokensBase
-import piuk.blockchain.android.coincore.impl.fetchLastPrice
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
+import piuk.blockchain.android.coincore.impl.fetchLastPrice
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
@@ -49,8 +49,7 @@ internal class PaxTokens(
                 PaxCryptoAccountCustodial(
                     labels.getDefaultCustodialWalletLabel(asset),
                     custodialWalletManager,
-                    exchangeRates,
-                    txActivityCache
+                    exchangeRates
                 )
             )
         )
@@ -76,7 +75,7 @@ internal class PaxTokens(
 
         val label = stringUtils.getString(R.string.pax_default_account_label_1)
 
-        return PaxCryptoAccountNonCustodial(label, paxAddress, paxAccount, exchangeRates, txActivityCache)
+        return PaxCryptoAccountNonCustodial(label, paxAddress, paxAccount, exchangeRates)
     }
 
     override fun noncustodialBalance(): Single<CryptoValue> =

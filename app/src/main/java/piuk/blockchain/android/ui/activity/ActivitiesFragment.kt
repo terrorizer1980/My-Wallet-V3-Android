@@ -77,14 +77,6 @@ class ActivitiesFragment
 
     @UiThread
     override fun render(newState: ActivitiesState) {
-
-        switchView(newState)
-
-        swipe.isRefreshing = newState.isLoading
-
-        renderAccountDetails(newState)
-        renderTransactionList(newState)
-
         if (newState.isError) {
             ToastCustom.makeText(
                 requireContext(),
@@ -93,6 +85,13 @@ class ActivitiesFragment
                 ToastCustom.TYPE_ERROR
             )
         }
+
+        switchView(newState)
+
+        swipe.isRefreshing = newState.isLoading
+
+        renderAccountDetails(newState)
+        renderTransactionList(newState)
 
         if (this.state?.bottomSheet != newState.bottomSheet) {
             when (newState.bottomSheet) {
@@ -119,7 +118,7 @@ class ActivitiesFragment
 
     private fun switchView(newState: ActivitiesState) {
         when {
-            newState.isLoading -> {
+            newState.isLoading && newState.activityList.isEmpty() -> {
                 header_layout.gone()
                 content_list.gone()
                 empty_view.gone()
@@ -237,7 +236,7 @@ class ActivitiesFragment
     private fun setupSwipeRefresh() {
         swipe.setOnRefreshListener {
             state?.account?.let {
-                model.process(AccountSelectedIntent(it))
+                model.process(AccountSelectedIntent(it, true))
             }
         }
 
@@ -274,7 +273,7 @@ class ActivitiesFragment
     }
 
     override fun onAccountSelected(account: CryptoAccount) {
-        model.process(AccountSelectedIntent(account))
+        model.process(AccountSelectedIntent(account, false))
     }
 
     override fun onShowBankDetailsSelected() {

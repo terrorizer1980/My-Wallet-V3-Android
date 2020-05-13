@@ -9,7 +9,6 @@ import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.TxCache
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountNonCustodialBase
 import piuk.blockchain.android.coincore.impl.transactionFetchCount
@@ -20,8 +19,7 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 internal class BtcCryptoAccountCustodial(
     override val label: String,
     override val custodialWalletManager: CustodialWalletManager,
-    override val exchangeRates: ExchangeRateDataManager,
-    override val txCache: TxCache
+    override val exchangeRates: ExchangeRateDataManager
 ) : CryptoSingleAccountCustodialBase() {
     override val cryptoCurrencies = setOf(CryptoCurrency.BTC)
 }
@@ -32,8 +30,7 @@ internal class BtcCryptoAccountNonCustodial(
     private val payloadManager: PayloadManager,
     private val payloadDataManager: PayloadDataManager,
     override val isDefault: Boolean = false,
-    override val exchangeRates: ExchangeRateDataManager,
-    override val txCache: TxCache
+    override val exchangeRates: ExchangeRateDataManager
 ) : CryptoSingleAccountNonCustodialBase() {
     override val cryptoCurrencies = setOf(CryptoCurrency.BTC)
 
@@ -48,43 +45,39 @@ internal class BtcCryptoAccountNonCustodial(
                         BtcActivitySummaryItem(
                             it,
                             payloadDataManager,
-                            exchangeRates
+                            exchangeRates,
+                            this
                         ) as ActivitySummaryItem
                 }
         }
-        .doOnSuccess { txCache.addToCache(it) }
-//        .map { txCache.asActivityList() }
+        .doOnSuccess { setHasTransactions(it.isNotEmpty()) }
 
     constructor(
         jsonAccount: Account,
         payloadManager: PayloadManager,
         payloadDataManager: PayloadDataManager,
         isDefault: Boolean = false,
-        exchangeRates: ExchangeRateDataManager,
-        txCache: TxCache
+        exchangeRates: ExchangeRateDataManager
     ) : this(
         jsonAccount.label,
         jsonAccount.xpub,
         payloadManager,
         payloadDataManager,
         isDefault,
-        exchangeRates,
-        txCache
+        exchangeRates
     )
 
     constructor(
         legacyAccount: LegacyAddress,
         payloadManager: PayloadManager,
         payloadDataManager: PayloadDataManager,
-        exchangeRates: ExchangeRateDataManager,
-        txCache: TxCache
+        exchangeRates: ExchangeRateDataManager
     ) : this(
         legacyAccount.label ?: legacyAccount.address,
         legacyAccount.address,
         payloadManager,
         payloadDataManager,
         false,
-        exchangeRates,
-        txCache
+        exchangeRates
     )
 }

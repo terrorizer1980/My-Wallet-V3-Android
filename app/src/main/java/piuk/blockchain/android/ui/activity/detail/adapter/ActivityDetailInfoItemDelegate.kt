@@ -1,4 +1,4 @@
-package piuk.blockchain.android.ui.activity.adapter
+package piuk.blockchain.android.ui.activity.detail.adapter
 
 import android.view.View
 import android.view.ViewGroup
@@ -34,7 +34,9 @@ class ActivityDetailInfoItemDelegate<in T> : AdapterDelegate<T> {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
-        InfoItemViewHolder(parent.inflate(R.layout.item_activity_detail_info))
+        InfoItemViewHolder(
+            parent.inflate(R.layout.item_activity_detail_info)
+        )
 
     override fun onBindViewHolder(
         items: List<T>,

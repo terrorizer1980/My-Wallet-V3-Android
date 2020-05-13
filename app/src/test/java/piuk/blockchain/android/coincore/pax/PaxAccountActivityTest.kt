@@ -15,7 +15,6 @@ import io.reactivex.Single
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import piuk.blockchain.android.coincore.impl.TxCacheImpl
 import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
@@ -36,8 +35,7 @@ class PaxAccountActivityTest {
             label = "Text Pax Account",
             address = "Test Px Address",
             paxAccount = paxAccount,
-            exchangeRates = exchangeRates,
-            txCache = TxCacheImpl()
+            exchangeRates = exchangeRates
         )
 
     @get:Rule
@@ -107,7 +105,7 @@ class PaxAccountActivityTest {
                     direction == TransactionSummary.Direction.SENT &&
                     txId == "0xfd7d583fa54bf55f6cfbfec97c0c55cc6af8c121b71addb7d06a9e1e305ae8ff" &&
                     confirmations == 3 &&
-                    totalCrypto == CryptoValue.fromMinor(CryptoCurrency.PAX, 10000.toBigInteger()) &&
+                    cryptoValue == CryptoValue.fromMinor(CryptoCurrency.PAX, 10000.toBigInteger()) &&
                     inputsMap["0x4058a004dd718babab47e14dd0d744742e5b9903"] ==
                         CryptoValue.fromMinor(CryptoCurrency.PAX, 10000.toBigInteger()) &&
                     outputsMap["0x2ca28ffadd20474ffe2705580279a1e67cd10a29"] ==

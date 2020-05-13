@@ -6,19 +6,19 @@ import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryItem
-import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.CustodialActivitySummaryItem
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.android.coincore.btc.BtcActivitySummaryItem
 import piuk.blockchain.android.coincore.eth.EthActivitySummaryItem
+import piuk.blockchain.android.coincore.impl.AssetActivityRepo
 import piuk.blockchain.android.coincore.pax.PaxActivitySummaryItem
 import java.text.ParseException
 import java.util.Date
 
 class ActivityDetailsInteractor(
-    private val coincore: Coincore,
     private val currencyPrefs: CurrencyPrefs,
-    private val transactionInputOutputMapper: TransactionInOutMapper
+    private val transactionInputOutputMapper: TransactionInOutMapper,
+    private val assetActivityRepo: AssetActivityRepo
 ) {
 
     fun loadCustodialItems(
@@ -45,16 +45,14 @@ class ActivityDetailsInteractor(
     fun getCustodialActivityDetails(
         cryptoCurrency: CryptoCurrency,
         txHash: String
-    ): CustodialActivitySummaryItem? = coincore[cryptoCurrency].findCachedActivityItem(
-        txHash
-    ) as? CustodialActivitySummaryItem
+    ): CustodialActivitySummaryItem? =
+        assetActivityRepo.findCachedItem(cryptoCurrency, txHash) as? CustodialActivitySummaryItem
 
     fun getNonCustodialActivityDetails(
         cryptoCurrency: CryptoCurrency,
         txHash: String
-    ): NonCustodialActivitySummaryItem? = coincore[cryptoCurrency].findCachedActivityItem(
-        txHash
-    ) as? NonCustodialActivitySummaryItem
+    ): NonCustodialActivitySummaryItem? =
+        assetActivityRepo.findCachedItem(cryptoCurrency, txHash) as? NonCustodialActivitySummaryItem
 
     fun loadCreationDate(
         activitySummaryItem: ActivitySummaryItem
@@ -70,7 +68,7 @@ class ActivityDetailsInteractor(
         .flatMap { fiatValue ->
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
                 listOfNotNull(
-                    Amount(item.totalCrypto),
+                    Amount(item.cryptoValue),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
                     FeeForTransaction("TODO"),
@@ -86,7 +84,7 @@ class ActivityDetailsInteractor(
         .flatMap { fiatValue ->
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
                 listOfNotNull(
-                    Amount(item.totalCrypto),
+                    Amount(item.cryptoValue),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
                     addSingleOrMultipleToAddresses(it),
@@ -102,7 +100,7 @@ class ActivityDetailsInteractor(
         .flatMap { fiatValue ->
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
                 listOfNotNull(
-                    Amount(item.totalCrypto),
+                    Amount(item.cryptoValue),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
                     addSingleOrMultipleToAddresses(it),
@@ -118,7 +116,7 @@ class ActivityDetailsInteractor(
         item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency).flatMap { fiatValue ->
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
                 listOfNotNull(
-                    Amount(item.totalCrypto),
+                    Amount(item.cryptoValue),
                     Fee(cryptoValue),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
@@ -135,7 +133,7 @@ class ActivityDetailsInteractor(
     ) = item.fee.singleOrError().flatMap { cryptoValue ->
         transactionInputOutputMapper.transformInputAndOutputs(item).map {
             listOfNotNull(
-                Amount(item.totalCrypto),
+                Amount(item.cryptoValue),
                 Fee(cryptoValue),
                 addSingleOrMultipleFromAddresses(it),
                 addSingleOrMultipleToAddresses(it),
@@ -150,10 +148,7 @@ class ActivityDetailsInteractor(
         cryptoCurrency: CryptoCurrency,
         description: String
     ): Completable {
-        val activityItem = coincore[cryptoCurrency].findCachedActivityItem(
-            txId
-        )
-        return when (activityItem) {
+        return when (val activityItem = assetActivityRepo.findCachedItem(cryptoCurrency, txId)) {
             is BtcActivitySummaryItem -> activityItem.updateDescription(description)
             is EthActivitySummaryItem -> activityItem.updateDescription(description)
             is PaxActivitySummaryItem -> activityItem.updateDescription(description)

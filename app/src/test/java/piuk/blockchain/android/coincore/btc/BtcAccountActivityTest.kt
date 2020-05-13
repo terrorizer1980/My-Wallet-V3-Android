@@ -32,8 +32,7 @@ class BtcAccountActivityTest {
             payloadManager = payloadManager,
             payloadDataManager = payloadDataManager,
             isDefault = true,
-            exchangeRates = exchangeRates,
-            txCache = mock()
+            exchangeRates = exchangeRates
         )
 
     @get:Rule

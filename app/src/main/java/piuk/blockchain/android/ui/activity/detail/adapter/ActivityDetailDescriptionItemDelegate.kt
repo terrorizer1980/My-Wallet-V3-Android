@@ -1,4 +1,4 @@
-package piuk.blockchain.android.ui.activity.adapter
+package piuk.blockchain.android.ui.activity.detail.adapter
 
 import android.text.InputFilter
 import android.text.InputType
@@ -33,7 +33,9 @@ class ActivityDetailDescriptionItemDelegate<in T>(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
-        DescriptionItemViewHolder(parent.inflate(R.layout.item_activity_detail_description))
+        DescriptionItemViewHolder(
+            parent.inflate(R.layout.item_activity_detail_description)
+        )
 
     override fun onBindViewHolder(
         items: List<T>,
@@ -56,7 +58,8 @@ private class DescriptionItemViewHolder(var parent: View) : RecyclerView.ViewHol
                 setText(it, TextView.BufferType.EDITABLE)
                 setSelection(item.description.length)
             }
-            inputType = INPUT_FIELD_FLAGS
+            inputType =
+                INPUT_FIELD_FLAGS
             filters = arrayOf(InputFilter.LengthFilter(MAX_NOTE_LENGTH))
 
             setOnEditorActionListener { v, actionId, _ ->
