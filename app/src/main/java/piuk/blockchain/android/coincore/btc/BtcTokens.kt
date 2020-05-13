@@ -14,11 +14,11 @@ import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import piuk.blockchain.android.coincore.CryptoSingleAccount
+import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.impl.BitcoinLikeTokens
 import piuk.blockchain.android.coincore.impl.fetchLastPrice
 import piuk.blockchain.android.coincore.impl.toCryptoSingle
-import piuk.blockchain.android.coincore.CryptoSingleAccount
-import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
@@ -56,8 +56,7 @@ internal class BtcTokens(
                             payloadManager,
                             payloadDataManager,
                             i == defaultIndex,
-                            exchangeRates,
-                            txActivityCache
+                            exchangeRates
                         )
                     )
                 }
@@ -68,8 +67,7 @@ internal class BtcTokens(
                             a,
                             payloadManager,
                             payloadDataManager,
-                            exchangeRates,
-                            txActivityCache
+                            exchangeRates
                         )
                     )
                 }
@@ -83,8 +81,7 @@ internal class BtcTokens(
                 BtcCryptoAccountCustodial(
                     labels.getDefaultCustodialWalletLabel(asset),
                     custodialWalletManager,
-                    exchangeRates,
-                    txActivityCache
+                    exchangeRates
                 )
             )
         }

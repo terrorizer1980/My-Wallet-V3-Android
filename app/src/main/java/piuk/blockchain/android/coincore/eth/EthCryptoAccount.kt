@@ -7,7 +7,6 @@ import info.blockchain.wallet.ethereum.EthereumAccount
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.TxCache
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountNonCustodialBase
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
@@ -16,8 +15,7 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 internal class EthCryptoAccountCustodial(
     override val label: String,
     override val custodialWalletManager: CustodialWalletManager,
-    override val exchangeRates: ExchangeRateDataManager,
-    override val txCache: TxCache
+    override val exchangeRates: ExchangeRateDataManager
 ) : CryptoSingleAccountCustodialBase() {
     override val cryptoCurrencies = setOf(CryptoCurrency.ETHER)
 }
@@ -26,22 +24,19 @@ internal class EthCryptoAccountNonCustodial(
     override val label: String,
     private val address: String,
     private val ethDataManager: EthDataManager,
-    override val exchangeRates: ExchangeRateDataManager,
-    override val txCache: TxCache
+    override val exchangeRates: ExchangeRateDataManager
 ) : CryptoSingleAccountNonCustodialBase() {
     override val cryptoCurrencies = setOf(CryptoCurrency.ETHER)
 
     constructor(
         ethDataManager: EthDataManager,
         jsonAccount: EthereumAccount,
-        exchangeRates: ExchangeRateDataManager,
-        txCache: TxCache
+        exchangeRates: ExchangeRateDataManager
     ) : this(
         jsonAccount.label,
         jsonAccount.address,
         ethDataManager,
-        exchangeRates,
-        txCache
+        exchangeRates
     )
 
     override val balance: Single<CryptoValue>
@@ -72,7 +67,7 @@ internal class EthCryptoAccountNonCustodial(
                         ) as ActivitySummaryItem
                     }.toList()
             }
-            .doOnSuccess { txCache.addToCache(it) }
+            .doOnSuccess { setHasTransactions(it.isNotEmpty()) }
 
     override val isDefault: Boolean = true // Only one ETH account, so always default
 }

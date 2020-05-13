@@ -7,13 +7,6 @@ import io.reactivex.Single
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 
-interface TxCache {
-    fun addToCache(txList: ActivitySummaryList)
-    fun asActivityList(): List<ActivitySummaryItem>
-    val hasTransactions: Boolean
-    fun clear()
-}
-
 interface CryptoAccount {
     val label: String
 

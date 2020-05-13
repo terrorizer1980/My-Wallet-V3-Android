@@ -15,7 +15,6 @@ import io.reactivex.Single
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import piuk.blockchain.android.coincore.impl.TxCacheImpl
 import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
@@ -36,8 +35,7 @@ class PaxAccountActivityTest {
             label = "Text Pax Account",
             address = "Test Px Address",
             paxAccount = paxAccount,
-            exchangeRates = exchangeRates,
-            txCache = TxCacheImpl()
+            exchangeRates = exchangeRates
         )
 
     @get:Rule

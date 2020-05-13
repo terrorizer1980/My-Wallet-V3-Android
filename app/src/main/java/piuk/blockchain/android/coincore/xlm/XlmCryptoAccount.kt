@@ -8,7 +8,6 @@ import info.blockchain.balance.CryptoValue
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.TxCache
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountNonCustodialBase
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
@@ -17,8 +16,7 @@ import piuk.blockchain.androidcore.utils.extensions.mapList
 internal class XlmCryptoAccountCustodial(
     override val label: String,
     override val custodialWalletManager: CustodialWalletManager,
-    override val exchangeRates: ExchangeRateDataManager,
-    override val txCache: TxCache
+    override val exchangeRates: ExchangeRateDataManager
 ) : CryptoSingleAccountCustodialBase() {
     override val cryptoCurrencies = setOf(CryptoCurrency.XLM)
 }
@@ -27,8 +25,7 @@ internal class XlmCryptoAccountNonCustodial(
     override val label: String = "",
     private val address: String,
     private val xlmManager: XlmDataManager,
-    override val exchangeRates: ExchangeRateDataManager,
-    override val txCache: TxCache
+    override val exchangeRates: ExchangeRateDataManager
 ) : CryptoSingleAccountNonCustodialBase() {
     override val cryptoCurrencies = setOf(CryptoCurrency.XLM)
 
@@ -46,12 +43,11 @@ internal class XlmCryptoAccountNonCustodial(
                     account = this
                 ) as ActivitySummaryItem
             }
-            .doOnSuccess { txCache.addToCache(it) }
+            .doOnSuccess { setHasTransactions(it.isNotEmpty()) }
 
     constructor(
         account: AccountReference.Xlm,
         xlmManager: XlmDataManager,
-        exchangeRates: ExchangeRateDataManager,
-        txCache: TxCache
-    ) : this(account.label, account.accountId, xlmManager, exchangeRates, txCache)
+        exchangeRates: ExchangeRateDataManager
+    ) : this(account.label, account.accountId, xlmManager, exchangeRates)
 }

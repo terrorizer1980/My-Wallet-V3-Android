@@ -16,7 +16,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
-import piuk.blockchain.android.coincore.impl.TxCacheImpl
 import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import java.math.BigInteger
@@ -36,8 +35,7 @@ class XlmAccountActivityTest {
             label = "TEst Xlm Account",
             address = "Test XLM Address",
             xlmManager = xlmDataManager,
-            exchangeRates = exchangeRates,
-            txCache = TxCacheImpl()
+            exchangeRates = exchangeRates
         )
 
     @get:Rule
