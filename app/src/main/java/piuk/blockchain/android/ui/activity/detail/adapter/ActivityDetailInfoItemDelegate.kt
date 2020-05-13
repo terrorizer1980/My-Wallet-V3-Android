@@ -90,7 +90,12 @@ private class InfoItemViewHolder(var parent: View) : RecyclerView.ViewHolder(par
             is BuyTransactionId -> infoType.txId
             is BuyCryptoWallet -> parent.context.getString(R.string.custodial_wallet_default_label,
                 parent.context.getString(infoType.crypto.assetName()))
-            is BuyPaymentMethod -> infoType.paymentMethod
+            is BuyPaymentMethod ->
+                if(infoType.paymentMethod.isBank()) {
+                    parent.context.getString(R.string.checkout_bank_transfer_label)
+                } else {
+                    infoType.paymentMethod.label ?: ""
+                }
             else -> ""
         }
 }

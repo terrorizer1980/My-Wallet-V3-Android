@@ -1,7 +1,9 @@
 package piuk.blockchain.android.ui.activity.detail
 
 import com.blockchain.preferences.CurrencyPrefs
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.OrderState
+import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -12,13 +14,15 @@ import piuk.blockchain.android.coincore.btc.BtcActivitySummaryItem
 import piuk.blockchain.android.coincore.eth.EthActivitySummaryItem
 import piuk.blockchain.android.coincore.impl.AssetActivityRepo
 import piuk.blockchain.android.coincore.pax.PaxActivitySummaryItem
+import piuk.blockchain.android.simplebuy.SelectedPaymentMethod
 import java.text.ParseException
 import java.util.Date
 
 class ActivityDetailsInteractor(
     private val currencyPrefs: CurrencyPrefs,
     private val transactionInputOutputMapper: TransactionInOutMapper,
-    private val assetActivityRepo: AssetActivityRepo
+    private val assetActivityRepo: AssetActivityRepo,
+    private val custodialWalletManager: CustodialWalletManager
 ) {
 
     fun loadCustodialItems(
@@ -29,17 +33,46 @@ class ActivityDetailsInteractor(
             Created(Date(custodialActivitySummaryItem.timeStampMs)),
             BuyPurchaseAmount(custodialActivitySummaryItem.fundedFiat),
             BuyCryptoWallet(custodialActivitySummaryItem.cryptoCurrency),
-            BuyFee(custodialActivitySummaryItem.fee),
-            // TODO this will change when we add cards, but for now it's the only supported type
-            BuyPaymentMethod("Bank Wire Transfer")
+            BuyFee(custodialActivitySummaryItem.fee)
         )
-        // TODO if the order is a card order, then it cannot be cancelled in these states
-        if (custodialActivitySummaryItem.status == OrderState.AWAITING_FUNDS ||
-            custodialActivitySummaryItem.status == OrderState.PENDING_EXECUTION) {
-            list.add(CancelAction())
-        }
 
-        return Single.just(list.toList())
+        return if (custodialActivitySummaryItem.paymentMethodId != PaymentMethod.BANK_PAYMENT_ID) {
+            custodialWalletManager.getCardDetails(custodialActivitySummaryItem.paymentMethodId)
+                .map { paymentMethod ->
+                    list.add(BuyPaymentMethod(SelectedPaymentMethod(paymentMethod.cardId,
+                        label = "${if (paymentMethod.label.isNotEmpty()) { 
+                            paymentMethod.label 
+                        } else { 
+                            paymentMethod.cardType}
+                        } - ${paymentMethod.endDigits}")
+                    ))
+
+                    if (custodialActivitySummaryItem.status == OrderState.PENDING_CONFIRMATION) {
+                        list.add(CancelAction())
+                    }
+
+                    list.toList()
+                }.onErrorReturn {
+                    list.add(BuyPaymentMethod(
+                        SelectedPaymentMethod(custodialActivitySummaryItem.paymentMethodId,
+                            label = "Couldn't load card details")
+                    ))
+
+                    if (custodialActivitySummaryItem.status == OrderState.PENDING_CONFIRMATION) {
+                        list.add(CancelAction())
+                    }
+                    list.toList()
+                }
+        } else {
+            list.add(BuyPaymentMethod(
+                SelectedPaymentMethod(custodialActivitySummaryItem.paymentMethodId)))
+
+            if (custodialActivitySummaryItem.status == OrderState.AWAITING_FUNDS ||
+                custodialActivitySummaryItem.status == OrderState.PENDING_EXECUTION) {
+                list.add(CancelAction())
+            }
+            Single.just(list.toList())
+        }
     }
 
     fun getCustodialActivityDetails(
@@ -178,9 +211,9 @@ class ActivityDetailsInteractor(
     private fun checkIfShouldAddDescription(
         item: NonCustodialActivitySummaryItem
     ): Description? = when (item) {
-            is BtcActivitySummaryItem,
-            is EthActivitySummaryItem,
-            is PaxActivitySummaryItem -> Description(item.description)
-            else -> null
-        }
+        is BtcActivitySummaryItem,
+        is EthActivitySummaryItem,
+        is PaxActivitySummaryItem -> Description(item.description)
+        else -> null
+    }
 }

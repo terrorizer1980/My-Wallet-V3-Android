@@ -8,6 +8,7 @@ import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
+import piuk.blockchain.android.simplebuy.SelectedPaymentMethod
 import piuk.blockchain.android.ui.base.mvi.MviModel
 import piuk.blockchain.android.ui.base.mvi.MviState
 import java.util.Date
@@ -29,7 +30,7 @@ data class BuyFee(val feeValue: FiatValue) : ActivityDetailsType()
 data class BuyPurchaseAmount(val fundedFiat: FiatValue) : ActivityDetailsType()
 data class BuyTransactionId(val txId: String) : ActivityDetailsType()
 data class BuyCryptoWallet(val crypto: CryptoCurrency) : ActivityDetailsType()
-data class BuyPaymentMethod(val paymentMethod: String) : ActivityDetailsType()
+data class BuyPaymentMethod(val paymentMethod: SelectedPaymentMethod) : ActivityDetailsType()
 
 enum class DescriptionState {
     NOT_SET,

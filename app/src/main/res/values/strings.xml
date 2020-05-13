@@ -1689,6 +1689,8 @@
     <string name="activity_custodial_pending_value">Bank Transfer</string>
     <string name="checkout_bank_transfer_label">Bank Transfer</string>
     <string name="activity_loading_error">Failed to load activity, please try again later</string>
+
+    <!-- Activity Details -->
     <string name="activity_details_created">Date</string>
     <string name="activity_details_completed">Completed</string>
     <string name="activity_details_fee">Fee</string>
@@ -1724,6 +1726,7 @@
     <string name="activity_details_buy_again">Buy Again</string>
     <string name="activity_details_description_updated">Description updated</string>
     <string name="activity_details_description_not_updated">Description failed to update</string>
+
     <string name="order_pending">Pending</string>
 
 </resources>
