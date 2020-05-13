@@ -49,7 +49,8 @@ class ActivityDetailsModelTest {
         fundedFiat = mock(),
         status = OrderState.FINISHED,
         fee = mock(),
-        account = mock()
+        account = mock(),
+        paymentMethodId = "123"
     )
 
     @get:Rule

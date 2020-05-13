@@ -23,22 +23,29 @@ class AssetActivityRepo(
         return Maybe.concat(
             getFromCache(),
             getFromNetwork(isRefreshRequested)
-            .onErrorResumeNext { _: Throwable ->
-                getFromCache()
-            }
-        ).switchIfEmpty { emptyList<ActivitySummaryItem>() }
-            .toObservable()
-            .map { list ->
-                list.filter { item -> account.includes(item.account) }.sorted()
-            }
+        )
+        .toObservable()
+        .map { list ->
+            list.filter { item -> account.includes(item.account) }.sorted()
+        }
     }
 
     private fun getFromNetwork(refreshRequested: Boolean): Maybe<ActivitySummaryList> {
         return if (refreshRequested || isCacheExpired()) {
             coincore.allWallets.activity.toMaybe().doOnSuccess { activityList ->
-                transactionCache.clear()
-                transactionCache.addAll(activityList)
+                // on error of activity returns onSuccess with empty list
+                if (activityList.isNotEmpty()) {
+                    transactionCache.clear()
+                    transactionCache.addAll(activityList)
+                }
                 lastUpdatedTimestamp = System.currentTimeMillis()
+            }.map { list ->
+                // if network comes empty, but we have cache, return cache instead
+                if (list.isEmpty() && transactionCache.isNotEmpty()) {
+                    transactionCache
+                } else {
+                    list
+                }
             }
         } else {
             Maybe.empty()
