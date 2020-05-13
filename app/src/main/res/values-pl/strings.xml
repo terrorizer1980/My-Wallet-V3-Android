@@ -1468,9 +1468,7 @@
   <string name="simple_buy_amount_to_send">Kwota do wysłania</string>
   <string name="simple_buy_pending_buy_sheet_title">Oczekuje na zakup %1s</string>
   <string name="recipient_name_must_match_eur">Nazwa odbiorcy powyżej musi być zgodna z nazwą posiadacza konta na koncie bankowym, aby przelew mógł zostać zrealizowany. Twój transfer może zostać odrzucony, jeśli nie ma dopasowania.</string>
-  <string name="recipient_name_must_match_gbp"><![CDATA[Nazwa odbiorcy powyżej musi być zgodna z nazwą posiadacza konta na koncie bankowym, aby przelew mógł zostać zrealizowany. Twój transfer może zostać odrzucony, jeśli nie ma dopasowania. 
-
- <annotation link=\"modular_terms_and_conditions\"> środki na to konto, zgadzasz się na <annotation link=\"modular_terms_and_conditions\"> Regulamin Modulr </annotation> , naszego partnera bankowego.]]></string>
+  <string name="recipient_name_must_match_gbp">Nazwa odbiorcy powyżej musi być zgodna z nazwą posiadacza konta na koncie bankowym, aby przelew mógł zostać zrealizowany. Twój transfer może zostać odrzucony, jeśli nie ma dopasowania.\n\nśrodki na to konto, zgadzasz się na <annotation link="modular_terms_and_conditions"> Regulamin Modulr </annotation> , naszego partnera bankowego.</string>
   <string name="recipient_name_must_match">Wysyłaj środki wyłącznie z konta bankowego na Twoje nazwisko. Jeśli nie, Twój depozyt może zostać opóźniony lub odrzucony.</string>
   <string name="simple_buy_no_currencies_available_title">Brak dostępnych walut</string>
   <string name="simple_buy_no_currencies_available">Niestety obecnie nie ma walut, którymi można handlować :(</string>

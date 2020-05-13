@@ -1468,9 +1468,7 @@
   <string name="simple_buy_amount_to_send">Částka k odeslání</string>
   <string name="simple_buy_pending_buy_sheet_title">Čeká se na nákup %1s</string>
   <string name="recipient_name_must_match_eur">Aby byl váš převod úspěšný, musí se výše uvedené jméno příjemce shodovat s jménem držitele účtu na vašem bankovním účtu. Pokud neexistuje shoda, mohl by být váš převod odmítnut.</string>
-  <string name="recipient_name_must_match_gbp"><![CDATA[Aby byl váš převod úspěšný, musí se výše uvedené jméno příjemce shodovat s jménem držitele účtu na vašem bankovním účtu. Pokud neexistuje shoda, mohl by být váš převod odmítnut. 
-
- Vložením prostředků na tento účet <annotation link=\"modular_terms_and_conditions\"> souhlas s <annotation link=\"modular_terms_and_conditions\"> smluvními podmínkami Modulr </annotation> , našeho bankovního partnera.]]></string>
+  <string name="recipient_name_must_match_gbp">Aby byl váš převod úspěšný, musí se výše uvedené jméno příjemce shodovat s jménem držitele účtu na vašem bankovním účtu. Pokud neexistuje shoda, mohl by být váš převod odmítnut.\n\nVložením prostředků na tento účet <annotation link="modular_terms_and_conditions"> souhlas s  smluvními podmínkami Modulr </annotation> , našeho bankovního partnera.</string>
   <string name="recipient_name_must_match">Prostředky zasílejte pouze z vašeho bankovního účtu. Pokud ne, váš vklad může být zpožděn nebo odmítnut.</string>
   <string name="simple_buy_no_currencies_available_title">K dispozici nejsou žádné měny</string>
   <string name="simple_buy_no_currencies_available">Bohužel v současné době neexistují žádné měny, se kterými můžete obchodovat :(</string>

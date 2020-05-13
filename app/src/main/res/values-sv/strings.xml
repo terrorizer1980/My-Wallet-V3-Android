@@ -1466,9 +1466,7 @@
   <string name="simple_buy_amount_to_send">Belopp att skicka</string>
   <string name="simple_buy_pending_buy_sheet_title">Väntande %1s Köp</string>
   <string name="recipient_name_must_match_eur">Ditt mottagarnamn ovan måste matcha kontoinnehavarens namn på ditt bankkonto för att din överföring ska lyckas. Din överföring kan avvisas om det inte finns en matchning.</string>
-  <string name="recipient_name_must_match_gbp">Ditt mottagarnamn ovan måste matcha kontoinnehavarens namn på ditt bankkonto för att din överföring ska lyckas. Din överföring kan avvisas om det inte finns en matchning. 
-
- Genom att sätta in pengar till detta konto, godkänner du <annotation link="modular_terms_and_conditions"> Villkor för Modulr </annotation> , vår bankpartner.</string>
+  <string name="recipient_name_must_match_gbp">Ditt mottagarnamn ovan måste matcha kontoinnehavarens namn på ditt bankkonto för att din överföring ska lyckas. Din överföring kan avvisas om det inte finns en matchning.\n\nGenom att sätta in pengar till detta konto, godkänner du <annotation link="modular_terms_and_conditions"> Villkor för Modulr </annotation> , vår bankpartner.</string>
   <string name="recipient_name_must_match">Skicka bara pengar från ett bankkonto i ditt namn. Om inte, kan din insättning försenas eller avvisas.</string>
   <string name="simple_buy_no_currencies_available_title">Inga valutor tillgängliga</string>
   <string name="simple_buy_no_currencies_available">Tyvärr finns det för närvarande inga valutor som du kan handla med :(</string>

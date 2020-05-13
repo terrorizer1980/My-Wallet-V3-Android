@@ -1465,9 +1465,7 @@
   <string name="simple_buy_amount_to_send">Jumlah yang dikirim</string>
   <string name="simple_buy_pending_buy_sheet_title">Tertunda %1s Beli</string>
   <string name="recipient_name_must_match_eur">Nama Penerima Anda di atas harus cocok dengan nama pemegang akun di rekening bank Anda agar transfer Anda berhasil. Transfer Anda dapat ditolak jika tidak ada kecocokan.</string>
-  <string name="recipient_name_must_match_gbp">Nama Penerima Anda di atas harus cocok dengan nama pemegang akun di rekening bank Anda agar transfer Anda berhasil. Transfer Anda dapat ditolak jika tidak ada kecocokan. 
-
- Dengan menyetorkan dana ke akun ini, Anda setuju dengan <annotation link="modular_terms_and_conditions"> Syarat &amp; Ketentuan Modulr </annotation> , mitra perbankan kami.</string>
+  <string name="recipient_name_must_match_gbp">Nama Penerima Anda di atas harus cocok dengan nama pemegang akun di rekening bank Anda agar transfer Anda berhasil. Transfer Anda dapat ditolak jika tidak ada kecocokan.\n\nDengan menyetorkan dana ke akun ini, Anda setuju dengan <annotation link="modular_terms_and_conditions"> Syarat &amp; Ketentuan Modulr </annotation> , mitra perbankan kami.</string>
   <string name="recipient_name_must_match">Hanya kirim dana dari rekening bank atas nama Anda. Jika tidak, setoran Anda bisa ditunda atau ditolak.</string>
   <string name="simple_buy_no_currencies_available_title">Mata uang tidak tersedia</string>
   <string name="simple_buy_no_currencies_available">Sayangnya, saat ini tidak ada mata uang yang dapat Anda perdagangkan :(</string>
