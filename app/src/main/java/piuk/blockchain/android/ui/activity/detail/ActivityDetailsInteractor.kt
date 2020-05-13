@@ -40,9 +40,9 @@ class ActivityDetailsInteractor(
             custodialWalletManager.getCardDetails(custodialActivitySummaryItem.paymentMethodId)
                 .map { paymentMethod ->
                     list.add(BuyPaymentMethod(SelectedPaymentMethod(paymentMethod.cardId,
-                        label = "${if (paymentMethod.label.isNotEmpty()) { 
-                            paymentMethod.label 
-                        } else { 
+                        label = "${if (paymentMethod.label.isNotEmpty()) {
+                            paymentMethod.label
+                        } else {
                             paymentMethod.cardType}
                         } - ${paymentMethod.endDigits}")
                     ))

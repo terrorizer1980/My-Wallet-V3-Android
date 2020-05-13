@@ -31,7 +31,8 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
             timeStampMs / 1000) // API uses seconds
 
     override operator fun compareTo(
-        other: ActivitySummaryItem) = (other.timeStampMs - timeStampMs).sign
+        other: ActivitySummaryItem
+    ) = (other.timeStampMs - timeStampMs).sign
 
     abstract val account: CryptoSingleAccount
 }
