@@ -356,7 +356,7 @@ class LiveCustodialWalletManager(
         authenticator.authenticate {
             nabuService.getCards(it)
         }.map {
-            it.filter { states.contains(it.state.toCardStatus()) }.map {
+            it.filter { states.contains(it.state.toCardStatus()) || states.isEmpty() }.map {
                 it.toCardPaymentMethod(
                     PaymentLimits(FiatValue.zero(it.currency), FiatValue.zero(it.currency)))
             }

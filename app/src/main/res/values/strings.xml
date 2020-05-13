@@ -1698,5 +1698,6 @@
     <string name="remove_card">Remove Card</string>
     <string name="save_my_card">Save My Card</string>
     <string name="custodial_activity_not_supported">Trading Wallet activity details are not supported in this release</string>
+    <string name="card_already_saved">This card has already been saved.</string>
 
 </resources>

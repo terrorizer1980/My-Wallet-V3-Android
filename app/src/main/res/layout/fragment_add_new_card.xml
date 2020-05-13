@@ -103,16 +103,28 @@
         app:srcCompat="@drawable/ic_card_locker" />
 
     <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/security_text"
         style="@style/Text.Standard.12"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/tiny_margin"
+        android:layout_marginEnd="@dimen/standard_margin"
         android:text="@string/privacy_protected_ssl"
         android:textColor="@color/grey_800"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="@dimen/standard_margin"
         app:layout_constraintStart_toEndOf="@+id/locker"
         app:layout_constraintTop_toTopOf="@+id/locker" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/same_card_error"
+        style="@style/Text.Standard.Centered.14"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/small_margin"
+        android:text="@string/card_already_saved"
+        android:textColor="@color/red_400"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/security_text" />
 
     <Button
         android:id="@+id/btn_next"
