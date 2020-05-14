@@ -52,9 +52,9 @@ class AssetDetailsCalculator {
     private fun getBalances(assetTokens: AssetTokens): Single<BalanceMap> {
         return Singles.zip(
             assetTokens.exchangeRate(),
-            assetTokens.totalBalance(AssetFilter.Total),
-            assetTokens.totalBalance(AssetFilter.Wallet),
-            assetTokens.totalBalance(AssetFilter.Custodial)
+            assetTokens.accounts(AssetFilter.Total).flatMap { it.balance },
+            assetTokens.accounts(AssetFilter.Wallet).flatMap { it.balance },
+            assetTokens.accounts(AssetFilter.Custodial).flatMap { it.balance }
         ) { fiatPrice, totalBalance, walletBalance, custodialBalance ->
             val totalFiat = totalBalance.toFiat(fiatPrice)
             val walletFiat = walletBalance.toFiat(fiatPrice)

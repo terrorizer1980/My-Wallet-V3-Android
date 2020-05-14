@@ -78,13 +78,6 @@ internal class PaxTokens(
         return PaxCryptoAccountNonCustodial(label, paxAddress, paxAccount, exchangeRates)
     }
 
-    override fun noncustodialBalance(): Single<CryptoValue> =
-        paxAccount.getBalance()
-            .map { CryptoValue.usdPaxFromMinor(it) }
-
-    override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
-        custodialWalletManager.getBalanceForAsset(CryptoCurrency.PAX)
-
     override fun balance(account: AccountReference): Single<CryptoValue> {
         TODO("not implemented")
     }

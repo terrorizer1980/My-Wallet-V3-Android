@@ -89,14 +89,6 @@ internal class StxTokens(
         )
     }
 
-    override fun custodialBalanceMaybe(): Maybe<CryptoValue> {
-        TODO("not implemented")
-    }
-
-    override fun noncustodialBalance(): Single<CryptoValue> {
-        TODO("not implemented")
-    }
-
     override fun balance(account: AccountReference): Single<CryptoValue> {
         TODO("not implemented")
     }

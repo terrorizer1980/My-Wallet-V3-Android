@@ -102,12 +102,6 @@ internal class BchTokens(
             address.toCashAddress()
         }.singleOrError()
 
-    override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
-        custodialWalletManager.getBalanceForAsset(CryptoCurrency.BCH)
-
-    override fun noncustodialBalance(): Single<CryptoValue> =
-        updater().toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getWalletBalance() }
-
     override fun balance(account: AccountReference): Single<CryptoValue> {
         val ref = accountReference(account)
         return updater().toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getAddressBalance(ref.xpub) }

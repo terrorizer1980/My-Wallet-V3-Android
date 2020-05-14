@@ -80,7 +80,7 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
 
             disposables += Singles.zip(
                 token.exchangeRate(),
-                token.totalBalance(AssetFilter.Custodial)
+                token.accounts(AssetFilter.Custodial).flatMap { it.balance }
             ) { fiatPrice, custodialBalance ->
                 val custodialFiat = custodialBalance.toFiat(fiatPrice)
                 Pair(custodialBalance, custodialFiat)

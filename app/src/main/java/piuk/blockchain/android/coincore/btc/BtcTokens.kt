@@ -93,12 +93,6 @@ internal class BtcTokens(
         payloadDataManager.getNextReceiveAddress(payloadDataManager.getAccount(payloadDataManager.defaultAccountIndex))
             .singleOrError()
 
-    override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
-        custodialWalletManager.getBalanceForAsset(CryptoCurrency.BTC)
-
-    override fun noncustodialBalance(): Single<CryptoValue> =
-        updater().toCryptoSingle(CryptoCurrency.BTC) { payloadManager.walletBalance }
-
     override fun balance(account: AccountReference): Single<CryptoValue> {
         val ref = accountReference(account)
         return updater()

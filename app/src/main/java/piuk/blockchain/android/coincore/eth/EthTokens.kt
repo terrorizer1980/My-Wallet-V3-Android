@@ -79,14 +79,14 @@ internal class EthTokens(
         ethDataManager.getEthWallet()?.account?.toAccountReference()
             ?: throw Exception("No ether wallet found")
 
-    override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
-        custodialWalletManager.getBalanceForAsset(CryptoCurrency.ETHER)
-
-    override fun noncustodialBalance(): Single<CryptoValue> =
-        ethDataManager.fetchEthAddress()
-            .singleOrError()
-            .map { CryptoValue(CryptoCurrency.ETHER, it.getTotalBalance()) }
-
+//    override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
+//        custodialWalletManager.getBalanceForAsset(CryptoCurrency.ETHER)
+//
+//    override fun noncustodialBalance(): Single<CryptoValue> =
+//        ethDataManager.fetchEthAddress()
+//            .singleOrError()
+//            .map { CryptoValue(CryptoCurrency.ETHER, it.getTotalBalance()) }
+//
     override fun balance(account: AccountReference): Single<CryptoValue> {
         val ref = account as? AccountReference.Ethereum
             ?: throw IllegalArgumentException("Not an XLM Account Ref")

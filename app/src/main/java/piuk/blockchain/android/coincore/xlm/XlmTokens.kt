@@ -64,12 +64,6 @@ internal class XlmTokens(
             it.receiveAddress
         }
 
-    override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
-        custodialWalletManager.getBalanceForAsset(CryptoCurrency.XLM)
-
-    override fun noncustodialBalance(): Single<CryptoValue> =
-        xlmDataManager.getBalance()
-
     override fun balance(account: AccountReference): Single<CryptoValue> {
         val ref = account as? AccountReference.Xlm
             ?: throw IllegalArgumentException("Not an XLM Account Ref")

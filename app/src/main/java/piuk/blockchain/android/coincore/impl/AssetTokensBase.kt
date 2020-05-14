@@ -6,9 +6,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Single
-import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.coincore.AssetAction
@@ -21,7 +19,6 @@ import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.utils.extensions.switchToSingleIfEmpty
 import piuk.blockchain.androidcore.utils.extensions.then
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
@@ -93,31 +90,11 @@ internal abstract class AssetTokensBase(
             accounts.first { it.isDefault }
         }
 
-    final override fun totalBalance(filter: AssetFilter): Single<CryptoValue> =
-        when (filter) {
-            AssetFilter.Wallet -> noncustodialBalance()
-            AssetFilter.Custodial -> custodialBalance()
-            AssetFilter.Total -> Singles.zip(
-                noncustodialBalance(),
-                custodialBalance()
-            ) { noncustodial, custodial -> noncustodial + custodial }
-        }
-
-    internal abstract fun custodialBalanceMaybe(): Maybe<CryptoValue>
-    internal abstract fun noncustodialBalance(): Single<CryptoValue>
+//    final override fun totalBalance(filter: AssetFilter): Single<CryptoValue> =
+//        accounts(filter)
+//            .flatMap { it.balance }
 
     private val isNonCustodialConfigured = AtomicBoolean(false)
-
-    private fun custodialBalance(): Single<CryptoValue> =
-        custodialBalanceMaybe()
-            .doOnComplete { isNonCustodialConfigured.set(false) }
-            .doOnSuccess { isNonCustodialConfigured.set(true) }
-            .switchToSingleIfEmpty { Single.just(CryptoValue.zero(asset)) }
-            // Report and then eat errors getting custodial balances - TODO add UI element to inform the user?
-            .onErrorReturn {
-                Timber.d("Unable to get non-custodial balance: $it")
-                CryptoValue.zero(asset)
-            }
 
     protected open val noncustodialActions = setOf(
         AssetAction.ViewActivity,

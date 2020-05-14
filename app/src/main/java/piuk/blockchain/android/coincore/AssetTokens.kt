@@ -43,8 +43,6 @@ interface AssetTokens {
     fun receiveAddress(): Single<String>
 
     @Deprecated(message = "CoinCore update")
-    fun totalBalance(filter: AssetFilter = AssetFilter.Total): Single<CryptoValue>
-    @Deprecated(message = "CoinCore update")
     fun balance(account: AccountReference): Single<CryptoValue>
 
     @Deprecated(message = "CoinCore update")
