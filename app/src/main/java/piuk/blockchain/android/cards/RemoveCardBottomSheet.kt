@@ -2,6 +2,7 @@ package piuk.blockchain.android.cards
 
 import android.os.Bundle
 import android.view.View
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -49,6 +50,7 @@ class RemoveCardBottomSheet : SlidingModalBottomDialog() {
                     .subscribeBy(onComplete = {
                         (parentFragment as? Host)?.onCardRemoved(card.cardId)
                         dismiss()
+                        analytics.logEvent(SimpleBuyAnalytics.REMOVE_CARD)
                     }, onError = {})
             }
         }

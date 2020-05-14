@@ -8,6 +8,7 @@ import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import kotlinx.android.synthetic.main.layout_payment_method_chooser_item.view.*
 import kotlinx.android.synthetic.main.simple_buy_crypto_currency_chooser.view.*
@@ -54,6 +55,11 @@ class PaymentMethodChooserBottomSheet : SlidingModalBottomDialog() {
                         })
                     }, canAdd)
         view.recycler.layoutManager = LinearLayoutManager(context)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        analytics.logEvent(SimpleBuyAnalytics.PAYMENT_METHODS_SHOWN)
     }
 
     companion object {
