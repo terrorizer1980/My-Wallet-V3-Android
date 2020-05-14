@@ -74,9 +74,9 @@ class ActivityDetailsInteractor(
                 } - ${paymentMethod.endDigits}")
             ))
         } ?: list.add(BuyPaymentMethod(
-                SelectedPaymentMethod(custodialActivitySummaryItem.paymentMethodId,
-                    label = "Couldn't load card details")
-            ))
+            SelectedPaymentMethod(custodialActivitySummaryItem.paymentMethodId,
+                label = "Couldn't load card details")
+        ))
 
         if (custodialActivitySummaryItem.status == OrderState.PENDING_CONFIRMATION) {
             list.add(CancelAction())
@@ -112,7 +112,7 @@ class ActivityDetailsInteractor(
                     Amount(item.cryptoValue),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
-                    FeeForTransaction("TODO"),
+                    addTransactionFor(item),
                     checkIfShouldAddDescription(item),
                     Action()
                 )
@@ -197,6 +197,19 @@ class ActivityDetailsInteractor(
                 Completable.error(UnsupportedOperationException(
                     "This type of currency doesn't support descriptions"))
             }
+        }
+    }
+
+    private fun addTransactionFor(item: NonCustodialActivitySummaryItem): FeeForTransaction? {
+        return when (item) {
+            is EthActivitySummaryItem -> {
+                val relatedItem = assetActivityRepo.findCachedItemById(item.ethTransaction.hash)
+                relatedItem?.let {
+                    FeeForTransaction(
+                        "${it.cryptoValue.toStringWithSymbol()} -> ${item.cryptoValue.toStringWithSymbol()}")
+                }
+            }
+            else -> null
         }
     }
 
