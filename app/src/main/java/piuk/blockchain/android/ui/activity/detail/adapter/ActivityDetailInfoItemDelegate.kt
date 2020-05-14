@@ -102,8 +102,8 @@ private class InfoItemViewHolder(var parent: View) : RecyclerView.ViewHolder(par
             is BuyPaymentMethod ->
                 if (infoType.paymentDetails.paymentMethodId == PaymentMethod.BANK_PAYMENT_ID) {
                     parent.context.getString(R.string.checkout_bank_transfer_label)
-                } else if(infoType.paymentDetails.endDigits != null &&
-                    infoType.paymentDetails.label != null){
+                } else if (infoType.paymentDetails.endDigits != null &&
+                    infoType.paymentDetails.label != null) {
                     parent.context.getString(R.string.common_hyphenated_strings,
                         infoType.paymentDetails.label,
                         infoType.paymentDetails.endDigits)
