@@ -65,17 +65,12 @@ class ActivityDetailsInteractor(
         custodialActivitySummaryItem: CustodialActivitySummaryItem
     ) {
         paymentMethod?.let {
-            val paymentTypeLabel = if (paymentMethod.label.isNotEmpty()) {
-                paymentMethod.label
-            } else {
-                paymentMethod.cardType
-            }
-            list.add(BuyPaymentMethod(SelectedPaymentMethod(paymentMethod.cardId,
-                label = "$paymentTypeLabel - ${paymentMethod.endDigits}")
+            list.add(BuyPaymentMethod(SelectedPaymentMethod(it.cardId,
+                label = "${it.uiLabel()} - ${it.endDigits}")
             ))
         } ?: list.add(BuyPaymentMethod(
                 SelectedPaymentMethod(custodialActivitySummaryItem.paymentMethodId,
-                    label = "Couldn't load card details")
+                    label = null)
             ))
 
         if (custodialActivitySummaryItem.status == OrderState.PENDING_CONFIRMATION) {
