@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- common -->
+    <string name="common_hyphenated_strings">%1$s - %2$s</string>
+
     <plurals name="transfer_label_plural">
         <item quantity="one">1 imported address</item>
         <item quantity="other">%d imported addresses</item>

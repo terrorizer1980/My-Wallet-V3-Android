@@ -14,7 +14,6 @@ import piuk.blockchain.android.coincore.btc.BtcActivitySummaryItem
 import piuk.blockchain.android.coincore.eth.EthActivitySummaryItem
 import piuk.blockchain.android.coincore.impl.AssetActivityRepo
 import piuk.blockchain.android.coincore.pax.PaxActivitySummaryItem
-import piuk.blockchain.android.simplebuy.SelectedPaymentMethod
 import java.text.ParseException
 import java.util.Date
 
@@ -49,7 +48,9 @@ class ActivityDetailsInteractor(
                 }
         } else {
             list.add(BuyPaymentMethod(
-                SelectedPaymentMethod(custodialActivitySummaryItem.paymentMethodId)))
+                PaymentDetails(custodialActivitySummaryItem.paymentMethodId, label = null,
+                    endDigits = null
+                )))
 
             if (custodialActivitySummaryItem.status == OrderState.AWAITING_FUNDS ||
                 custodialActivitySummaryItem.status == OrderState.PENDING_EXECUTION) {
@@ -65,13 +66,13 @@ class ActivityDetailsInteractor(
         custodialActivitySummaryItem: CustodialActivitySummaryItem
     ) {
         paymentMethod?.let {
-            list.add(BuyPaymentMethod(SelectedPaymentMethod(it.cardId,
-                label = "${it.uiLabel()} - ${it.endDigits}")
-            ))
+            list.add(BuyPaymentMethod(PaymentDetails(
+                it.cardId, it.uiLabel(), it.endDigits
+            )))
         } ?: list.add(BuyPaymentMethod(
-                SelectedPaymentMethod(custodialActivitySummaryItem.paymentMethodId,
-                    label = null)
-            ))
+            PaymentDetails(custodialActivitySummaryItem.paymentMethodId,
+                label = null, endDigits = null)
+        ))
 
         if (custodialActivitySummaryItem.status == OrderState.PENDING_CONFIRMATION) {
             list.add(CancelAction())

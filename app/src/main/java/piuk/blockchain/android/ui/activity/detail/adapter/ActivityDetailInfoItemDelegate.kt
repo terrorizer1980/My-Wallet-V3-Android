@@ -3,6 +3,7 @@ package piuk.blockchain.android.ui.activity.detail.adapter
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_activity_detail_info.view.*
@@ -99,10 +100,15 @@ private class InfoItemViewHolder(var parent: View) : RecyclerView.ViewHolder(par
             is BuyCryptoWallet -> parent.context.getString(R.string.custodial_wallet_default_label,
                 parent.context.getString(infoType.crypto.assetName()))
             is BuyPaymentMethod ->
-                if (infoType.paymentMethod.isBank()) {
+                if (infoType.paymentDetails.paymentMethodId == PaymentMethod.BANK_PAYMENT_ID) {
                     parent.context.getString(R.string.checkout_bank_transfer_label)
+                } else if(infoType.paymentDetails.endDigits != null &&
+                    infoType.paymentDetails.label != null){
+                    parent.context.getString(R.string.common_hyphenated_strings,
+                        infoType.paymentDetails.label,
+                        infoType.paymentDetails.endDigits)
                 } else {
-                    infoType.paymentMethod.label ?: parent.context.getString(
+                    parent.context.getString(
                         R.string.activity_details_payment_load_fail)
                 }
             else -> ""
