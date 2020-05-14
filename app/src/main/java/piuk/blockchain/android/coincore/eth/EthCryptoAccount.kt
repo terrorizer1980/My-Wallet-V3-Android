@@ -53,23 +53,24 @@ internal class EthCryptoAccountNonCustodial(
         get() = Single.just(address)
 
     override val activity: Single<ActivitySummaryList>
-        get() = ethDataManager.getLatestBlock()
-            .singleOrError()
+        get() = ethDataManager.getLatestBlockNumber()
             .flatMap { latestBlock ->
                 ethDataManager.getEthTransactions()
                     .map {
-                        val ethFeeForPaxTransaction = it.to.equals(
-                            ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress,
-                            ignoreCase = true
-                        )
-                        EthActivitySummaryItem(
-                            ethDataManager,
-                            it,
-                            ethFeeForPaxTransaction,
-                            latestBlock.blockHeight,
-                            exchangeRates
-                        ) as ActivitySummaryItem
-                    }.toList()
+                        it.map {
+                            val ethFeeForPaxTransaction = it.to.equals(
+                                ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress,
+                                ignoreCase = true
+                            )
+                            EthActivitySummaryItem(
+                                ethDataManager,
+                                it,
+                                ethFeeForPaxTransaction,
+                                latestBlock.number.toLong(),
+                                exchangeRates
+                            ) as ActivitySummaryItem
+                        }
+                    }
             }
             .doOnSuccess { txCache.addToCache(it) }
 

@@ -35,7 +35,7 @@ internal class EthActivitySummaryItem(
         }
     }
 
-    override val timeStampMs: Long = ethTransaction.timeStamp * 1000
+    override val timeStampMs: Long = ethTransaction.timestamp * 1000
 
     override val totalCrypto: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.ETHER,

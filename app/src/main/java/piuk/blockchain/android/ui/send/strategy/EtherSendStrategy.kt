@@ -449,6 +449,13 @@ class EtherSendStrategy(
         } else {
             view?.updateMaxAvailableColor(R.color.primary_blue_accent)
         }
+
+        // Check if any pending ether txs exist and warn user
+        compositeDisposable += isLastTxPending()
+            .subscribeBy(
+                onSuccess = { /* No-op */ },
+                onError = { Timber.e(it) }
+            )
     }
 
     override fun handlePrivxScan(scanData: String?) {}
@@ -487,7 +494,7 @@ class EtherSendStrategy(
         }.flatMap { errorPair ->
             if (errorPair.first) {
                 // Validate address does not have unconfirmed funds
-                isLastTxPending()
+                isLastTxPending().toObservable()
             } else {
                 Observable.just(errorPair)
             }
