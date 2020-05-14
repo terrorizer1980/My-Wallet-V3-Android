@@ -78,9 +78,9 @@ internal class PaxTokens(
         return PaxCryptoAccountNonCustodial(label, paxAddress, paxAccount, exchangeRates)
     }
 
-    override fun balance(account: AccountReference): Single<CryptoValue> {
-        TODO("not implemented")
-    }
+//    override fun balance(account: AccountReference): Single<CryptoValue> {
+//        TODO("not implemented")
+//    }
 
     override fun exchangeRate(): Single<FiatValue> =
         exchangeRates.fetchLastPrice(CryptoCurrency.PAX, currencyPrefs.selectedFiatCurrency)

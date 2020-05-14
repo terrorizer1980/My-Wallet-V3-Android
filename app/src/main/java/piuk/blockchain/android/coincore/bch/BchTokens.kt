@@ -102,10 +102,10 @@ internal class BchTokens(
             address.toCashAddress()
         }.singleOrError()
 
-    override fun balance(account: AccountReference): Single<CryptoValue> {
-        val ref = accountReference(account)
-        return updater().toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getAddressBalance(ref.xpub) }
-    }
+//    override fun balance(account: AccountReference): Single<CryptoValue> {
+//        val ref = accountReference(account)
+//        return updater().toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getAddressBalance(ref.xpub) }
+//    }
 
     override fun doUpdateBalances(): Completable =
         bchDataManager.updateAllBalances()

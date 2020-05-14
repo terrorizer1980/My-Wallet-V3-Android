@@ -93,11 +93,11 @@ internal class BtcTokens(
         payloadDataManager.getNextReceiveAddress(payloadDataManager.getAccount(payloadDataManager.defaultAccountIndex))
             .singleOrError()
 
-    override fun balance(account: AccountReference): Single<CryptoValue> {
-        val ref = accountReference(account)
-        return updater()
-            .toCryptoSingle(CryptoCurrency.BTC) { payloadManager.getAddressBalance(ref.xpub) }
-    }
+//    override fun balance(account: AccountReference): Single<CryptoValue> {
+//        val ref = accountReference(account)
+//        return updater()
+//            .toCryptoSingle(CryptoCurrency.BTC) { payloadManager.getAddressBalance(ref.xpub) }
+//    }
 
     override fun doUpdateBalances(): Completable =
         payloadDataManager.updateAllBalances()

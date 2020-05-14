@@ -64,12 +64,6 @@ internal class XlmTokens(
             it.receiveAddress
         }
 
-    override fun balance(account: AccountReference): Single<CryptoValue> {
-        val ref = account as? AccountReference.Xlm
-            ?: throw IllegalArgumentException("Not an XLM Account Ref")
-        return xlmDataManager.getBalance(ref)
-    }
-
     override fun exchangeRate(): Single<FiatValue> =
         exchangeRates.fetchLastPrice(CryptoCurrency.XLM, currencyPrefs.selectedFiatCurrency)
 

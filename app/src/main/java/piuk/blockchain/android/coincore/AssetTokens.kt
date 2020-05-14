@@ -43,9 +43,6 @@ interface AssetTokens {
     fun receiveAddress(): Single<String>
 
     @Deprecated(message = "CoinCore update")
-    fun balance(account: AccountReference): Single<CryptoValue>
-
-    @Deprecated(message = "CoinCore update")
     fun actions(filter: AssetFilter): AvailableActions
 
     /** Has this user got a configured wallet for asset type?

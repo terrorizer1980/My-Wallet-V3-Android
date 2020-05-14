@@ -89,10 +89,6 @@ internal class StxTokens(
         )
     }
 
-    override fun balance(account: AccountReference): Single<CryptoValue> {
-        TODO("not implemented")
-    }
-
     override fun exchangeRate(): Single<FiatValue> {
         TODO("not implemented")
     }

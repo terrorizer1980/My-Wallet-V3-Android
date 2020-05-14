@@ -87,13 +87,13 @@ internal class EthTokens(
 //            .singleOrError()
 //            .map { CryptoValue(CryptoCurrency.ETHER, it.getTotalBalance()) }
 //
-    override fun balance(account: AccountReference): Single<CryptoValue> {
-        val ref = account as? AccountReference.Ethereum
-            ?: throw IllegalArgumentException("Not an XLM Account Ref")
-
-        return ethDataManager.getBalance(ref.address)
-            .map { CryptoValue.etherFromWei(it) }
-    }
+//    override fun balance(account: AccountReference): Single<CryptoValue> {
+//        val ref = account as? AccountReference.Ethereum
+//            ?: throw IllegalArgumentException("Not an XLM Account Ref")
+//
+//        return ethDataManager.getBalance(ref.address)
+//            .map { CryptoValue.etherFromWei(it) }
+//    }
 
     override fun exchangeRate(): Single<FiatValue> =
         exchangeRates.fetchLastPrice(CryptoCurrency.ETHER, currencyPrefs.selectedFiatCurrency)
