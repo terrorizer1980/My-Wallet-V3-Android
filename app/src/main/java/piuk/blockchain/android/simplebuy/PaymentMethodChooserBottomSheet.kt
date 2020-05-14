@@ -12,6 +12,7 @@ import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import kotlinx.android.synthetic.main.layout_payment_method_chooser_item.view.*
 import kotlinx.android.synthetic.main.simple_buy_crypto_currency_chooser.view.*
 import piuk.blockchain.android.R
+import piuk.blockchain.android.cards.icon
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.extensions.gone
@@ -113,7 +114,8 @@ private class BottomSheetPaymentMethodsAdapter(
             icon.setImageResource(R.drawable.ic_payment_card)
             title.text = if (canAdd) title.context.getString(R.string.add_credit_or_debit_card) else
                 title.context.getString(R.string.credit_or_debit_card)
-            limit.text = paymentMethod.limits?.max?.toStringWithSymbol()
+            limit.text =
+                limit.context.getString(R.string.payment_method_limit, paymentMethod.limits.max.toStringWithSymbol())
         }
     }
 
@@ -123,18 +125,19 @@ private class BottomSheetPaymentMethodsAdapter(
             cardNumber.gone()
             expiryDate.gone()
             icon.setImageResource(R.drawable.ic_bank_transfer)
-            title.text = title.context.getString(R.string.bank_wise_transfer)
-            limit.text = paymentMethod.limits.max.toStringWithSymbol()
+            title.text = title.context.getString(R.string.bank_wire_transfer)
+            limit.text =
+                limit.context.getString(R.string.payment_method_limit, paymentMethod.limits.max.toStringWithSymbol())
         }
     }
 
     private fun configureUIforCard(paymentMethod: PaymentMethod.Card, holder: ViewHolder) {
         with(holder) {
             addIcon.gone()
-            icon.setImageResource(paymentMethod.cardType.frontResource)
-            title.text = paymentMethod.label
-            limit.text = paymentMethod.limits?.max?.toStringWithSymbol()
-            cardNumber.text = "•••• ${paymentMethod.endDigits}"
+            icon.setImageResource(paymentMethod.cardType.icon())
+            title.text = paymentMethod.uiLabel()
+            limit.text = paymentMethod.limits.max.toStringWithSymbol()
+            cardNumber.text = paymentMethod.dottedEndDigits()
             expiryDate.text =
                 expiryDate.context.getString(R.string.card_expiry_date, paymentMethod.expireDate.formatted())
             cardNumber.visible()

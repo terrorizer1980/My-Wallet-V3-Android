@@ -8,7 +8,6 @@ import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import piuk.blockchain.android.cards.EverypayAuthOptions
 import piuk.blockchain.android.ui.base.mvi.MviIntent
@@ -38,9 +37,9 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
             state
     }
 
-    class OrderPriceUpdated(private val price: CryptoValue?) : SimpleBuyIntent() {
+    class OrderPriceUpdated(private val price: FiatValue?) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
-            oldState.copy(price = price, isLoading = false)
+            oldState.copy(orderExchangePrice = price, isLoading = false)
     }
 
     class Open3dsAuth(private val paymentLink: String, private val exitLink: String) : SimpleBuyIntent() {
@@ -70,7 +69,7 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
                     } as? PaymentMethod.Card)?.partner,
                     (availablePaymentMethods.firstOrNull {
                         it.id == selectedPaymentMethodId
-                    } as? PaymentMethod.Card)?.uiLabel() ?: ""
+                    } as? PaymentMethod.Card)?.uiLabelWithDigits() ?: ""
                 ), // todo apply the right logic
                 paymentOptions = PaymentOptions(
                     availablePaymentMethods = availablePaymentMethods,
@@ -96,7 +95,7 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
                     paymentMethod.id,
                     // no partner for bank transfer or ui label. Ui label for bank transfer is coming from resources
                     (paymentMethod as? PaymentMethod.Card)?.partner,
-                    (paymentMethod as? PaymentMethod.Card)?.uiLabel() ?: ""
+                    (paymentMethod as? PaymentMethod.Card)?.uiLabelWithDigits() ?: ""
                 ))
     }
 
@@ -280,7 +279,7 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
                 id = buyOrder.id,
                 fee = buyOrder.fee,
                 orderValue = buyOrder.orderValue,
-                price = buyOrder.price,
+                orderExchangePrice = buyOrder.price,
                 isLoading = false
             )
     }

@@ -319,8 +319,8 @@ class EtherSendStrategy(
             cryptoAmount = amount.toStringWithoutSymbol(),
             cryptoFee = fee.toStringWithoutSymbol(),
             cryptoTotal = total.toStringWithoutSymbol(),
-            fiatFee = fee.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol(),
-            fiatAmount = amount.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol(),
+            fiatFee = fee.toFiat(exchangeRates, fiatCurrency).toStringWithoutSymbol(),
+            fiatAmount = amount.toFiat(exchangeRates, fiatCurrency).toStringWithoutSymbol(),
             fiatTotal = total.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
         )
     }

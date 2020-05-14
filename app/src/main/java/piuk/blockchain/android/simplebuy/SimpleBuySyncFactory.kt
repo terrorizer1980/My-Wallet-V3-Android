@@ -162,7 +162,7 @@ class SimpleBuySyncFactory(
                             custodialWallet.getCardDetails(buyOrder.paymentMethodId).flatMapMaybe {
                                 Maybe.just(buyOrder.toSimpleBuyState().copy(
                                     selectedPaymentMethod = SelectedPaymentMethod(
-                                        it.cardId, it.partner, it.uiLabel()
+                                        it.cardId, it.partner, it.uiLabelWithDigits()
                                     )
                                 )
                                 )
@@ -188,7 +188,7 @@ class SimpleBuySyncFactory(
                                 custodialWallet.getCardDetails(buyOrder.paymentMethodId).flatMapMaybe {
                                     Maybe.just(buyOrder.toSimpleBuyState().copy(
                                         selectedPaymentMethod = SelectedPaymentMethod(
-                                            it.cardId, it.partner, it.uiLabel()
+                                            it.cardId, it.partner, it.uiLabelWithDigits()
                                         )
                                     )
                                     )
@@ -258,7 +258,7 @@ fun BuyOrder.toSimpleBuyState(): SimpleBuyState =
         orderState = state,
         fee = fee,
         orderValue = orderValue,
-        price = price,
+        orderExchangePrice = price,
         selectedPaymentMethod = SelectedPaymentMethod(id = paymentMethodId),
         expirationDate = expires,
         kycVerificationState = KycState.VERIFIED_AND_ELIGIBLE, // This MUST be so if we have an order in process.

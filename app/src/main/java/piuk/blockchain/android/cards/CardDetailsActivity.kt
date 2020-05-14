@@ -3,7 +3,7 @@ package piuk.blockchain.android.cards
 import android.content.Intent
 import android.os.Bundle
 import com.blockchain.preferences.SimpleBuyPrefs
-import com.blockchain.swap.nabu.datamanagers.Partner
+import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import kotlinx.android.synthetic.main.activity_card_details.*
 import kotlinx.android.synthetic.main.toolbar_general.toolbar_general
 import org.koin.android.ext.android.inject
@@ -59,11 +59,11 @@ class CardDetailsActivity : BlockchainActivity(), AddCardNavigator, CardDetailsP
             .commitAllowingStateLoss()
     }
 
-    override fun exitWithSuccess(cardId: String, cardLabel: String, partner: Partner) {
+    override fun exitWithSuccess(card: PaymentMethod.Card) {
         val data = Intent().apply {
-            putExtra(CARD_ID_KEY, cardId)
-            putExtra(CARD_PARTNER_KEY, partner)
-            putExtra(CARD_LABEL_KEY, cardLabel)
+            putExtras(Bundle().apply {
+                putSerializable(CARD_KEY, card)
+            })
         }
         setResult(RESULT_OK, data)
         finish()
@@ -80,9 +80,7 @@ class CardDetailsActivity : BlockchainActivity(), AddCardNavigator, CardDetailsP
     override fun getCardData(): CardData? = cardData
 
     companion object {
-        const val CARD_ID_KEY = "card_id"
-        const val CARD_LABEL_KEY = "card_label"
-        const val CARD_PARTNER_KEY = "card_partner"
+        const val CARD_KEY = "card_key"
         const val ADD_CARD_REQUEST_CODE = 3245
     }
 }

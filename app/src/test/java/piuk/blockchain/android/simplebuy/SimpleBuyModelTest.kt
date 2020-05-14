@@ -2,9 +2,9 @@ package piuk.blockchain.android.simplebuy
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.preferences.SimpleBuyPrefs
-import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.datamanagers.BuyLimits
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
+import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.simplebuy.CardPaymentAttributes
@@ -137,7 +137,11 @@ class SimpleBuyModelTest {
 
     @Test
     fun `make card payment should update price and payment attributes`() {
-        val price = CryptoValue.fromMinor(CryptoCurrency.BTC, 1000.toBigDecimal())
+        val price = FiatValue.fromMinor(
+            "EUR",
+            1000.toLong()
+        )
+
         val paymentLink = "http://example.com"
         val id = "testId"
         whenever(interactor.fetchOrder(id))
@@ -163,12 +167,12 @@ class SimpleBuyModelTest {
 
         testObserver.assertValueAt(0, defaultState)
         testObserver.assertValueAt(1, defaultState.copy(isLoading = true))
-        testObserver.assertValueAt(2, defaultState.copy(price = price))
-        testObserver.assertValueAt(3, defaultState.copy(price = price,
+        testObserver.assertValueAt(2, defaultState.copy(orderExchangePrice = price))
+        testObserver.assertValueAt(3, defaultState.copy(orderExchangePrice = price,
             everypayAuthOptions = EverypayAuthOptions(
                 paymentLink, EverypayCardActivator.redirectUrl
             )))
-        testObserver.assertValueAt(4, defaultState.copy(price = price))
+        testObserver.assertValueAt(4, defaultState.copy(orderExchangePrice = price))
     }
 
     @Test
