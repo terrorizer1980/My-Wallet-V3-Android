@@ -50,6 +50,11 @@ class AssetActivityRepo(
             it.cryptoCurrency == cryptoCurrency && it.txId == txHash
         }
 
+    fun findCachedItemById(txHash: String): ActivitySummaryItem? =
+        transactionCache.find {
+            it.txId == txHash
+        }
+
     private fun getFromNetwork(refreshRequested: Boolean): Maybe<ActivitySummaryList> {
         return if (refreshRequested || isCacheExpired()) {
             coincore.allWallets.activity.toMaybe().doOnSuccess { activityList ->

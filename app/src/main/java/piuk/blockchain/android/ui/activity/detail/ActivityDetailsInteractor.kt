@@ -107,7 +107,7 @@ class ActivityDetailsInteractor(
                     Amount(item.cryptoValue),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
-                    FeeForTransaction("TODO"),
+                    addFeeForTransaction(item),
                     checkIfShouldAddDescription(item),
                     Action()
                 )
@@ -192,6 +192,21 @@ class ActivityDetailsInteractor(
                 Completable.error(UnsupportedOperationException(
                     "This type of currency doesn't support descriptions"))
             }
+        }
+    }
+
+    private fun addFeeForTransaction(item: NonCustodialActivitySummaryItem): FeeForTransaction? {
+        return when (item) {
+            is EthActivitySummaryItem -> {
+                val relatedItem = assetActivityRepo.findCachedItemById(item.ethTransaction.hash)
+                relatedItem?.let {
+                    FeeForTransaction(
+                        item.direction,
+                        it.cryptoValue
+                    )
+                }
+            }
+            else -> null
         }
     }
 

@@ -1729,6 +1729,8 @@
     <string name="activity_details_buy_again">Buy Again</string>
     <string name="activity_details_description_updated">Description updated</string>
     <string name="activity_details_description_not_updated">Description failed to update</string>
+    <string name="activity_details_transaction_fee_send">Sending %1$s</string>
+    <string name="activity_details_transaction_fee_unknown">Unknown</string>
     <string name="activity_details_payment_load_fail">Couldn\'t load card details</string>
 
     <string name="order_pending">Pending</string>

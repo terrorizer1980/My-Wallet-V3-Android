@@ -3,6 +3,7 @@ package piuk.blockchain.android.ui.activity.detail.adapter
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import info.blockchain.wallet.multiaddress.TransactionSummary
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_activity_detail_info.view.*
 import piuk.blockchain.android.R
@@ -84,7 +85,14 @@ private class InfoItemViewHolder(var parent: View) : RecyclerView.ViewHolder(par
             is Value -> infoType.fiatAtExecution.toStringWithSymbol()
             is To -> infoType.toAddress
             is From -> infoType.fromAddress
-            is FeeForTransaction -> infoType.transactionFee
+            is FeeForTransaction -> {
+                when (infoType.direction) {
+                    TransactionSummary.Direction.SENT -> parent.context.getString(
+                        R.string.activity_details_transaction_fee_send,
+                        infoType.cryptoValue.toStringWithSymbol())
+                    else -> parent.context.getString(R.string.activity_details_transaction_fee_unknown)
+                }
+            }
             is BuyFee -> infoType.feeValue.toStringWithSymbol()
             is BuyPurchaseAmount -> infoType.fundedFiat.toStringWithSymbol()
             is BuyTransactionId -> infoType.txId
