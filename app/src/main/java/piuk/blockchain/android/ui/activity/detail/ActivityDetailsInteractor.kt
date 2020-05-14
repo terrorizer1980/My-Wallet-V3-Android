@@ -112,7 +112,7 @@ class ActivityDetailsInteractor(
                     Amount(item.cryptoValue),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
-                    addTransactionFor(item),
+                    addFeeForTransaction(item),
                     checkIfShouldAddDescription(item),
                     Action()
                 )
@@ -200,7 +200,7 @@ class ActivityDetailsInteractor(
         }
     }
 
-    private fun addTransactionFor(item: NonCustodialActivitySummaryItem): FeeForTransaction? {
+    private fun addFeeForTransaction(item: NonCustodialActivitySummaryItem): FeeForTransaction? {
         return when (item) {
             is EthActivitySummaryItem -> {
                 val relatedItem = assetActivityRepo.findCachedItemById(item.ethTransaction.hash)
