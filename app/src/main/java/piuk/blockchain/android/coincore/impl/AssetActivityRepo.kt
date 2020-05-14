@@ -5,29 +5,25 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.CryptoAccount
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import timber.log.Timber
 
 private const val CACHE_LIFETIME = 60 * 1000
 
 class AssetActivityRepo(
     private val coincore: Coincore,
-    rxBus: RxBus
+    private val rxBus: RxBus
 ) {
+    private val event =  rxBus.register(AuthEvent.LOGOUT::class.java)
 
     init {
         val compositeDisposable = CompositeDisposable()
-        Timber.e("---- registering event on bus")
-        compositeDisposable += rxBus.register(AuthEvent.LOGOUT::class.java)
-            .observeOn(Schedulers.computation())
+        compositeDisposable += event
             .subscribe {
-                Timber.e("---- on logout called")
                 doOnLogout()
             }
     }
@@ -89,5 +85,6 @@ class AssetActivityRepo(
 
     private fun doOnLogout() {
         transactionCache.clear()
+        rxBus.unregister(AuthEvent::class.java, event)
     }
 }
