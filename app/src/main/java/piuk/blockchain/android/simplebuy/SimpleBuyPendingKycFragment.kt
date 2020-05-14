@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
-import com.blockchain.swap.nabu.datamanagers.Partner
 import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import kotlinx.android.synthetic.main.fragment_simple_buy_kyc_pending.*
 import org.koin.android.ext.android.inject
@@ -109,9 +108,11 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CardDetailsActivity.ADD_CARD_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val cardId = data?.getStringExtra(CardDetailsActivity.CARD_ID_KEY) ?: return
-            val cardLabel = data.getStringExtra(CardDetailsActivity.CARD_LABEL_KEY) ?: return
-            val cardPartner = data.getSerializableExtra(CardDetailsActivity.CARD_PARTNER_KEY) as? Partner ?: return
+            val card = (data?.extras?.getSerializable(CardDetailsActivity.CARD_KEY) as?
+                    PaymentMethod.Card) ?: return
+            val cardId = card.cardId
+            val cardLabel = card.uiLabel()
+            val cardPartner = card.partner
 
             model.process(SimpleBuyIntent.UpdateSelectedPaymentMethod(cardId, cardLabel, cardPartner))
             navigator().goToCheckOutScreen()

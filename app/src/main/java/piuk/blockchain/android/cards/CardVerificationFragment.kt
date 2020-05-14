@@ -41,7 +41,7 @@ class CardVerificationFragment : MviFragment<CardModel, CardIntent, CardState>()
             when (it) {
                 is CardRequestStatus.Loading -> renderLoadingState()
                 is CardRequestStatus.Error -> renderErrorState()
-                is CardRequestStatus.Success -> navigator.exitWithSuccess(it.cardId, it.cardLabel, it.partner)
+                is CardRequestStatus.Success -> navigator.exitWithSuccess(it.card)
             }
         }
 

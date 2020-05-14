@@ -257,10 +257,12 @@ class NabuService(retrofit: Retrofit) {
 
     internal fun isEligibleForSimpleBuy(
         sessionToken: NabuSessionTokenResponse,
-        fiatCurrency: String
+        fiatCurrency: String,
+        methods: String
     ): Single<SimpleBuyEligibility> = service.isEligibleForSimpleBuy(
         sessionToken.authHeader,
-        fiatCurrency
+        fiatCurrency,
+        methods
     ).wrapErrorMessage()
 
     internal fun createOrder(
@@ -303,6 +305,13 @@ class NabuService(retrofit: Retrofit) {
         orderId: String
     ) = service.getBuyOrder(
         sessionToken.authHeader, orderId
+    ).wrapErrorMessage()
+
+    fun deleteCard(
+        sessionToken: NabuSessionTokenResponse,
+        cardId: String
+    ) = service.deleteCard(
+        sessionToken.authHeader, cardId
     ).wrapErrorMessage()
 
     fun addNewCard(

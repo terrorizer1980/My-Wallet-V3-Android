@@ -102,7 +102,8 @@ private class InfoItemViewHolder(var parent: View) : RecyclerView.ViewHolder(par
                 if (infoType.paymentMethod.isBank()) {
                     parent.context.getString(R.string.checkout_bank_transfer_label)
                 } else {
-                    infoType.paymentMethod.label ?: ""
+                    infoType.paymentMethod.label ?: parent.context.getString(
+                        R.string.activity_details_payment_load_fail)
                 }
             else -> ""
         }

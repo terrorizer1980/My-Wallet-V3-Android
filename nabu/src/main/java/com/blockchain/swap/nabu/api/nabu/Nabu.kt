@@ -221,7 +221,8 @@ internal interface Nabu {
     @GET(NABU_SIMPLE_BUY_ELIGIBILITY)
     fun isEligibleForSimpleBuy(
         @Header("authorization") authorization: String,
-        @Query("fiatCurrency") fiatCurrency: String
+        @Query("fiatCurrency") fiatCurrency: String,
+        @Query("methods") methods: String
     ): Single<SimpleBuyEligibility>
 
     @POST(NABU_SIMPLE_BUY_ORDERS)
@@ -261,6 +262,12 @@ internal interface Nabu {
         @Header("authorization") authHeader: String,
         @Body addNewCardBody: AddNewCardBodyRequest
     ): Single<AddNewCardResponse>
+
+    @DELETE("$NABU_CARDS/{cardId}")
+    fun deleteCard(
+        @Header("authorization") authHeader: String,
+        @Path("cardId") cardId: String
+    ): Completable
 
     @POST("$NABU_CARDS/{cardId}/activate")
     fun activateCard(
