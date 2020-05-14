@@ -18,7 +18,7 @@ class AssetActivityRepo(
     private val coincore: Coincore,
     private val rxBus: RxBus
 ) {
-    private val event =  rxBus.register(AuthEvent.LOGOUT::class.java)
+    private val event = rxBus.register(AuthEvent.LOGOUT::class.java)
 
     init {
         val compositeDisposable = CompositeDisposable()
