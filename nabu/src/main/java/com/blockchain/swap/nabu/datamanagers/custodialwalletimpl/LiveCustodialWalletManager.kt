@@ -25,6 +25,7 @@ import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.swap.nabu.extensions.toLocalTime
 import com.blockchain.swap.nabu.models.cards.CardResponse
 import com.blockchain.swap.nabu.models.cards.PaymentMethodType
+import com.blockchain.swap.nabu.models.cards.PaymentMethodsResponse
 import com.blockchain.swap.nabu.models.nabu.AddAddressRequest
 import com.blockchain.swap.nabu.models.simplebuy.AddNewCardBodyRequest
 import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
@@ -245,6 +246,13 @@ class LiveCustodialWalletManager(
             .flatMapCompletable { deleteBuyOrder(it.id) }
     }
 
+    override fun updateSupportedCardTypes(fiatCurrency: String): Completable =
+        authenticator.authenticate {
+            nabuService.getPaymentMethods(it, fiatCurrency).doOnSuccess {
+                updateSupportedCards(it)
+            }
+        }.ignoreElement()
+
     override fun fetchSuggestedPaymentMethod(
         fiatCurrency: String,
         isTier2Approved: Boolean
@@ -270,15 +278,18 @@ class LiveCustodialWalletManager(
             }
         }
 
+    private val updateSupportedCards: (PaymentMethodsResponse) -> Unit = {
+        val cardTypes = it.methods.filter { it.subTypes.isNullOrEmpty().not() }.mapNotNull {
+            it.subTypes
+        }.flatten().distinct()
+        simpleBuyPrefs.updateSupportedCards(cardTypes.joinToString())
+    }
+
     private fun allPaymentsMethods(fiatCurrency: String, isTier2Approved: Boolean) = authenticator.authenticate {
         Singles.zip(
             nabuService.getCards(it).onErrorReturn { emptyList() },
             nabuService.getPaymentMethods(it, fiatCurrency).doOnSuccess {
-                val cardTypes = it.methods.filter { it.subTypes.isNullOrEmpty().not() }.map {
-                    it.subTypes
-                }.filterNotNull().flatten().distinct()
-
-                simpleBuyPrefs.updateSupportedCards(cardTypes.joinToString())
+                updateSupportedCards(it)
             }
         )
     }.map { (cardsResponse, paymentMethods) ->
