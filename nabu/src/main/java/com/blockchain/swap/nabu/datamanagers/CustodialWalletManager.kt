@@ -170,7 +170,7 @@ sealed class PaymentMethod(val id: String, open val limits: PaymentLimits?) : Se
         val label: String,
         val endDigits: String,
         val partner: Partner,
-        val expireDate: Date,   
+        val expireDate: Date,
         val cardType: CardType,
         val status: CardStatus
     ) : PaymentMethod(cardId, limits), Serializable {
