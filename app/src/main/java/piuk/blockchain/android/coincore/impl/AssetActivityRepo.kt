@@ -3,16 +3,35 @@ package piuk.blockchain.android.coincore.impl
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.CryptoAccount
+import piuk.blockchain.androidcore.data.access.AuthEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
+import timber.log.Timber
 
 private const val CACHE_LIFETIME = 60 * 1000
 
 class AssetActivityRepo(
-    private val coincore: Coincore
+    private val coincore: Coincore,
+    rxBus: RxBus
 ) {
+
+    init {
+        val compositeDisposable = CompositeDisposable()
+        Timber.e("---- registering event on bus")
+        compositeDisposable += rxBus.register(AuthEvent.LOGOUT::class.java)
+            .observeOn(Schedulers.computation())
+            .subscribe {
+                Timber.e("---- on logout called")
+                doOnLogout()
+            }
+    }
+
     private val transactionCache = mutableListOf<ActivitySummaryItem>()
     private var lastUpdatedTimestamp: Long = -1L
 
@@ -29,6 +48,11 @@ class AssetActivityRepo(
             list.filter { item -> account.includes(item.account) }.sorted()
         }
     }
+
+    fun findCachedItem(cryptoCurrency: CryptoCurrency, txHash: String): ActivitySummaryItem? =
+        transactionCache.find {
+            it.cryptoCurrency == cryptoCurrency && it.txId == txHash
+        }
 
     private fun getFromNetwork(refreshRequested: Boolean): Maybe<ActivitySummaryList> {
         return if (refreshRequested || isCacheExpired()) {
@@ -63,8 +87,7 @@ class AssetActivityRepo(
     private fun isCacheExpired() =
         System.currentTimeMillis() - lastUpdatedTimestamp >= CACHE_LIFETIME
 
-    fun findCachedItem(cryptoCurrency: CryptoCurrency, txHash: String): ActivitySummaryItem? =
-        transactionCache.find {
-            it.cryptoCurrency == cryptoCurrency && it.txId == txHash
-        }
+    private fun doOnLogout() {
+        transactionCache.clear()
+    }
 }
