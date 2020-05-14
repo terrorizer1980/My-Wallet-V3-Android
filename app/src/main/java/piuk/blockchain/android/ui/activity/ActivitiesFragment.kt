@@ -259,7 +259,7 @@ class ActivitiesFragment
         rxBus.unregister(ActionEvent::class.java, actionEvent)
         super.onPause()
     }
-    
+
     private fun onActivityClicked(
         cryptoCurrency: CryptoCurrency,
         txHash: String,
