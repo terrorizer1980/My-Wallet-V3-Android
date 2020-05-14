@@ -206,7 +206,9 @@ class ActivityDetailsInteractor(
                 val relatedItem = assetActivityRepo.findCachedItemById(item.ethTransaction.hash)
                 relatedItem?.let {
                     FeeForTransaction(
-                        "${it.cryptoValue.toStringWithSymbol()} -> ${item.cryptoValue.toStringWithSymbol()}")
+                        item.direction,
+                        it.cryptoValue
+                    )
                 }
             }
             else -> null

@@ -19,9 +19,10 @@ data class Amount(val cryptoValue: CryptoValue) : ActivityDetailsType()
 data class Fee(val feeValue: CryptoValue) : ActivityDetailsType()
 data class Value(val fiatAtExecution: FiatValue) : ActivityDetailsType()
 data class From(val fromAddress: String) : ActivityDetailsType()
-
-// TODO this will be updated to have info on what transaction the fee is for
-data class FeeForTransaction(val transactionFee: String) : ActivityDetailsType()
+data class FeeForTransaction(
+    val direction: TransactionSummary.Direction,
+    val cryptoValue: CryptoValue
+) : ActivityDetailsType()
 data class To(val toAddress: String) : ActivityDetailsType()
 data class Description(val description: String? = null) : ActivityDetailsType()
 data class Action(val action: String = "") : ActivityDetailsType()
