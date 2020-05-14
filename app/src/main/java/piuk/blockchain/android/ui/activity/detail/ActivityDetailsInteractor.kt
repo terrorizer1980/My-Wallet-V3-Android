@@ -65,13 +65,13 @@ class ActivityDetailsInteractor(
         custodialActivitySummaryItem: CustodialActivitySummaryItem
     ) {
         paymentMethod?.let {
+            val paymentTypeLabel = if (paymentMethod.label.isNotEmpty()) {
+                paymentMethod.label
+            } else {
+                paymentMethod.cardType
+            }
             list.add(BuyPaymentMethod(SelectedPaymentMethod(paymentMethod.cardId,
-                label = "${if (paymentMethod.label.isNotEmpty()) {
-                    paymentMethod.label
-                } else {
-                    paymentMethod.cardType
-                }
-                } - ${paymentMethod.endDigits}")
+                label = "$paymentTypeLabel - ${paymentMethod.endDigits}")
             ))
         } ?: list.add(BuyPaymentMethod(
                 SelectedPaymentMethod(custodialActivitySummaryItem.paymentMethodId,
