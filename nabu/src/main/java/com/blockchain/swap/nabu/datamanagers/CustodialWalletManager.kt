@@ -168,7 +168,7 @@ sealed class PaymentMethod(val id: String, open val limits: PaymentLimits?) : Se
         val cardId: String,
         override val limits: PaymentLimits,
         private val label: String,
-        private val endDigits: String,
+        val endDigits: String,
         val partner: Partner,
         val expireDate: Date,
         val cardType: CardType,

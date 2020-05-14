@@ -36,7 +36,7 @@ class RemoveCardBottomSheet : SlidingModalBottomDialog() {
         with(view) {
             title.text = card.uiLabel()
             end_digits.text = card.dottedEndDigits()
-            icon.setImageResource(card.cardType.frontResource)
+            icon.setImageResource(card.cardType.icon())
             rmv_card_btn.setOnClickListener {
                 compositeDisposable += custodialWalletManager.deleteCard(card.id)
                     .observeOn(AndroidSchedulers.mainThread())

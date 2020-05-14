@@ -135,7 +135,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                                     getView().showToast(R.string.settings_error_updating, ToastCustom.TYPE_ERROR);
                                 }));
         updateCards();
-        getCompositeDisposable().add(pitLinking.getState().subscribe(this::onPitStateUpdated));
+        getCompositeDisposable().add(pitLinking.getState().subscribe(this::onPitStateUpdated, throwable -> {
+        }));
         getCompositeDisposable().add(featureFlag.getEnabled().subscribe(this::showPitItem));
     }
 

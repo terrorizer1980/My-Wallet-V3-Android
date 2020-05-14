@@ -3,6 +3,8 @@ package piuk.blockchain.android.cards
 import com.blockchain.swap.nabu.datamanagers.BillingAddress
 import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.CardStatus
+import com.braintreepayments.cardform.utils.CardType
+import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.mvi.MviState
 
 data class CardState(
@@ -22,3 +24,10 @@ sealed class CardRequestStatus {
     object Loading : CardRequestStatus()
     class Success(val card: PaymentMethod.Card) : CardRequestStatus()
 }
+
+fun CardType.icon() =
+    when (this) {
+        CardType.VISA -> R.drawable.ic_visa
+        CardType.MASTERCARD -> R.drawable.ic_mastercard
+        else -> this.frontResource
+    }
