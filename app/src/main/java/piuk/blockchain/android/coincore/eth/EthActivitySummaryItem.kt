@@ -14,7 +14,7 @@ import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 
 internal class EthActivitySummaryItem(
     private val ethDataManager: EthDataManager,
-    private val ethTransaction: EthTransaction,
+    val ethTransaction: EthTransaction,
     override val isFeeTransaction: Boolean,
     private val blockHeight: Long,
     override val exchangeRates: ExchangeRateDataManager,
