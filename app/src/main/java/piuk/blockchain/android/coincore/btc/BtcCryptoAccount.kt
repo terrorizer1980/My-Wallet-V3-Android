@@ -40,7 +40,8 @@ internal class BtcCryptoAccountNonCustodial(
 
     override val receiveAddress: Single<String>
         get() = payloadDataManager.getNextReceiveAddress(
-            payloadDataManager.getAccount(payloadDataManager.defaultAccountIndex) // TODO: Probably want the index of this address'
+            // TODO: Probably want the index of this address'
+            payloadDataManager.getAccount(payloadDataManager.defaultAccountIndex)
         ).singleOrError()
 
     override val activity: Single<ActivitySummaryList>

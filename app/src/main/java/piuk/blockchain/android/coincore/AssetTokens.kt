@@ -1,8 +1,6 @@
 package piuk.blockchain.android.coincore
 
-import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Single
