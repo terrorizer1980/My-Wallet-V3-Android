@@ -6,13 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.annotation.UiThread
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockchain.annotations.CommonCode
+import com.blockchain.notifications.analytics.ActivityAnalytics
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
+import com.blockchain.notifications.analytics.activityShown
 import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -26,9 +28,11 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.CryptoAccount
 import piuk.blockchain.android.coincore.isCustodial
+import piuk.blockchain.android.simplebuy.SimpleBuyCancelOrderBottomSheet
 import piuk.blockchain.android.ui.accounts.AccountSelectSheet
 import piuk.blockchain.android.ui.activity.adapter.ActivitiesDelegateAdapter
-import piuk.blockchain.android.ui.activity.detail.TransactionDetailActivity
+import piuk.blockchain.android.ui.activity.detail.ActivityDetailsBottomSheet
+import piuk.blockchain.android.ui.dashboard.sheets.BankDetailsBottomSheet
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
 import piuk.blockchain.android.util.setCoinIcon
 import piuk.blockchain.androidcore.data.events.ActionEvent
@@ -42,8 +46,10 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import timber.log.Timber
 
-class ActivitiesFragment : HomeScreenMviFragment<ActivitiesModel, ActivitiesIntent, ActivitiesState>(),
-    AccountSelectSheet.Host {
+class ActivitiesFragment
+    : HomeScreenMviFragment<ActivitiesModel, ActivitiesIntent, ActivitiesState>(),
+    AccountSelectSheet.Host, ActivityDetailsBottomSheet.Host, BankDetailsBottomSheet.Host,
+    SimpleBuyCancelOrderBottomSheet.Host {
 
     override val model: ActivitiesModel by inject()
 
@@ -73,14 +79,6 @@ class ActivitiesFragment : HomeScreenMviFragment<ActivitiesModel, ActivitiesInte
 
     @UiThread
     override fun render(newState: ActivitiesState) {
-
-        switchView(newState)
-
-        swipe.isRefreshing = newState.isLoading
-
-        renderAccountDetails(newState)
-        renderTransactionList(newState)
-
         if (newState.isError) {
             ToastCustom.makeText(
                 requireContext(),
@@ -90,9 +88,32 @@ class ActivitiesFragment : HomeScreenMviFragment<ActivitiesModel, ActivitiesInte
             )
         }
 
+        switchView(newState)
+
+        swipe.isRefreshing = newState.isLoading
+
+        renderAccountDetails(newState)
+        renderTransactionList(newState)
+
         if (this.state?.bottomSheet != newState.bottomSheet) {
             when (newState.bottomSheet) {
-                ActivitiesSheet.ACCOUNT_SELECTOR -> showBottomSheet(AccountSelectSheet.newInstance())
+                ActivitiesSheet.ACCOUNT_SELECTOR -> {
+                    analytics.logEvent(ActivityAnalytics.WALLET_PICKER_SHOWN)
+                    showBottomSheet(AccountSelectSheet.newInstance())
+                }
+                ActivitiesSheet.ACTIVITY_DETAILS -> {
+                    newState.selectedCryptoCurrency?.let {
+                        showBottomSheet(
+                            ActivityDetailsBottomSheet.newInstance(it, newState.selectedTxId,
+                                newState.isCustodial))
+                    }
+                }
+                ActivitiesSheet.BANK_TRANSFER_DETAILS -> {
+                    showBottomSheet(BankDetailsBottomSheet.newInstance())
+                }
+                ActivitiesSheet.BANK_ORDER_CANCEL -> {
+                    showBottomSheet(SimpleBuyCancelOrderBottomSheet.newInstance(false))
+                }
             }
         }
 
@@ -101,8 +122,8 @@ class ActivitiesFragment : HomeScreenMviFragment<ActivitiesModel, ActivitiesInte
 
     private fun switchView(newState: ActivitiesState) {
         when {
-            newState.isLoading -> {
-                header_layout.visible()
+            newState.isLoading && newState.activityList.isEmpty() -> {
+                header_layout.gone()
                 content_list.gone()
                 empty_view.gone()
             }
@@ -155,7 +176,8 @@ class ActivitiesFragment : HomeScreenMviFragment<ActivitiesModel, ActivitiesInte
         when (account.cryptoCurrencies.size) {
             0 -> throw IllegalStateException("Account is invalid; no crypto")
             1 -> setCoinIcon(account.cryptoCurrencies.first())
-            else -> setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_all_wallets_white))
+            else -> setImageDrawable(
+                AppCompatResources.getDrawable(context, R.drawable.ic_all_wallets_white))
         }
     }
 
@@ -218,7 +240,7 @@ class ActivitiesFragment : HomeScreenMviFragment<ActivitiesModel, ActivitiesInte
     private fun setupSwipeRefresh() {
         swipe.setOnRefreshListener {
             state?.account?.let {
-                model.process(AccountSelectedIntent(it))
+                model.process(AccountSelectedIntent(it, true))
             }
         }
 
@@ -242,21 +264,12 @@ class ActivitiesFragment : HomeScreenMviFragment<ActivitiesModel, ActivitiesInte
         super.onPause()
     }
 
-    private fun onActivityClicked(cryptoCurrency: CryptoCurrency, txHash: String, isCustodial: Boolean) {
-        // TODO: Use an intent, when we upgrade the de3tail sheet as per then designs.
-        // For expediency, currently using to old details sheet
-        // model.process(ShowActivityDetailsIntent(cryptoCurrency, txHash))
-        // Also, custodial detains are not supported, until the new designs are built.
-        // Show a toast in this case, for now - this may change come design review...
-        if (isCustodial) {
-            Toast.makeText(
-                requireContext(),
-                R.string.custodial_activity_not_supported,
-                Toast.LENGTH_LONG
-            ).show()
-        } else {
-            TransactionDetailActivity.start(requireContext(), cryptoCurrency, txHash)
-        }
+    private fun onActivityClicked(
+        cryptoCurrency: CryptoCurrency,
+        txHash: String,
+        isCustodial: Boolean
+    ) {
+        model.process(ShowActivityDetailsIntent(cryptoCurrency, txHash, isCustodial))
     }
 
     private fun onShowAllActivity() {
@@ -264,7 +277,30 @@ class ActivitiesFragment : HomeScreenMviFragment<ActivitiesModel, ActivitiesInte
     }
 
     override fun onAccountSelected(account: CryptoAccount) {
-        model.process(AccountSelectedIntent(account))
+        analytics.logEvent(activityShown(account.label))
+        model.process(AccountSelectedIntent(account, false))
+    }
+
+    override fun onShowBankDetailsSelected() {
+        model.process(ShowBankTransferDetailsIntent)
+    }
+
+    override fun onShowBankCancelOrder() {
+        model.process(ShowCancelOrderIntent)
+    }
+
+    override fun startWarnCancelSimpleBuyOrder() {
+        model.process(ShowCancelOrderIntent)
+    }
+
+    override fun cancelOrderConfirmAction(cancelOrder: Boolean, orderId: String?) {
+        if (cancelOrder && orderId != null) {
+            analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_CANCEL_CONFIRMED)
+            model.process(CancelSimpleBuyOrderIntent(orderId))
+        } else {
+            analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_CANCEL_GO_BACK)
+            model.process(ShowCancelOrderIntent)
+        }
     }
 
     // SlidingModalBottomDialog.Host

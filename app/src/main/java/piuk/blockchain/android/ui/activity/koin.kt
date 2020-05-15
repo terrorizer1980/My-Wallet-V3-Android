@@ -2,6 +2,9 @@ package piuk.blockchain.android.ui.activity
 
 import io.reactivex.android.schedulers.AndroidSchedulers
 import org.koin.dsl.module.applicationContext
+import piuk.blockchain.android.ui.activity.detail.ActivityDetailState
+import piuk.blockchain.android.ui.activity.detail.ActivityDetailsInteractor
+import piuk.blockchain.android.ui.activity.detail.ActivityDetailsModel
 import piuk.blockchain.android.ui.activity.detail.TransactionHelper
 import piuk.blockchain.android.ui.activity.detail.TransactionInOutMapper
 
@@ -19,7 +22,28 @@ val activitiesModule = applicationContext {
 
         factory {
             ActivitiesInteractor(
-                coincore = get()
+                coincore = get(),
+                activityRepo = get(),
+                custodialWalletManager = get(),
+                simpleBuyPrefs = get(),
+                analytics = get()
+            )
+        }
+
+        factory {
+            ActivityDetailsModel(
+                initialState = ActivityDetailState(),
+                mainScheduler = AndroidSchedulers.mainThread(),
+                interactor = get()
+            )
+        }
+
+        factory {
+            ActivityDetailsInteractor(
+                currencyPrefs = get(),
+                transactionInputOutputMapper = get(),
+                assetActivityRepo = get(),
+                custodialWalletManager = get()
             )
         }
 

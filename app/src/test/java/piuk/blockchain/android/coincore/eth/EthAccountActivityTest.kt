@@ -14,7 +14,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
-import piuk.blockchain.android.coincore.impl.TxCacheImpl
 import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
@@ -32,8 +31,7 @@ class EthAccountActivityTest {
             label = "TestEthAccount",
             address = "Test Address",
             ethDataManager = ethDataManager,
-            exchangeRates = exchangeRates,
-            txCache = TxCacheImpl()
+            exchangeRates = exchangeRates
         )
 
     @get:Rule

@@ -15,9 +15,9 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.AssetAction
-import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
@@ -53,8 +53,7 @@ internal class StxTokens(
                 StxCryptoAccountCustodial(
                     labels.getDefaultCustodialWalletLabel(asset),
                     custodialWalletManager,
-                    exchangeRates,
-                    txActivityCache
+                    exchangeRates
                 )
             )
         )
@@ -86,8 +85,7 @@ internal class StxTokens(
         return StxCryptoAccountNonCustodial(
             label = "STX Account",
             address = stxAccount.bitcoinSerializedBase58Address,
-            exchangeRates = exchangeRates,
-            txCache = txActivityCache
+            exchangeRates = exchangeRates
         )
     }
 

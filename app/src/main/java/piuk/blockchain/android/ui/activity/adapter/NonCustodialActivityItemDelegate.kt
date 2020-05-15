@@ -72,7 +72,7 @@ private class NonCustodialActivityItemViewHolder(
             setTextColours(tx.isConfirmed)
 
             asset_balance_fiat.gone()
-            asset_balance_crypto.text = tx.totalCrypto.toStringWithSymbol()
+            asset_balance_crypto.text = tx.cryptoValue.toStringWithSymbol()
             disposables += tx.totalFiatWhenExecuted(fiatCurrency)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(

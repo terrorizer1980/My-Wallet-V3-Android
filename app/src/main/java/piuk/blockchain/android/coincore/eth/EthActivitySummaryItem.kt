@@ -6,6 +6,7 @@ import info.blockchain.wallet.ethereum.data.EthTransaction
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Completable
 import io.reactivex.Observable
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
@@ -13,10 +14,11 @@ import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 
 internal class EthActivitySummaryItem(
     private val ethDataManager: EthDataManager,
-    private val ethTransaction: EthTransaction,
+    val ethTransaction: EthTransaction,
     override val isFeeTransaction: Boolean,
     private val blockHeight: Long,
-    override val exchangeRates: ExchangeRateDataManager
+    override val exchangeRates: ExchangeRateDataManager,
+    override val account: CryptoSingleAccount
 ) : NonCustodialActivitySummaryItem() {
 
     override val cryptoCurrency: CryptoCurrency = CryptoCurrency.ETHER
@@ -37,7 +39,7 @@ internal class EthActivitySummaryItem(
 
     override val timeStampMs: Long = ethTransaction.timestamp * 1000
 
-    override val totalCrypto: CryptoValue by unsafeLazy {
+    override val cryptoValue: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.ETHER,
             when (direction) {
                 TransactionSummary.Direction.RECEIVED -> ethTransaction.value

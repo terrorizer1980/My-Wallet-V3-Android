@@ -7,7 +7,6 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.TxCache
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountNonCustodialBase
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
@@ -18,8 +17,7 @@ import piuk.blockchain.androidcore.utils.extensions.mapList
 internal class PaxCryptoAccountCustodial(
     override val label: String,
     override val custodialWalletManager: CustodialWalletManager,
-    override val exchangeRates: ExchangeRateDataManager,
-    override val txCache: TxCache
+    override val exchangeRates: ExchangeRateDataManager
 ) : CryptoSingleAccountCustodialBase() {
     override val cryptoCurrencies = setOf(CryptoCurrency.PAX)
 }
@@ -28,8 +26,7 @@ internal class PaxCryptoAccountNonCustodial(
     override val label: String,
     private val address: String,
     private val paxAccount: Erc20Account,
-    override val exchangeRates: ExchangeRateDataManager,
-    override val txCache: TxCache
+    override val exchangeRates: ExchangeRateDataManager
 ) : CryptoSingleAccountNonCustodialBase() {
     override val isDefault: Boolean = true // Only one account, so always default
 
@@ -66,10 +63,11 @@ internal class PaxCryptoAccountNonCustodial(
                         accountHash = accountHash,
                         ethDataManager = ethDataManager,
                         exchangeRates = exchangeRates,
-                        lastBlockNumber = latestBlockNumber.number
+                        lastBlockNumber = latestBlockNumber.number,
+                        account = this
                     ) as ActivitySummaryItem
                 }
             }
-            .doOnSuccess { txCache.addToCache(it) }
+            .doOnSuccess { setHasTransactions(it.isNotEmpty()) }
         }
 }

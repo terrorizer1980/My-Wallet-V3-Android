@@ -15,10 +15,10 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import org.bitcoinj.core.Address
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.impl.BitcoinLikeTokens
-import piuk.blockchain.android.coincore.impl.fetchLastPrice
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
+import piuk.blockchain.android.coincore.impl.BitcoinLikeTokens
+import piuk.blockchain.android.coincore.impl.fetchLastPrice
 import piuk.blockchain.android.coincore.impl.toCryptoSingle
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -67,8 +67,7 @@ internal class BchTokens(
                             a,
                             bchDataManager,
                             i == defaultIndex,
-                            exchangeRates,
-                            txActivityCache
+                            exchangeRates
                         )
                     )
                 }
@@ -82,8 +81,7 @@ internal class BchTokens(
                 BchCryptoAccountCustodial(
                     labels.getDefaultCustodialWalletLabel(asset),
                     custodialWalletManager,
-                    exchangeRates,
-                    txActivityCache
+                    exchangeRates
                 )
             )
         }

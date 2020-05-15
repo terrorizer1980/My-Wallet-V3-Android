@@ -13,15 +13,14 @@ import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.android.coincore.impl.fetchLastPrice
-import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import java.lang.IllegalArgumentException
 
 internal class XlmTokens(
     private val xlmDataManager: XlmDataManager,
@@ -43,7 +42,7 @@ internal class XlmTokens(
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         xlmDataManager.defaultAccount()
             .map {
-                listOf(XlmCryptoAccountNonCustodial(it, xlmDataManager, exchangeRates, txActivityCache))
+                listOf(XlmCryptoAccountNonCustodial(it, xlmDataManager, exchangeRates))
             }
 
     override fun loadCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
@@ -52,8 +51,7 @@ internal class XlmTokens(
                 XlmCryptoAccountCustodial(
                     labels.getDefaultCustodialWalletLabel(asset),
                     custodialWalletManager,
-                    exchangeRates,
-                    txActivityCache
+                    exchangeRates
                 )
             )
         )
