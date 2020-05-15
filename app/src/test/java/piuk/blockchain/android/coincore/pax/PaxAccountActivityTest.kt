@@ -69,12 +69,11 @@ class PaxAccountActivityTest {
         whenever(ethDataManager
             .getTransaction("0xfd7d583fa54bf55f6cfbfec97c0c55cc6af8c121b71addb7d06a9e1e305ae8ff"))
             .thenReturn(Observable.just(
-                EthTransaction().apply {
-                    gasPrice = 100.toBigInteger()
+                EthTransaction(
+                    gasPrice = 100.toBigInteger(),
                     gasUsed = 2.toBigInteger()
-                }
             )
-        )
+        ))
 
         whenever(paxAccount.fetchErc20Address()).thenReturn(Observable.just(mock()))
 
@@ -82,7 +81,7 @@ class PaxAccountActivityTest {
             .thenReturn(Single.just("0x4058a004dd718babab47e14dd0d744742e5b9903"))
 
         whenever(ethDataManager.getLatestBlockNumber())
-            .thenReturn(Observable.just(
+            .thenReturn(Single.just(
                 EthLatestBlockNumber().apply {
                     number = erc20Transfer.blockNumber.plus(3.toBigInteger())
                 }
