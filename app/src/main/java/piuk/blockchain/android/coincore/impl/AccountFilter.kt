@@ -20,7 +20,19 @@ fun filterTokenAccounts(
                 buildNonCustodialGroup(asset, labels, accountList)
             AssetFilter.Custodial ->
                 buildCustodialGroup(asset, labels, accountList)
+            AssetFilter.Interest ->
+                buildInterestGroup(asset, labels, accountList)
         }.exhaustive
+
+private fun buildInterestGroup(
+    asset: CryptoCurrency,
+    labels: DefaultLabels,
+    accountList: List<CryptoSingleAccount>
+): CryptoAccountGroup =
+    CryptoAccountInterestGroup(
+        labels.getDefaultInterestWalletLabel(asset),
+        accountList.filterIsInstance<CryptoSingleAccountInterestBase>()
+    )
 
 private fun buildCustodialGroup(
     asset: CryptoCurrency,

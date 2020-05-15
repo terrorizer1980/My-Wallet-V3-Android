@@ -7,10 +7,10 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import io.reactivex.Single
-import piuk.blockchain.android.coincore.AvailableActions
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.AssetAction
+import piuk.blockchain.android.coincore.AvailableActions
 import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoAccountsList
 import piuk.blockchain.android.coincore.CryptoSingleAccount
@@ -40,6 +40,38 @@ abstract class CryptoSingleAccountBase : CryptoSingleAccount {
 
     final override fun fiatBalance(fiat: String, exchangeRates: ExchangeRateDataManager): Single<FiatValue> =
         balance.map { it.toFiat(exchangeRates, fiat) }
+}
+
+abstract class CryptoSingleAccountInterestBase: CryptoSingleAccountBase() {
+    protected abstract val custodialWalletManager: CustodialWalletManager
+
+    private val isConfigured = AtomicBoolean(false)
+
+    override val receiveAddress: Single<String>
+        get() = Single.error(NotImplementedError("Custodial accounts don't support receive"))
+
+    override val balance: Single<CryptoValue>
+        get() = custodialWalletManager.getBalanceForAsset(cryptoAsset)
+            .doOnComplete { isConfigured.set(false) }
+            .doOnSuccess { isConfigured.set(true) }
+            .switchToSingleIfEmpty { Single.just(CryptoValue.zero(cryptoAsset)) }
+            .onErrorReturn {
+                Timber.d("Unable to get non-custodial balance: $it")
+                CryptoValue.zero(cryptoAsset)
+            }
+
+    override val activity: Single<ActivitySummaryList>
+        get() = Single.just(emptyList())
+
+    override val isFunded: Boolean
+        get() = isConfigured.get()
+
+    final override val isDefault: Boolean = false // Default is, presently, only ever a non-custodial account.
+
+    final override val actions: AvailableActions
+        get() = availableActions
+
+    private val availableActions = emptySet<AssetAction>()
 }
 
 abstract class CryptoSingleAccountCustodialBase : CryptoSingleAccountBase() {
@@ -146,6 +178,42 @@ class CryptoAccountCustodialGroup(
         require(accounts[0] is CryptoSingleAccountCustodialBase)
 
         account = accounts[0] as CryptoSingleAccountCustodialBase
+    }
+
+    override val cryptoCurrencies: Set<CryptoCurrency>
+        get() = account.cryptoCurrencies
+
+    override val balance: Single<CryptoValue>
+        get() = account.balance
+
+    override val activity: Single<ActivitySummaryList>
+        get() = account.activity
+
+    override val actions: AvailableActions
+        get() = account.actions
+
+    override val isFunded: Boolean
+        get() = account.isFunded
+
+    override val hasTransactions: Boolean
+        get() = account.hasTransactions
+
+    override fun fiatBalance(fiat: String, exchangeRates: ExchangeRateDataManager): Single<FiatValue> =
+        balance.map { it.toFiat(exchangeRates, fiat) }
+}
+
+class CryptoAccountInterestGroup(
+    override val label: String,
+    override val accounts: CryptoAccountsList
+) : CryptoAccountGroup {
+
+    private val account: CryptoSingleAccountInterestBase
+
+    init {
+        require(accounts.size == 1)
+        require(accounts[0] is CryptoSingleAccountInterestBase)
+
+        account = accounts[0] as CryptoSingleAccountInterestBase
     }
 
     override val cryptoCurrencies: Set<CryptoCurrency>

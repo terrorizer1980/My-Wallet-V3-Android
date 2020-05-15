@@ -14,11 +14,11 @@ import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import piuk.blockchain.android.coincore.CryptoSingleAccount
+import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.impl.BitcoinLikeTokens
 import piuk.blockchain.android.coincore.impl.fetchLastPrice
 import piuk.blockchain.android.coincore.impl.toCryptoSingle
-import piuk.blockchain.android.coincore.CryptoSingleAccount
-import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
@@ -89,6 +89,18 @@ internal class BtcTokens(
             )
         }
 
+    override fun loadInterestAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
+        Single.fromCallable {
+            listOf(
+                BtcCryptoInterestAccount(
+                    labels.getDefaultInterestWalletLabel(asset),
+                    custodialWalletManager,
+                    exchangeRates,
+                    txActivityCache
+                )
+            )
+        }
+
     override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(payloadDataManager.defaultAccount.toAccountReference())
 
@@ -119,4 +131,8 @@ internal class BtcTokens(
 
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
         historicRates.getHistoricPriceSeries(CryptoCurrency.BTC, currencyPrefs.selectedFiatCurrency, period)
+
+    override fun interestRate(): Maybe<Double> {
+        TODO()
+    }
 }

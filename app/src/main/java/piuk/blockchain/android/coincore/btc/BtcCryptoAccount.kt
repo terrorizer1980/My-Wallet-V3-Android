@@ -11,11 +11,21 @@ import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.TxCache
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
+import piuk.blockchain.android.coincore.impl.CryptoSingleAccountInterestBase
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountNonCustodialBase
 import piuk.blockchain.android.coincore.impl.transactionFetchCount
 import piuk.blockchain.android.coincore.impl.transactionFetchOffset
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
+
+internal class BtcCryptoInterestAccount(
+    override val label: String,
+    override val custodialWalletManager: CustodialWalletManager,
+    override val exchangeRates: ExchangeRateDataManager,
+    override val txCache: TxCache
+) : CryptoSingleAccountInterestBase() {
+    override val cryptoCurrencies = setOf(CryptoCurrency.BTC)
+}
 
 internal class BtcCryptoAccountCustodial(
     override val label: String,
@@ -43,16 +53,17 @@ internal class BtcCryptoAccountNonCustodial(
 
     override val activity: Single<ActivitySummaryList>
         get() = Single.fromCallable {
-                    payloadManager.getAccountTransactions(address, transactionFetchCount, transactionFetchOffset)
-                    .map {
-                        BtcActivitySummaryItem(
-                            it,
-                            payloadDataManager,
-                            exchangeRates
-                        ) as ActivitySummaryItem
+            payloadManager.getAccountTransactions(address, transactionFetchCount,
+                transactionFetchOffset)
+                .map {
+                    BtcActivitySummaryItem(
+                        it,
+                        payloadDataManager,
+                        exchangeRates
+                    ) as ActivitySummaryItem
                 }
         }
-        .doOnSuccess { txCache.addToCache(it) }
+            .doOnSuccess { txCache.addToCache(it) }
 //        .map { txCache.asActivityList() }
 
     constructor(

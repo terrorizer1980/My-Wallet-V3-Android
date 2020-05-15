@@ -26,8 +26,8 @@ import com.blockchain.swap.nabu.models.simplebuy.ConfirmOrderRequestBody
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyQuoteResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairsResp
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyQuoteResponse
 import com.blockchain.swap.nabu.models.simplebuy.TransferRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
@@ -388,6 +388,17 @@ class NabuService(retrofit: Retrofit) {
     ) = service.getCards(
         authorization = sessionToken.authHeader
     ).wrapErrorMessage()
+
+    fun getInterestAddresses(
+        sessionToken: NabuSessionTokenResponse,
+        currency: String
+    ) = service.getInterestAddress(authorization = sessionToken.authHeader, cryptoSymbol = currency)
+        .wrapErrorMessage()
+
+    fun getInterestRates(
+        sessionToken: NabuSessionTokenResponse
+    ) = service.getInterestRates(authorization = sessionToken.authHeader)
+        .wrapErrorMessage()
 
     companion object {
         internal const val CLIENT_TYPE = "APP"

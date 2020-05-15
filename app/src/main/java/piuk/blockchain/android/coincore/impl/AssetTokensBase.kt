@@ -11,11 +11,11 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.AssetTokens
 import piuk.blockchain.android.coincore.AvailableActions
-import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
@@ -64,6 +64,11 @@ internal abstract class AssetTokensBase(
                     .doOnSuccess { accounts.addAll(it) }
                     .ignoreElement()
             }
+            .then {
+                loadInterestAccounts(labels)
+                    .doOnSuccess { accounts.addAll(it) }
+                    .ignoreElement()
+            }
             .doOnError { Timber.e("Error loading accounts for ${asset.networkTicker}: $it") }
 
     abstract fun initToken(): Completable
@@ -83,6 +88,10 @@ internal abstract class AssetTokensBase(
 
     abstract fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList>
     abstract fun loadCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList>
+    open fun loadInterestAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
+        Single.just(emptyList())
+
+    open fun interestRate(): Maybe<Double> = Maybe.empty()
 
     protected open fun onLogoutSignal(event: AuthEvent) {}
 
@@ -104,6 +113,7 @@ internal abstract class AssetTokensBase(
                 noncustodialBalance(),
                 custodialBalance()
             ) { noncustodial, custodial -> noncustodial + custodial }
+            AssetFilter.Interest -> TODO()
         }
 
     internal abstract fun custodialBalanceMaybe(): Maybe<CryptoValue>
@@ -138,6 +148,7 @@ internal abstract class AssetTokensBase(
             AssetFilter.Total -> custodialActions.intersect(noncustodialActions)
             AssetFilter.Custodial -> custodialActions
             AssetFilter.Wallet -> noncustodialActions
+            AssetFilter.Interest -> TODO()
         }
 
     override fun hasActiveWallet(filter: AssetFilter): Boolean =
@@ -145,6 +156,7 @@ internal abstract class AssetTokensBase(
             AssetFilter.Total -> true
             AssetFilter.Wallet -> true
             AssetFilter.Custodial -> isNonCustodialConfigured.get()
+            AssetFilter.Interest -> TODO()
         }
 
     final override fun findCachedActivityItem(txId: String): ActivitySummaryItem? =
