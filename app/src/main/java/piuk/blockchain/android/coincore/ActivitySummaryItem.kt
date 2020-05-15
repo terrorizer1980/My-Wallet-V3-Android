@@ -27,9 +27,12 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
         cryptoValue.toFiat(exchangeRates, selectedFiat)
 
     fun totalFiatWhenExecuted(selectedFiat: String): Single<FiatValue> =
-        exchangeRates.getHistoricPrice(cryptoValue, selectedFiat, timeStampMs / 1000) // API uses seconds
+        exchangeRates.getHistoricPrice(cryptoValue, selectedFiat,
+            timeStampMs / 1000) // API uses seconds
 
-    override operator fun compareTo(other: ActivitySummaryItem) = (other.timeStampMs - timeStampMs).sign
+    override operator fun compareTo(
+        other: ActivitySummaryItem
+    ) = (other.timeStampMs - timeStampMs).sign
 
     abstract val account: CryptoSingleAccount
 }
@@ -43,7 +46,8 @@ data class CustodialActivitySummaryItem(
     override val account: CryptoSingleAccount,
     val fundedFiat: FiatValue,
     val status: OrderState,
-    val fee: FiatValue
+    val fee: FiatValue,
+    val paymentMethodId: String
 ) : ActivitySummaryItem()
 
 abstract class NonCustodialActivitySummaryItem : ActivitySummaryItem() {
@@ -65,17 +69,17 @@ abstract class NonCustodialActivitySummaryItem : ActivitySummaryItem() {
     open var note: String? = null
 
     override fun toString(): String = "cryptoCurrency = $cryptoCurrency" +
-            "direction  = $direction " +
-            "timeStamp  = $timeStampMs " +
-            "total  = ${cryptoValue.toStringWithSymbol()} " +
-            "txId (hash)  = $txId " +
-            "inputsMap  = $inputsMap " +
-            "outputsMap  = $outputsMap " +
-            "confirmations  = $confirmations " +
-            "watchOnly  = $watchOnly " +
-            "doubleSpend  = $doubleSpend " +
-            "isPending  = $isPending " +
-            "note = $note"
+        "direction  = $direction " +
+        "timeStamp  = $timeStampMs " +
+        "total  = ${cryptoValue.toStringWithSymbol()} " +
+        "txId (hash)  = $txId " +
+        "inputsMap  = $inputsMap " +
+        "outputsMap  = $outputsMap " +
+        "confirmations  = $confirmations " +
+        "watchOnly  = $watchOnly " +
+        "doubleSpend  = $doubleSpend " +
+        "isPending  = $isPending " +
+        "note = $note"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -83,18 +87,18 @@ abstract class NonCustodialActivitySummaryItem : ActivitySummaryItem() {
         val that = other as NonCustodialActivitySummaryItem?
 
         return this.cryptoCurrency == that?.cryptoCurrency &&
-                this.direction == that.direction &&
-                this.timeStampMs == that.timeStampMs &&
-                this.cryptoValue == that.cryptoValue &&
-                this.txId == that.txId &&
-                this.inputsMap == that.inputsMap &&
-                this.outputsMap == that.outputsMap &&
-                this.confirmations == that.confirmations &&
-                this.watchOnly == that.watchOnly &&
-                this.doubleSpend == that.doubleSpend &&
-                this.isFeeTransaction == that.isFeeTransaction &&
-                this.isPending == that.isPending &&
-                this.note == that.note
+            this.direction == that.direction &&
+            this.timeStampMs == that.timeStampMs &&
+            this.cryptoValue == that.cryptoValue &&
+            this.txId == that.txId &&
+            this.inputsMap == that.inputsMap &&
+            this.outputsMap == that.outputsMap &&
+            this.confirmations == that.confirmations &&
+            this.watchOnly == that.watchOnly &&
+            this.doubleSpend == that.doubleSpend &&
+            this.isFeeTransaction == that.isFeeTransaction &&
+            this.isPending == that.isPending &&
+            this.note == that.note
     }
 
     override fun hashCode(): Int {

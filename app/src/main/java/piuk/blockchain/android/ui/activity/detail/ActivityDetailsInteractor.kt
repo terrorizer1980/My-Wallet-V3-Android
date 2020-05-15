@@ -1,7 +1,9 @@
 package piuk.blockchain.android.ui.activity.detail
 
 import com.blockchain.preferences.CurrencyPrefs
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.OrderState
+import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -18,7 +20,8 @@ import java.util.Date
 class ActivityDetailsInteractor(
     private val currencyPrefs: CurrencyPrefs,
     private val transactionInputOutputMapper: TransactionInOutMapper,
-    private val assetActivityRepo: AssetActivityRepo
+    private val assetActivityRepo: AssetActivityRepo,
+    private val custodialWalletManager: CustodialWalletManager
 ) {
 
     fun loadCustodialItems(
@@ -29,17 +32,51 @@ class ActivityDetailsInteractor(
             Created(Date(custodialActivitySummaryItem.timeStampMs)),
             BuyPurchaseAmount(custodialActivitySummaryItem.fundedFiat),
             BuyCryptoWallet(custodialActivitySummaryItem.cryptoCurrency),
-            BuyFee(custodialActivitySummaryItem.fee),
-            // TODO this will change when we add cards, but for now it's the only supported type
-            BuyPaymentMethod("Bank Wire Transfer")
+            BuyFee(custodialActivitySummaryItem.fee)
         )
-        // TODO if the order is a card order, then it cannot be cancelled in these states
-        if (custodialActivitySummaryItem.status == OrderState.AWAITING_FUNDS ||
-            custodialActivitySummaryItem.status == OrderState.PENDING_EXECUTION) {
+
+        return if (custodialActivitySummaryItem.paymentMethodId != PaymentMethod.BANK_PAYMENT_ID) {
+            custodialWalletManager.getCardDetails(custodialActivitySummaryItem.paymentMethodId)
+                .map { paymentMethod ->
+                    addPaymentDetailsToList(list, paymentMethod, custodialActivitySummaryItem)
+
+                    list.toList()
+                }.onErrorReturn {
+                    addPaymentDetailsToList(list, null, custodialActivitySummaryItem)
+
+                    list.toList()
+                }
+        } else {
+            list.add(BuyPaymentMethod(
+                PaymentDetails(custodialActivitySummaryItem.paymentMethodId, label = null,
+                    endDigits = null
+                )))
+
+            if (custodialActivitySummaryItem.status == OrderState.AWAITING_FUNDS ||
+                custodialActivitySummaryItem.status == OrderState.PENDING_EXECUTION) {
+                list.add(CancelAction())
+            }
+            Single.just(list.toList())
+        }
+    }
+
+    private fun addPaymentDetailsToList(
+        list: MutableList<ActivityDetailsType>,
+        paymentMethod: PaymentMethod.Card?,
+        custodialActivitySummaryItem: CustodialActivitySummaryItem
+    ) {
+        paymentMethod?.let {
+            list.add(BuyPaymentMethod(PaymentDetails(
+                it.cardId, it.uiLabel(), it.endDigits
+            )))
+        } ?: list.add(BuyPaymentMethod(
+            PaymentDetails(custodialActivitySummaryItem.paymentMethodId,
+                label = null, endDigits = null)
+        ))
+
+        if (custodialActivitySummaryItem.status == OrderState.PENDING_CONFIRMATION) {
             list.add(CancelAction())
         }
-
-        return Single.just(list.toList())
     }
 
     fun getCustodialActivityDetails(
@@ -71,7 +108,7 @@ class ActivityDetailsInteractor(
                     Amount(item.cryptoValue),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
-                    FeeForTransaction("TODO"),
+                    addFeeForTransaction(item),
                     checkIfShouldAddDescription(item),
                     Action()
                 )
@@ -159,6 +196,21 @@ class ActivityDetailsInteractor(
         }
     }
 
+    private fun addFeeForTransaction(item: NonCustodialActivitySummaryItem): FeeForTransaction? {
+        return when (item) {
+            is EthActivitySummaryItem -> {
+                val relatedItem = assetActivityRepo.findCachedItemById(item.ethTransaction.hash)
+                relatedItem?.let {
+                    FeeForTransaction(
+                        item.direction,
+                        it.cryptoValue
+                    )
+                }
+            }
+            else -> null
+        }
+    }
+
     private fun addSingleOrMultipleFromAddresses(
         it: TransactionInOutDetails
     ) = if (it.inputs.size == 1) {
@@ -178,9 +230,9 @@ class ActivityDetailsInteractor(
     private fun checkIfShouldAddDescription(
         item: NonCustodialActivitySummaryItem
     ): Description? = when (item) {
-            is BtcActivitySummaryItem,
-            is EthActivitySummaryItem,
-            is PaxActivitySummaryItem -> Description(item.description)
-            else -> null
-        }
+        is BtcActivitySummaryItem,
+        is EthActivitySummaryItem,
+        is PaxActivitySummaryItem -> Description(item.description)
+        else -> null
+    }
 }

@@ -108,7 +108,8 @@ val coincoreModule = applicationContext {
 
         bean {
             AssetActivityRepo(
-                coincore = get()
+                coincore = get(),
+                rxBus = get()
             )
         }
     }
