@@ -46,6 +46,7 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
                     AssetFilter.Total -> R.string.dashboard_asset_balance_total
                     AssetFilter.Wallet -> R.string.dashboard_asset_balance_wallet
                     AssetFilter.Custodial -> R.string.dashboard_asset_balance_custodial
+                    AssetFilter.Interest -> TODO()
                 }
             )
             setOnClickListenerDebounced { doShowMenu(item, onActionSelected, analytics) }

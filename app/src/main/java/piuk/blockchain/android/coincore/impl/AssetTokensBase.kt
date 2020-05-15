@@ -39,8 +39,6 @@ internal abstract class AssetTokensBase(
 
     private val accounts = mutableListOf<CryptoSingleAccount>()
 
-    protected val txActivityCache = TxCacheImpl()
-
     // Init token, set up accounts and fetch a few activities
     fun init(): Completable =
         initToken()
@@ -158,9 +156,6 @@ internal abstract class AssetTokensBase(
             AssetFilter.Custodial -> isNonCustodialConfigured.get()
             AssetFilter.Interest -> TODO()
         }
-
-    final override fun findCachedActivityItem(txId: String): ActivitySummaryItem? =
-        txActivityCache[txId]
 
     // These are constant ATM, but may need to change this so hardcode here
     protected val transactionFetchCount = 50

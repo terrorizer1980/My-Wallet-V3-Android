@@ -484,6 +484,7 @@ private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
         state = state.toLocalState(),
         expires = expiresAt.fromIso8601ToUtc() ?: Date(0),
         updated = updatedAt.fromIso8601ToUtc() ?: Date(0),
+        created = insertedAt.fromIso8601ToUtc() ?: Date(0),
         fee = fee?.let { FiatValue.fromMinor(inputCurrency, it.toLongOrDefault(0)) },
         paymentMethodId = paymentMethodId ?: PaymentMethod.BANK_PAYMENT_ID,
         price = price?.let {

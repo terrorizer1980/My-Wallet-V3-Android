@@ -48,8 +48,6 @@ interface AssetTokens {
     @Deprecated(message = "CoinCore update")
     fun balance(account: AccountReference): Single<CryptoValue>
 
-    fun findCachedActivityItem(txId: String): ActivitySummaryItem?
-
     @Deprecated(message = "CoinCore update")
     fun actions(filter: AssetFilter): AvailableActions
 

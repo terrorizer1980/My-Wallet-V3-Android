@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.activity
 
+import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
@@ -10,7 +11,10 @@ import piuk.blockchain.android.ui.base.mvi.MviState
 import timber.log.Timber
 
 enum class ActivitiesSheet {
-    ACCOUNT_SELECTOR
+    ACCOUNT_SELECTOR,
+    ACTIVITY_DETAILS,
+    BANK_TRANSFER_DETAILS,
+    BANK_ORDER_CANCEL
 }
 
 data class ActivitiesState(
@@ -18,7 +22,10 @@ data class ActivitiesState(
     val activityList: ActivitySummaryList = emptyList(),
     val isLoading: Boolean = false,
     val bottomSheet: ActivitiesSheet? = null,
-    val isError: Boolean = false
+    val isError: Boolean = false,
+    val selectedTxId: String = "",
+    val selectedCryptoCurrency: CryptoCurrency? = null,
+    val isCustodial: Boolean = false
 ) : MviState
 
 class ActivitiesModel(
@@ -29,23 +36,34 @@ class ActivitiesModel(
     initialState,
     mainScheduler
 ) {
-    override fun performAction(previousState: ActivitiesState, intent: ActivitiesIntent): Disposable? {
+    override fun performAction(
+        previousState: ActivitiesState,
+        intent: ActivitiesIntent
+    ): Disposable? {
         Timber.d("***> performAction: ${intent.javaClass.simpleName}")
 
         return when (intent) {
             is AccountSelectedIntent ->
-                interactor.getActivityForAccount(intent.account)
+                interactor.getActivityForAccount(intent.account, intent.isRefreshRequested)
                     .subscribeBy(
-                        onSuccess = { process(ActivityListUpdatedIntent(it)) },
+                        onNext = {
+                            process(ActivityListUpdatedIntent(it))
+                        },
+                        onComplete = {
+                            // do nothing
+                        },
                         onError = { process(ActivityListUpdatedErrorIntent) }
                     )
             is SelectDefaultAccountIntent ->
                 interactor.getDefaultAccount()
                     .subscribeBy(
-                        onSuccess = { process(AccountSelectedIntent(it)) },
+                        onSuccess = { process(AccountSelectedIntent(it, true)) },
                         onError = { process(ActivityListUpdatedErrorIntent) }
                     )
+            is CancelSimpleBuyOrderIntent -> interactor.cancelSimpleBuyOrder(intent.orderId)
             is ShowActivityDetailsIntent,
+            is ShowBankTransferDetailsIntent,
+            is ShowCancelOrderIntent,
             is ClearBottomSheetIntent,
             is ActivityListUpdatedIntent,
             is ActivityListUpdatedErrorIntent,

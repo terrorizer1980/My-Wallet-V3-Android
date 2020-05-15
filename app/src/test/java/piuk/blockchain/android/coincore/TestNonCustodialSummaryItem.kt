@@ -12,12 +12,13 @@ internal class TestNonCustodialSummaryItem(
     override val cryptoCurrency: CryptoCurrency = CryptoCurrency.BTC,
     override val direction: TransactionSummary.Direction = TransactionSummary.Direction.RECEIVED,
     override val timeStampMs: Long = 0,
-    override val totalCrypto: CryptoValue = CryptoValue.ZeroBtc,
+    override val cryptoValue: CryptoValue = CryptoValue.ZeroBtc,
     override val fee: Observable<CryptoValue> = Observable.just(CryptoValue.ZeroBtc),
     override val txId: String = "",
     override val inputsMap: Map<String, CryptoValue> = emptyMap(),
     override val outputsMap: Map<String, CryptoValue> = emptyMap(),
     override val description: String? = null,
     override val confirmations: Int = 0,
-    override val isFeeTransaction: Boolean = false
+    override val isFeeTransaction: Boolean = false,
+    override val account: CryptoSingleAccount = mock()
 ) : NonCustodialActivitySummaryItem()

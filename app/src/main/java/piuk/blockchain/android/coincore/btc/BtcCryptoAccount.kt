@@ -9,7 +9,6 @@ import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.TxCache
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountInterestBase
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountNonCustodialBase
@@ -21,8 +20,7 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 internal class BtcCryptoInterestAccount(
     override val label: String,
     override val custodialWalletManager: CustodialWalletManager,
-    override val exchangeRates: ExchangeRateDataManager,
-    override val txCache: TxCache
+    override val exchangeRates: ExchangeRateDataManager
 ) : CryptoSingleAccountInterestBase() {
     override val cryptoCurrencies = setOf(CryptoCurrency.BTC)
 }
@@ -30,8 +28,7 @@ internal class BtcCryptoInterestAccount(
 internal class BtcCryptoAccountCustodial(
     override val label: String,
     override val custodialWalletManager: CustodialWalletManager,
-    override val exchangeRates: ExchangeRateDataManager,
-    override val txCache: TxCache
+    override val exchangeRates: ExchangeRateDataManager
 ) : CryptoSingleAccountCustodialBase() {
     override val cryptoCurrencies = setOf(CryptoCurrency.BTC)
 }
@@ -42,8 +39,7 @@ internal class BtcCryptoAccountNonCustodial(
     private val payloadManager: PayloadManager,
     private val payloadDataManager: PayloadDataManager,
     override val isDefault: Boolean = false,
-    override val exchangeRates: ExchangeRateDataManager,
-    override val txCache: TxCache
+    override val exchangeRates: ExchangeRateDataManager
 ) : CryptoSingleAccountNonCustodialBase() {
     override val cryptoCurrencies = setOf(CryptoCurrency.BTC)
 
@@ -53,49 +49,44 @@ internal class BtcCryptoAccountNonCustodial(
 
     override val activity: Single<ActivitySummaryList>
         get() = Single.fromCallable {
-            payloadManager.getAccountTransactions(address, transactionFetchCount,
-                transactionFetchOffset)
-                .map {
-                    BtcActivitySummaryItem(
-                        it,
-                        payloadDataManager,
-                        exchangeRates
-                    ) as ActivitySummaryItem
+                    payloadManager.getAccountTransactions(address, transactionFetchCount, transactionFetchOffset)
+                    .map {
+                        BtcActivitySummaryItem(
+                            it,
+                            payloadDataManager,
+                            exchangeRates,
+                            this
+                        ) as ActivitySummaryItem
                 }
         }
-            .doOnSuccess { txCache.addToCache(it) }
-//        .map { txCache.asActivityList() }
+        .doOnSuccess { setHasTransactions(it.isNotEmpty()) }
 
     constructor(
         jsonAccount: Account,
         payloadManager: PayloadManager,
         payloadDataManager: PayloadDataManager,
         isDefault: Boolean = false,
-        exchangeRates: ExchangeRateDataManager,
-        txCache: TxCache
+        exchangeRates: ExchangeRateDataManager
     ) : this(
         jsonAccount.label,
         jsonAccount.xpub,
         payloadManager,
         payloadDataManager,
         isDefault,
-        exchangeRates,
-        txCache
+        exchangeRates
     )
 
     constructor(
         legacyAccount: LegacyAddress,
         payloadManager: PayloadManager,
         payloadDataManager: PayloadDataManager,
-        exchangeRates: ExchangeRateDataManager,
-        txCache: TxCache
+        exchangeRates: ExchangeRateDataManager
     ) : this(
         legacyAccount.label ?: legacyAccount.address,
         legacyAccount.address,
         payloadManager,
         payloadDataManager,
         false,
-        exchangeRates,
-        txCache
+        exchangeRates
     )
 }

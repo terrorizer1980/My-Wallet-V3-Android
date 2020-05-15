@@ -76,12 +76,12 @@ class TransactionHelper(
                 // (inputs x and y could send to output y in which case y is not receiving change,
                 // but rather the total amount)
                 if (inputMap.containsKey(outputAddress) &&
-                    outputValue.amount.abs().compareTo(tx.totalCrypto.amount) != 0
+                    outputValue.amount.abs().compareTo(tx.cryptoValue.amount) != 0
                 ) {
                     continue // change back to same input address
                 }
                 // Output more than tx amount - change
-                if (outputValue.amount.abs() > tx.totalCrypto.amount) {
+                if (outputValue.amount.abs() > tx.cryptoValue.amount) {
                     continue
                 }
                 outputMap[outputAddress] = outputValue
@@ -156,12 +156,12 @@ class TransactionHelper(
                 // (inputs x and y could send to output y in which case y is not receiving change,
                 // but rather the total amount)
                 if (inputMap.containsKey(outputAddress) &&
-                    outputValue.amount.abs().compareTo(tx.totalCrypto.amount) != 0
+                    outputValue.amount.abs().compareTo(tx.cryptoValue.amount) != 0
                 ) {
                     continue // change back to same input address
                 }
                 // Output more than tx amount - change
-                if (outputValue.amount.abs() > tx.totalCrypto.amount) {
+                if (outputValue.amount.abs() > tx.cryptoValue.amount) {
                     continue
                 }
                 outputMap[outputAddress] = outputValue

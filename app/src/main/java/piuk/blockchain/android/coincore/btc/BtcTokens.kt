@@ -56,8 +56,7 @@ internal class BtcTokens(
                             payloadManager,
                             payloadDataManager,
                             i == defaultIndex,
-                            exchangeRates,
-                            txActivityCache
+                            exchangeRates
                         )
                     )
                 }
@@ -68,8 +67,7 @@ internal class BtcTokens(
                             a,
                             payloadManager,
                             payloadDataManager,
-                            exchangeRates,
-                            txActivityCache
+                            exchangeRates
                         )
                     )
                 }
@@ -83,8 +81,7 @@ internal class BtcTokens(
                 BtcCryptoAccountCustodial(
                     labels.getDefaultCustodialWalletLabel(asset),
                     custodialWalletManager,
-                    exchangeRates,
-                    txActivityCache
+                    exchangeRates
                 )
             )
         }
@@ -95,8 +92,7 @@ internal class BtcTokens(
                 BtcCryptoInterestAccount(
                     labels.getDefaultInterestWalletLabel(asset),
                     custodialWalletManager,
-                    exchangeRates,
-                    txActivityCache
+                    exchangeRates
                 )
             )
         }

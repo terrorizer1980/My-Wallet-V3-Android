@@ -5,6 +5,7 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Completable
 import io.reactivex.Observable
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -13,7 +14,8 @@ import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 internal class BtcActivitySummaryItem(
     private val transactionSummary: TransactionSummary,
     private val payloadDataManager: PayloadDataManager,
-    override val exchangeRates: ExchangeRateDataManager
+    override val exchangeRates: ExchangeRateDataManager,
+    override val account: CryptoSingleAccount
 ) : NonCustodialActivitySummaryItem() {
 
     override val cryptoCurrency = CryptoCurrency.BTC
@@ -23,7 +25,7 @@ internal class BtcActivitySummaryItem(
 
     override val timeStampMs = transactionSummary.time * 1000
 
-    override val totalCrypto: CryptoValue by unsafeLazy {
+    override val cryptoValue: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.BTC, transactionSummary.total)
     }
 
