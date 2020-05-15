@@ -1,10 +1,11 @@
 package piuk.blockchain.android.coincore.impl
 
 import com.blockchain.logging.CrashLogger
+import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
+import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
@@ -17,6 +18,9 @@ import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.androidcore.data.access.AuthEvent
+import piuk.blockchain.androidcore.data.charts.ChartsDataManager
+import piuk.blockchain.androidcore.data.charts.PriceSeries
+import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.extensions.then
@@ -24,6 +28,9 @@ import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal abstract class AssetTokensBase(
+    protected val exchangeRates: ExchangeRateDataManager,
+    protected val historicRates: ChartsDataManager,
+    protected val currencyPrefs: CurrencyPrefs,
     private val labels: DefaultLabels,
     protected val crashLogger: CrashLogger,
     rxBus: RxBus
@@ -90,10 +97,6 @@ internal abstract class AssetTokensBase(
             accounts.first { it.isDefault }
         }
 
-//    final override fun totalBalance(filter: AssetFilter): Single<CryptoValue> =
-//        accounts(filter)
-//            .flatMap { it.balance }
-
     private val isNonCustodialConfigured = AtomicBoolean(false)
 
     protected open val noncustodialActions = setOf(
@@ -120,6 +123,15 @@ internal abstract class AssetTokensBase(
             AssetFilter.Wallet -> true
             AssetFilter.Custodial -> isNonCustodialConfigured.get()
         }
+
+    final override fun exchangeRate(): Single<FiatValue> =
+        exchangeRates.fetchLastPrice(asset, currencyPrefs.selectedFiatCurrency)
+
+    final override fun historicRate(epochWhen: Long): Single<FiatValue> =
+        exchangeRates.getHistoricPrice(asset, currencyPrefs.selectedFiatCurrency, epochWhen)
+
+    override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
+        historicRates.getHistoricPriceSeries(asset, currencyPrefs.selectedFiatCurrency, period)
 
     // These are constant ATM, but may need to change this so hardcode here
     protected val transactionFetchCount = 50

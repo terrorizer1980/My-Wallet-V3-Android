@@ -119,8 +119,8 @@ abstract class CryptoSingleAccountCustodialBase : CryptoSingleAccountBase() {
 
 abstract class CryptoSingleAccountNonCustodialBase : CryptoSingleAccountBase() {
 
-    override val receiveAddress: Single<String>
-        get() = Single.error(NotImplementedError("ReceiveAddress not implemented"))
+//    override val receiveAddress: Single<String>
+//        get() = Single.error(NotImplementedError("ReceiveAddress not implemented"))
 
     override val isFunded: Boolean
         get() = false

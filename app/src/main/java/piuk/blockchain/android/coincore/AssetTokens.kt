@@ -36,12 +36,6 @@ interface AssetTokens {
     fun historicRate(epochWhen: Long): Single<FiatValue>
     fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries>
 
-    @Deprecated(replaceWith = ReplaceWith("defaultAccount"), message = "CoinCore update")
-    fun defaultAccountRef(): Single<AccountReference>
-
-    @Deprecated(message = "CoinCore update")
-    fun receiveAddress(): Single<String>
-
     @Deprecated(message = "CoinCore update")
     fun actions(filter: AssetFilter): AvailableActions
 

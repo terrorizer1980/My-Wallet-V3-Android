@@ -36,6 +36,9 @@ internal class PaxCryptoAccountNonCustodial(
         get() = paxAccount.getBalance()
             .map { CryptoValue.fromMinor(CryptoCurrency.PAX, it) }
 
+    override val receiveAddress: Single<String>
+        get() = Single.just(address)
+
     override val activity: Single<ActivitySummaryList>
         get() {
             val ethDataManager = paxAccount.ethDataManager

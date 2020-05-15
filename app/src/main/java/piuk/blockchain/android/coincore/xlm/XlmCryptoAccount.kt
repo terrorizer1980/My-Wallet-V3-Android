@@ -34,6 +34,9 @@ internal class XlmCryptoAccountNonCustodial(
     override val balance: Single<CryptoValue>
         get() = xlmManager.getBalance()
 
+    override val receiveAddress: Single<String>
+        get() = Single.just(address)
+
     override val activity: Single<ActivitySummaryList>
         get() = xlmManager.getTransactionList()
             .mapList {

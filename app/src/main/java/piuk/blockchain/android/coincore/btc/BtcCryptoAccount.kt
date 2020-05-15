@@ -38,6 +38,11 @@ internal class BtcCryptoAccountNonCustodial(
         get() = Single.just(payloadManager.getAddressBalance(address))
             .map { CryptoValue.fromMinor(CryptoCurrency.BTC, it) }
 
+    override val receiveAddress: Single<String>
+        get() = payloadDataManager.getNextReceiveAddress(
+            payloadDataManager.getAccount(payloadDataManager.defaultAccountIndex) // TODO: Probably want the index of this address'
+        ).singleOrError()
+
     override val activity: Single<ActivitySummaryList>
         get() = Single.fromCallable {
                     payloadManager.getAccountTransactions(address, transactionFetchCount, transactionFetchOffset)

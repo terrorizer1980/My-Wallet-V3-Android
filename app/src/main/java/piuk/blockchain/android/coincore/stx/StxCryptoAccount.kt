@@ -30,6 +30,9 @@ class StxCryptoAccountNonCustodial(
     override val balance: Single<CryptoValue>
         get() = TODO("not implemented")
 
+    override val receiveAddress: Single<String>
+        get() = TODO("not implemented")
+
     override val activity: Single<ActivitySummaryList>
         get() = Single.just(emptyList())
 }
