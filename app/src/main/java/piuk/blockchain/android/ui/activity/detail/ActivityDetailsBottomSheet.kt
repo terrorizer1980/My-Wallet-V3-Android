@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.blockchain.notifications.analytics.ActivityAnalytics
 import com.blockchain.ui.urllinks.makeBlockExplorerUrl
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.multiaddress.TransactionSummary
@@ -55,6 +56,8 @@ class ActivityDetailsBottomSheet :
         get() = this?.getSerializable(ARG_CRYPTO_CURRENCY) as? CryptoCurrency
             ?: throw IllegalArgumentException("Cryptocurrency should not be null")
 
+    private lateinit var currentState: ActivityDetailState
+
     override fun initControls(view: View) {
         view.details_list.apply {
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
@@ -65,7 +68,9 @@ class ActivityDetailsBottomSheet :
     }
 
     override fun render(newState: ActivityDetailState) {
+        currentState = newState
         showDescriptionUpdate(newState.descriptionState)
+
         dialogView.apply {
             title.text = if (newState.isFeeTransaction) {
                 getString(R.string.activity_details_title_fee)
@@ -86,6 +91,7 @@ class ActivityDetailsBottomSheet :
                     custodial_tx_button.text =
                         getString(R.string.activity_details_buy_again)
                     custodial_tx_button.setOnClickListener {
+                        analytics.logEvent(ActivityAnalytics.DETAILS_BUY_PURCHASE_AGAIN)
                         startActivity(SimpleBuyActivity.newInstance(requireContext()))
                         dismiss()
                     }
@@ -140,14 +146,24 @@ class ActivityDetailsBottomSheet :
 
                 status.text = getString(when {
                     direction == TransactionSummary.Direction.SENT ||
-                        direction == TransactionSummary.Direction.TRANSFERRED ->
+                        direction == TransactionSummary.Direction.TRANSFERRED -> {
+                        analytics.logEvent(ActivityAnalytics.DETAILS_SEND_CONFIRMING)
                         R.string.activity_details_label_confirming
-                    isFeeTransaction || direction == TransactionSummary.Direction.SWAP ->
+                    }
+                    isFeeTransaction || direction == TransactionSummary.Direction.SWAP -> {
+                        if (isFeeTransaction) {
+                            analytics.logEvent(ActivityAnalytics.DETAILS_FEE_PENDING)
+                        } else {
+                            analytics.logEvent(ActivityAnalytics.DETAILS_SWAP_PENDING)
+                        }
                         R.string.activity_details_label_pending
+                    }
                     direction == TransactionSummary.Direction.BUY ->
                         if (pending && !pendingExecution) {
+                            analytics.logEvent(ActivityAnalytics.DETAILS_BUY_AWAITING_FUNDS)
                             R.string.activity_details_label_waiting_on_funds
                         } else {
+                            analytics.logEvent(ActivityAnalytics.DETAILS_BUY_PENDING)
                             R.string.activity_details_label_pending_execution
                         }
                     else -> R.string.activity_details_empty
@@ -162,6 +178,7 @@ class ActivityDetailsBottomSheet :
                     ContextCompat.getDrawable(requireContext(), R.drawable.bkgd_status_received)
                 status.setTextColor(
                     ContextCompat.getColor(requireContext(), R.color.green_600))
+                logAnalyticsForComplete(direction, isFeeTransaction)
             }
         }
     }
@@ -172,25 +189,18 @@ class ActivityDetailsBottomSheet :
     }
 
     private fun onCancelActionItemClicked() {
+        analytics.logEvent(ActivityAnalytics.DETAILS_BUY_CANCEL)
         host.onShowBankCancelOrder()
         dismiss()
     }
 
     private fun onActionItemClicked() {
         val explorerUri = makeBlockExplorerUrl(arguments.cryptoCurrency, arguments.txId)
-
+        logAnalyticsForExplorer()
         Intent(Intent.ACTION_VIEW).apply {
             data = Uri.parse(explorerUri)
             startActivity(this)
         }
-    }
-
-    private fun loadActivityDetails(
-        cryptoCurrency: CryptoCurrency,
-        txHash: String,
-        isCustodial: Boolean
-    ) {
-        model.process(LoadActivityDetailsIntent(cryptoCurrency, txHash, isCustodial))
     }
 
     private fun mapToAction(direction: TransactionSummary.Direction?): String =
@@ -205,6 +215,45 @@ class ActivityDetailsBottomSheet :
             TransactionSummary.Direction.SWAP -> getString(R.string.activity_details_title_swap)
             else -> ""
         }
+
+    private fun logAnalyticsForExplorer() {
+        when {
+            currentState.isFeeTransaction ->
+                analytics.logEvent(ActivityAnalytics.DETAILS_FEE_VIEW_EXPLORER)
+            currentState.direction == TransactionSummary.Direction.SENT ->
+                analytics.logEvent(ActivityAnalytics.DETAILS_SEND_VIEW_EXPLORER)
+            currentState.direction == TransactionSummary.Direction.SWAP ->
+                analytics.logEvent(ActivityAnalytics.DETAILS_SWAP_VIEW_EXPLORER)
+            currentState.direction == TransactionSummary.Direction.RECEIVED ->
+                analytics.logEvent(ActivityAnalytics.DETAILS_RECEIVE_VIEW_EXPLORER)
+        }
+    }
+
+    private fun logAnalyticsForComplete(
+        direction: TransactionSummary.Direction?,
+        isFeeTransaction: Boolean
+    ) {
+        when {
+            isFeeTransaction ->
+                analytics.logEvent(ActivityAnalytics.DETAILS_FEE_COMPLETE)
+            direction == TransactionSummary.Direction.SENT ->
+                analytics.logEvent(ActivityAnalytics.DETAILS_SEND_COMPLETE)
+            direction == TransactionSummary.Direction.SWAP ->
+                analytics.logEvent(ActivityAnalytics.DETAILS_SWAP_COMPLETE)
+            direction == TransactionSummary.Direction.BUY ->
+                analytics.logEvent(ActivityAnalytics.DETAILS_BUY_COMPLETE)
+            direction == TransactionSummary.Direction.RECEIVED ->
+                analytics.logEvent(ActivityAnalytics.DETAILS_RECEIVE_COMPLETE)
+        }
+    }
+
+    private fun loadActivityDetails(
+        cryptoCurrency: CryptoCurrency,
+        txHash: String,
+        isCustodial: Boolean
+    ) {
+        model.process(LoadActivityDetailsIntent(cryptoCurrency, txHash, isCustodial))
+    }
 
     companion object {
         private const val ARG_CRYPTO_CURRENCY = "crypto_currency"
