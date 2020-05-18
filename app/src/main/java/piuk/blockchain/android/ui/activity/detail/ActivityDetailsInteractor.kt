@@ -114,24 +114,23 @@ class ActivityDetailsInteractor(
         item: NonCustodialActivitySummaryItem,
         fiatValue: FiatValue?
     ) = transactionInputOutputMapper.transformInputAndOutputs(item).map {
-        listOfNotNull(
-            Amount(item.cryptoValue),
-            Value(fiatValue),
-            addSingleOrMultipleFromAddresses(it),
-            addFeeForTransaction(item),
-            checkIfShouldAddDescription(item),
-            Action()
-        )
+        getListOfItemsForFees(item, fiatValue, it)
     }.onErrorReturn {
-        listOfNotNull(
-            Amount(item.cryptoValue),
-            Value(fiatValue),
-            addSingleOrMultipleFromAddresses(null),
-            addFeeForTransaction(item),
-            checkIfShouldAddDescription(item),
-            Action()
-        )
+        getListOfItemsForFees(item, fiatValue, null)
     }
+
+    private fun getListOfItemsForFees(
+        item: NonCustodialActivitySummaryItem,
+        fiatValue: FiatValue?,
+        transactionInOutDetails: TransactionInOutDetails?
+    ) = listOfNotNull(
+        Amount(item.cryptoValue),
+        Value(fiatValue),
+        addSingleOrMultipleFromAddresses(transactionInOutDetails),
+        addFeeForTransaction(item),
+        checkIfShouldAddDescription(item),
+        Action()
+    )
 
     fun loadReceivedItems(
         item: NonCustodialActivitySummaryItem
@@ -146,24 +145,23 @@ class ActivityDetailsInteractor(
         item: NonCustodialActivitySummaryItem,
         fiatValue: FiatValue?
     ) = transactionInputOutputMapper.transformInputAndOutputs(item).map {
-        listOfNotNull(
-            Amount(item.cryptoValue),
-            Value(fiatValue),
-            addSingleOrMultipleFromAddresses(it),
-            addSingleOrMultipleToAddresses(it),
-            checkIfShouldAddDescription(item),
-            Action()
-        )
+        getListOfItemsForReceives(item, fiatValue, it)
     }.onErrorReturn {
-        listOfNotNull(
-            Amount(item.cryptoValue),
-            Value(fiatValue),
-            addSingleOrMultipleFromAddresses(null),
-            addSingleOrMultipleToAddresses(null),
-            checkIfShouldAddDescription(item),
-            Action()
-        )
+        getListOfItemsForReceives(item, fiatValue, null)
     }
+
+    private fun getListOfItemsForReceives(
+        item: NonCustodialActivitySummaryItem,
+        fiatValue: FiatValue?,
+        transactionInOutDetails: TransactionInOutDetails?
+    ) = listOfNotNull(
+        Amount(item.cryptoValue),
+        Value(fiatValue),
+        addSingleOrMultipleFromAddresses(transactionInOutDetails),
+        addSingleOrMultipleToAddresses(transactionInOutDetails),
+        checkIfShouldAddDescription(item),
+        Action()
+    )
 
     fun loadTransferItems(
         item: NonCustodialActivitySummaryItem
@@ -177,25 +175,24 @@ class ActivityDetailsInteractor(
     private fun getTransactionsMapForTransferItems(
         item: NonCustodialActivitySummaryItem,
         fiatValue: FiatValue?
-    ) =transactionInputOutputMapper.transformInputAndOutputs(item).map {
-        listOfNotNull(
-            Amount(item.cryptoValue),
-            Value(fiatValue),
-            addSingleOrMultipleFromAddresses(it),
-            addSingleOrMultipleToAddresses(it),
-            checkIfShouldAddDescription(item),
-            Action()
-        )
+    ) = transactionInputOutputMapper.transformInputAndOutputs(item).map {
+        getListOfItemsForTransfers(item, fiatValue, it)
     }.onErrorReturn {
-            listOfNotNull(
-                Amount(item.cryptoValue),
-                Value(fiatValue),
-                addSingleOrMultipleFromAddresses(null),
-                addSingleOrMultipleToAddresses(null),
-                checkIfShouldAddDescription(item),
-                Action()
-            )
+        getListOfItemsForTransfers(item, fiatValue, null)
     }
+
+    private fun getListOfItemsForTransfers(
+        item: NonCustodialActivitySummaryItem,
+        fiatValue: FiatValue?,
+        transactionInOutDetails: TransactionInOutDetails?
+    ) = listOfNotNull(
+        Amount(item.cryptoValue),
+        Value(fiatValue),
+        addSingleOrMultipleFromAddresses(transactionInOutDetails),
+        addSingleOrMultipleToAddresses(transactionInOutDetails),
+        checkIfShouldAddDescription(item),
+        Action()
+    )
 
     fun loadConfirmedSentItems(
         item: NonCustodialActivitySummaryItem
@@ -221,26 +218,25 @@ class ActivityDetailsInteractor(
         item: NonCustodialActivitySummaryItem
     ) = transactionInputOutputMapper.transformInputAndOutputs(item)
         .map {
-            listOfNotNull(
-                Amount(item.cryptoValue),
-                Fee(cryptoValue),
-                Value(fiatValue),
-                addSingleOrMultipleFromAddresses(it),
-                addSingleOrMultipleToAddresses(it),
-                checkIfShouldAddDescription(item),
-                Action()
-            )
+            getListOfItemsForConfirmedSends(cryptoValue, fiatValue, item, it)
         }.onErrorReturn {
-            listOfNotNull(
-                Amount(item.cryptoValue),
-                Fee(cryptoValue),
-                Value(fiatValue),
-                addSingleOrMultipleFromAddresses(null),
-                addSingleOrMultipleToAddresses(null),
-                checkIfShouldAddDescription(item),
-                Action()
-            )
+            getListOfItemsForConfirmedSends(cryptoValue, fiatValue, item, null)
         }
+
+    private fun getListOfItemsForConfirmedSends(
+        cryptoValue: CryptoValue?,
+        fiatValue: FiatValue?,
+        item: NonCustodialActivitySummaryItem,
+        transactionInOutDetails: TransactionInOutDetails?
+    ) = listOfNotNull(
+        Amount(item.cryptoValue),
+        Fee(cryptoValue),
+        Value(fiatValue),
+        addSingleOrMultipleFromAddresses(transactionInOutDetails),
+        addSingleOrMultipleToAddresses(transactionInOutDetails),
+        checkIfShouldAddDescription(item),
+        Action()
+    )
 
     fun loadUnconfirmedSentItems(
         item: NonCustodialActivitySummaryItem
@@ -254,24 +250,23 @@ class ActivityDetailsInteractor(
         item: NonCustodialActivitySummaryItem,
         cryptoValue: CryptoValue?
     ) = transactionInputOutputMapper.transformInputAndOutputs(item).map {
-        listOfNotNull(
-            Amount(item.cryptoValue),
-            Fee(cryptoValue),
-            addSingleOrMultipleFromAddresses(it),
-            addSingleOrMultipleToAddresses(it),
-            checkIfShouldAddDescription(item),
-            Action()
-        )
+        getListOfItemsForUnconfirmedSends(item, cryptoValue, it)
     }.onErrorReturn {
-        listOfNotNull(
-            Amount(item.cryptoValue),
-            Fee(cryptoValue),
-            addSingleOrMultipleFromAddresses(null),
-            addSingleOrMultipleToAddresses(null),
-            checkIfShouldAddDescription(item),
-            Action()
-        )
+        getListOfItemsForUnconfirmedSends(item, cryptoValue, null)
     }
+
+    private fun getListOfItemsForUnconfirmedSends(
+        item: NonCustodialActivitySummaryItem,
+        cryptoValue: CryptoValue?,
+        transactionInOutDetails: TransactionInOutDetails?
+    ) = listOfNotNull(
+        Amount(item.cryptoValue),
+        Fee(cryptoValue),
+        addSingleOrMultipleFromAddresses(transactionInOutDetails),
+        addSingleOrMultipleToAddresses(transactionInOutDetails),
+        checkIfShouldAddDescription(item),
+        Action()
+    )
 
     fun updateItemDescription(
         txId: String,
