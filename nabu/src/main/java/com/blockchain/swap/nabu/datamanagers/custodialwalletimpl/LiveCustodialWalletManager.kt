@@ -286,8 +286,10 @@ class LiveCustodialWalletManager(
         simpleBuyPrefs.updateSupportedCards(cardTypes.joinToString())
     }
 
-    private fun allPaymentsMethods(fiatCurrency: String,
-                                   isTier2Approved: Boolean) = authenticator.authenticate {
+    private fun allPaymentsMethods(
+        fiatCurrency: String,
+        isTier2Approved: Boolean
+    ) = authenticator.authenticate {
         Singles.zip(
             nabuService.getCards(it).onErrorReturn { emptyList() },
             nabuService.getPaymentMethods(it, fiatCurrency).doOnSuccess {
@@ -410,7 +412,6 @@ class LiveCustodialWalletManager(
                     }
                 }
         }
-
 
     private fun CardResponse.toCardPaymentMethod(cardLimits: PaymentLimits) =
         PaymentMethod.Card(

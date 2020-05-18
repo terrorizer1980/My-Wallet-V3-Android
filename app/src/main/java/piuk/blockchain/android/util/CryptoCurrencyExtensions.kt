@@ -117,6 +117,6 @@ internal class ResourceDefaultLabels(
     override fun getAllWalletLabel(): String =
         resources.getString(R.string.default_label_all_wallets)
 
-    //FIXME return resource
+    // FIXME return resource
     override fun getDefaultInterestWalletLabel(cryptoCurrency: CryptoCurrency): String = "Interest"
 }

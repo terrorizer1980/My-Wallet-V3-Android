@@ -35,8 +35,10 @@ abstract class CryptoSingleAccountBase : CryptoSingleAccount {
     final override var hasTransactions: Boolean = false
         private set
 
-    final override fun fiatBalance(fiat: String,
-                                   exchangeRates: ExchangeRateDataManager): Single<FiatValue> =
+    final override fun fiatBalance(
+        fiat: String,
+        exchangeRates: ExchangeRateDataManager
+    ): Single<FiatValue> =
         balance.map { it.toFiat(exchangeRates, fiat) }
 
     override fun includes(cryptoAccount: CryptoSingleAccount): Boolean =
@@ -209,8 +211,10 @@ class CryptoAccountCustodialGroup(
     override val hasTransactions: Boolean
         get() = account.hasTransactions
 
-    override fun fiatBalance(fiat: String,
-                             exchangeRates: ExchangeRateDataManager): Single<FiatValue> =
+    override fun fiatBalance(
+        fiat: String,
+        exchangeRates: ExchangeRateDataManager
+    ): Single<FiatValue> =
         balance.map { it.toFiat(exchangeRates, fiat) }
 
     override fun includes(cryptoAccount: CryptoSingleAccount): Boolean =
@@ -249,8 +253,10 @@ class CryptoAccountInterestGroup(
     override val hasTransactions: Boolean
         get() = account.hasTransactions
 
-    override fun fiatBalance(fiat: String,
-                             exchangeRates: ExchangeRateDataManager): Single<FiatValue> =
+    override fun fiatBalance(
+        fiat: String,
+        exchangeRates: ExchangeRateDataManager
+    ): Single<FiatValue> =
         balance.map { it.toFiat(exchangeRates, fiat) }
 
     override fun includes(cryptoAccount: CryptoSingleAccount): Boolean =
@@ -300,8 +306,10 @@ class CryptoAccountCompoundGroup(
     override val isFunded: Boolean =
         accounts.map { it.isFunded }.any { it }
 
-    override fun fiatBalance(fiat: String,
-                             exchangeRates: ExchangeRateDataManager): Single<FiatValue> =
+    override fun fiatBalance(
+        fiat: String,
+        exchangeRates: ExchangeRateDataManager
+    ): Single<FiatValue> =
         balance.map { it.toFiat(exchangeRates, fiat) }
 
     override fun includes(cryptoAccount: CryptoSingleAccount): Boolean =
