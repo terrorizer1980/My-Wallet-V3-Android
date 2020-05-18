@@ -392,14 +392,23 @@ class LiveCustodialWalletManager(
         crypto: CryptoCurrency
     ): Single<AssetInterestDetails> =
         authenticator.authenticate { sessionToken ->
-            nabuService.getInterestAddresses(sessionToken, crypto.networkTicker).flatMap { addressesResponse ->
-                nabuService.getInterestRates(sessionToken).map { interestResponse ->
-                    AssetInterestDetails(
-                        address = addressesResponse.body()?.depositAddress ?: "Unknown",
-                        crypto = CryptoCurrency.BTC,
-                        interestRate = interestResponse.body()?.assetInterestRate ?: 0.0)
+            nabuService.getInterestAddresses(sessionToken, crypto.networkTicker)
+                .flatMap { addressesResponse ->
+                    nabuService.getInterestRates(sessionToken).flatMap { interestResponse ->
+                        nabuService.getInterestAccountBalance(sessionToken, crypto.networkTicker)
+                            .map { accountBalanceResponse ->
+                                AssetInterestDetails(
+                                    address = addressesResponse.body()?.depositAddress ?: "Unknown",
+                                    crypto = CryptoCurrency.BTC,
+                                    interestRate = interestResponse.body()?.assetInterestRate
+                                        ?: 0.0,
+                                    fiatValue = accountBalanceResponse.body()?.fiatAmount ?: 0.0,
+                                    fiatCurrency = accountBalanceResponse.body()?.fiatCurrency
+                                        ?: "USD",
+                                    balance = accountBalanceResponse.body()?.available ?: 0.0)
+                            }
+                    }
                 }
-            }
         }
 
 

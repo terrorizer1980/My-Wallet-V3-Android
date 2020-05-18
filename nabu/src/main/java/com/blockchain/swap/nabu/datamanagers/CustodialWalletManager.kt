@@ -110,7 +110,10 @@ interface CustodialWalletManager {
 data class AssetInterestDetails(
     val address: String,
     val crypto: CryptoCurrency,
-    val interestRate: Double
+    val interestRate: Double,
+    val fiatValue: Double,
+    val fiatCurrency: String,
+    val balance: Double
 )
 
 data class BuyOrder(

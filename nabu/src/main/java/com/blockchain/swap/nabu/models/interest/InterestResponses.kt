@@ -11,3 +11,11 @@ data class InterestResponse(
     @Json(name="BTC")
     val assetInterestRate: Double?
 )
+
+@Json(name="BTC")
+data class InterestAccountBalanceResponse(
+    val available: Double?,
+    val pendingInterest:Double?,
+    val fiatAmount:Double?,
+    val fiatCurrency: String?
+)

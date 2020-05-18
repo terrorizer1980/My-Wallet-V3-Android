@@ -400,6 +400,14 @@ class NabuService(retrofit: Retrofit) {
     ) = service.getInterestRates(authorization = sessionToken.authHeader)
         .wrapErrorMessage()
 
+    fun getInterestAccountBalance(
+        sessionToken: NabuSessionTokenResponse,
+        currency: String
+    ) = service.getInterestAccountBalance(
+        authorization = sessionToken.authHeader,
+        cryptoSymbol = currency
+    ).wrapErrorMessage()
+
     companion object {
         internal const val CLIENT_TYPE = "APP"
     }
