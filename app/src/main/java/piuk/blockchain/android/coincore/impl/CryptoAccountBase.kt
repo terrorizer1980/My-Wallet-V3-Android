@@ -15,6 +15,7 @@ import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.CustodialActivitySummaryItem
+import piuk.blockchain.android.coincore.btc.BtcCryptoInterestAccount
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.utils.extensions.mapList
@@ -35,7 +36,10 @@ abstract class CryptoSingleAccountBase : CryptoSingleAccount {
     final override var hasTransactions: Boolean = false
         private set
 
-    final override fun fiatBalance(fiat: String, exchangeRates: ExchangeRateDataManager): Single<FiatValue> =
+    final override fun fiatBalance(
+        fiat: String,
+        exchangeRates: ExchangeRateDataManager
+    ): Single<FiatValue> =
         balance.map { it.toFiat(exchangeRates, fiat) }
 
     override fun includes(cryptoAccount: CryptoSingleAccount): Boolean =
@@ -75,7 +79,8 @@ abstract class CryptoSingleAccountCustodialBase : CryptoSingleAccountBase() {
     override val isFunded: Boolean
         get() = isNonCustodialConfigured.get()
 
-    final override val isDefault: Boolean = false // Default is, presently, only ever a non-custodial account.
+    final override val isDefault: Boolean =
+        false // Default is, presently, only ever a non-custodial account.
 
     final override val actions: AvailableActions
         get() = availableActions
@@ -173,7 +178,52 @@ class CryptoAccountCustodialGroup(
     override val hasTransactions: Boolean
         get() = account.hasTransactions
 
-    override fun fiatBalance(fiat: String, exchangeRates: ExchangeRateDataManager): Single<FiatValue> =
+    override fun fiatBalance(
+        fiat: String,
+        exchangeRates: ExchangeRateDataManager
+    ): Single<FiatValue> =
+        balance.map { it.toFiat(exchangeRates, fiat) }
+
+    override fun includes(cryptoAccount: CryptoSingleAccount): Boolean =
+        accounts.contains(cryptoAccount)
+}
+
+class CryptoAccountInterestGroup(
+    override val label: String,
+    override val accounts: CryptoSingleAccountList
+) : CryptoAccountGroup {
+
+    private val account: BtcCryptoInterestAccount
+
+    init {
+        require(accounts.size == 1)
+        require(accounts[0] is BtcCryptoInterestAccount)
+
+        account = accounts[0] as BtcCryptoInterestAccount
+    }
+
+    override val cryptoCurrencies: Set<CryptoCurrency>
+        get() = account.cryptoCurrencies
+
+    override val balance: Single<CryptoValue>
+        get() = account.balance
+
+    override val activity: Single<ActivitySummaryList>
+        get() = account.activity
+
+    override val actions: AvailableActions
+        get() = account.actions
+
+    override val isFunded: Boolean
+        get() = account.isFunded
+
+    override val hasTransactions: Boolean
+        get() = account.hasTransactions
+
+    override fun fiatBalance(
+        fiat: String,
+        exchangeRates: ExchangeRateDataManager
+    ): Single<FiatValue> =
         balance.map { it.toFiat(exchangeRates, fiat) }
 
     override fun includes(cryptoAccount: CryptoSingleAccount): Boolean =
@@ -223,7 +273,10 @@ class CryptoAccountCompoundGroup(
     override val isFunded: Boolean =
         accounts.map { it.isFunded }.any { it }
 
-    override fun fiatBalance(fiat: String, exchangeRates: ExchangeRateDataManager): Single<FiatValue> =
+    override fun fiatBalance(
+        fiat: String,
+        exchangeRates: ExchangeRateDataManager
+    ): Single<FiatValue> =
         balance.map { it.toFiat(exchangeRates, fiat) }
 
     override fun includes(cryptoAccount: CryptoSingleAccount): Boolean =

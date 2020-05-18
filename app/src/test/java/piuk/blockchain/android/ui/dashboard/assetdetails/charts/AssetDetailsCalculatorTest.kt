@@ -46,6 +46,7 @@ class AssetDetailsCalculatorTest {
         val walletCrypto = CryptoValue(CryptoCurrency.BTC, 548621.toBigInteger())
         val custodialCrypto = CryptoValue.ZeroBtc
         val totalCrypto = walletCrypto + custodialCrypto
+        val interestCrypto = CryptoValue.ZeroBtc
 
         val walletFiat = FiatValue.fromMinor("USD", 30985)
         val custodialFiat = FiatValue.fromMinor("USD", 0)
@@ -65,6 +66,7 @@ class AssetDetailsCalculatorTest {
                 AssetFilter.Total -> Single.just(totalCrypto)
                 AssetFilter.Custodial -> Single.just(custodialCrypto)
                 AssetFilter.Wallet -> Single.just(walletCrypto)
+                AssetFilter.Interest -> Single.just(interestCrypto)
             }.exhaustive
         }
 

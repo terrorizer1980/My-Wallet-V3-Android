@@ -3,6 +3,7 @@ package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 import com.blockchain.preferences.SimpleBuyPrefs
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.swap.nabu.Authenticator
+import com.blockchain.swap.nabu.datamanagers.AssetInterestDetails
 import com.blockchain.swap.nabu.datamanagers.BankAccount
 import com.blockchain.swap.nabu.datamanagers.BillingAddress
 import com.blockchain.swap.nabu.datamanagers.BuyLimits
@@ -285,7 +286,10 @@ class LiveCustodialWalletManager(
         simpleBuyPrefs.updateSupportedCards(cardTypes.joinToString())
     }
 
-    private fun allPaymentsMethods(fiatCurrency: String, isTier2Approved: Boolean) = authenticator.authenticate {
+    private fun allPaymentsMethods(
+        fiatCurrency: String,
+        isTier2Approved: Boolean
+    ) = authenticator.authenticate {
         Singles.zip(
             nabuService.getCards(it).onErrorReturn { emptyList() },
             nabuService.getPaymentMethods(it, fiatCurrency).doOnSuccess {
@@ -384,6 +388,28 @@ class LiveCustodialWalletManager(
                 ))
         }.map {
             it.toBuyOrder()
+        }
+
+    override fun getInterestDetails(
+        crypto: CryptoCurrency
+    ): Single<AssetInterestDetails> =
+        authenticator.authenticate { sessionToken ->
+            // TODO when we know how we will identify an wallet without an interest account
+            //  we can delete this, or reinstate it as needed
+
+            // nabuService.getInterestAddresses(sessionToken, crypto.networkTicker)
+            //   .flatMap { addressesResponse ->
+            nabuService.getInterestRates(sessionToken).flatMap { interestResponse ->
+                nabuService.getInterestAccountBalance(sessionToken, crypto.networkTicker)
+                    .map { accountBalanceResponse ->
+                        AssetInterestDetails(
+                            crypto = CryptoCurrency.BTC,
+                            interestRate = interestResponse.body()?.assetInterestRate
+                                ?: 0.0,
+                            balance = accountBalanceResponse.body()?.balanceAvailable ?: 0L)
+                    }
+            }
+            // }
         }
 
     private fun CardResponse.toCardPaymentMethod(cardLimits: PaymentLimits) =

@@ -12,7 +12,8 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 enum class AssetFilter {
     Total,
     Wallet,
-    Custodial
+    Custodial,
+    Interest
 }
 
 enum class AssetAction {

@@ -61,6 +61,11 @@ internal abstract class AssetTokensBase(
                     .doOnSuccess { accounts.addAll(it) }
                     .ignoreElement()
             }
+            .then {
+                loadInterestAccounts(labels)
+                    .doOnSuccess { accounts.addAll(it) }
+                    .ignoreElement()
+            }
             .doOnError { Timber.e("Error loading accounts for ${asset.networkTicker}: $it") }
 
     abstract fun initToken(): Completable
@@ -80,6 +85,10 @@ internal abstract class AssetTokensBase(
 
     abstract fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList>
     abstract fun loadCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList>
+    open fun loadInterestAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
+        Single.just(emptyList())
+
+    open fun interestRate(): Maybe<Double> = Maybe.empty()
 
     protected open fun onLogoutSignal(event: AuthEvent) {}
 
@@ -101,6 +110,7 @@ internal abstract class AssetTokensBase(
                 noncustodialBalance(),
                 custodialBalance()
             ) { noncustodial, custodial -> noncustodial + custodial }
+            AssetFilter.Interest -> TODO("this is going to be removed soon")
         }
 
     internal abstract fun custodialBalanceMaybe(): Maybe<CryptoValue>
@@ -135,6 +145,7 @@ internal abstract class AssetTokensBase(
             AssetFilter.Total -> custodialActions.intersect(noncustodialActions)
             AssetFilter.Custodial -> custodialActions
             AssetFilter.Wallet -> noncustodialActions
+            AssetFilter.Interest -> emptySet()
         }
 
     override fun hasActiveWallet(filter: AssetFilter): Boolean =
@@ -142,6 +153,7 @@ internal abstract class AssetTokensBase(
             AssetFilter.Total -> true
             AssetFilter.Wallet -> true
             AssetFilter.Custodial -> isNonCustodialConfigured.get()
+            AssetFilter.Interest -> isNonCustodialConfigured.get()
         }
 
     // These are constant ATM, but may need to change this so hardcode here

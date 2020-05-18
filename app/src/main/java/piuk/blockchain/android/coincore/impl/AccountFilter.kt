@@ -6,6 +6,7 @@ import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoSingleAccount
+import piuk.blockchain.android.coincore.btc.BtcCryptoInterestAccount
 
 fun filterTokenAccounts(
     asset: CryptoCurrency,
@@ -20,7 +21,19 @@ fun filterTokenAccounts(
                 buildNonCustodialGroup(asset, labels, accountList)
             AssetFilter.Custodial ->
                 buildCustodialGroup(asset, labels, accountList)
+            AssetFilter.Interest ->
+                buildInterestGroup(asset, labels, accountList)
         }.exhaustive
+
+private fun buildInterestGroup(
+    asset: CryptoCurrency,
+    labels: DefaultLabels,
+    accountList: List<CryptoSingleAccount>
+): CryptoAccountGroup =
+    CryptoAccountInterestGroup(
+        labels.getDefaultInterestWalletLabel(asset),
+        accountList.filterIsInstance<BtcCryptoInterestAccount>()
+    )
 
 private fun buildCustodialGroup(
     asset: CryptoCurrency,
