@@ -394,23 +394,22 @@ class LiveCustodialWalletManager(
         crypto: CryptoCurrency
     ): Single<AssetInterestDetails> =
         authenticator.authenticate { sessionToken ->
-            nabuService.getInterestAddresses(sessionToken, crypto.networkTicker)
-                .flatMap { addressesResponse ->
-                    nabuService.getInterestRates(sessionToken).flatMap { interestResponse ->
-                        nabuService.getInterestAccountBalance(sessionToken, crypto.networkTicker)
-                            .map { accountBalanceResponse ->
-                                AssetInterestDetails(
-                                    address = addressesResponse.body()?.depositAddress ?: "Unknown",
-                                    crypto = CryptoCurrency.BTC,
-                                    interestRate = interestResponse.body()?.assetInterestRate
-                                        ?: 0.0,
-                                    fiatValue = accountBalanceResponse.body()?.fiatAmount ?: 0.0,
-                                    fiatCurrency = accountBalanceResponse.body()?.fiatCurrency
-                                        ?: "USD",
-                                    balance = accountBalanceResponse.body()?.available ?: 0.0)
-                            }
+            // TODO when we know how we will identify an wallet without an interest account
+            //  we can delete this, or reinstate it as needed
+
+            // nabuService.getInterestAddresses(sessionToken, crypto.networkTicker)
+            //   .flatMap { addressesResponse ->
+            nabuService.getInterestRates(sessionToken).flatMap { interestResponse ->
+                nabuService.getInterestAccountBalance(sessionToken, crypto.networkTicker)
+                    .map { accountBalanceResponse ->
+                        AssetInterestDetails(
+                            crypto = CryptoCurrency.BTC,
+                            interestRate = interestResponse.body()?.assetInterestRate
+                                ?: 0.0,
+                            balance = accountBalanceResponse.body()?.balanceAvailable ?: 0L)
                     }
-                }
+            }
+            // }
         }
 
     private fun CardResponse.toCardPaymentMethod(cardLimits: PaymentLimits) =
