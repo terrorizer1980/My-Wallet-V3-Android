@@ -23,7 +23,7 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 internal class PaxTokens(
     private val paxAccount: Erc20Account,
     private val stringUtils: StringUtils,
-    private val custodialWalletManager: CustodialWalletManager,
+    custodialManager: CustodialWalletManager,
     exchangeRates: ExchangeRateDataManager,
     historicRates: ChartsDataManager,
     currencyPrefs: CurrencyPrefs,
@@ -35,6 +35,7 @@ internal class PaxTokens(
     historicRates,
     currencyPrefs,
     labels,
+    custodialManager,
     crashLogger,
     rxBus
 ) {
@@ -46,17 +47,6 @@ internal class PaxTokens(
 
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         Single.just(listOf(getNonCustodialPaxAccount()))
-
-    override fun loadCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
-        Single.just(
-            listOf(
-                PaxCryptoAccountCustodial(
-                    labels.getDefaultCustodialWalletLabel(asset),
-                    custodialWalletManager,
-                    exchangeRates
-                )
-            )
-        )
 
     private fun getNonCustodialPaxAccount(): CryptoSingleAccount {
         val paxAddress = paxAccount.ethDataManager.getEthWallet()?.account?.address

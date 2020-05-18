@@ -1,21 +1,11 @@
 package piuk.blockchain.android.coincore.stx
 
-import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountNonCustodialBase
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-
-internal class StxCryptoAccountCustodial(
-    override val label: String,
-    override val custodialWalletManager: CustodialWalletManager,
-    override val exchangeRates: ExchangeRateDataManager
-) : CryptoSingleAccountCustodialBase() {
-    override val cryptoCurrencies = setOf(CryptoCurrency.STX)
-}
 
 class StxCryptoAccountNonCustodial(
     override val label: String,

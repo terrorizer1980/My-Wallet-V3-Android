@@ -20,7 +20,7 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 internal class EthTokens(
     private val ethDataManager: EthDataManager,
     private val stringUtils: StringUtils,
-    private val custodialWalletManager: CustodialWalletManager,
+    custodialManager: CustodialWalletManager,
     exchangeRates: ExchangeRateDataManager,
     historicRates: ChartsDataManager,
     currencyPrefs: CurrencyPrefs,
@@ -31,7 +31,10 @@ internal class EthTokens(
     exchangeRates,
     historicRates,
     currencyPrefs,
-    labels, crashLogger, rxBus
+    labels,
+    custodialManager,
+    crashLogger,
+    rxBus
 ) {
 
     override val asset: CryptoCurrency
@@ -49,17 +52,6 @@ internal class EthTokens(
                 EthCryptoAccountNonCustodial(
                     ethDataManager,
                     ethDataManager.getEthWallet()?.account ?: throw Exception("No ether wallet found"),
-                    exchangeRates
-                )
-            )
-        )
-
-    override fun loadCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
-        Single.just(
-            listOf(
-                EthCryptoAccountCustodial(
-                    labels.getDefaultCustodialWalletLabel(asset),
-                    custodialWalletManager,
                     exchangeRates
                 )
             )

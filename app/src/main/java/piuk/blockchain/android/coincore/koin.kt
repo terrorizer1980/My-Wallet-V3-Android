@@ -20,7 +20,7 @@ val coincoreModule = applicationContext {
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
-                custodialWalletManager = get(),
+                custodialManager = get(),
                 crashLogger = get(),
                 labels = get()
             )
@@ -34,7 +34,7 @@ val coincoreModule = applicationContext {
                 currencyPrefs = get(),
                 payloadDataManager = get(),
                 rxBus = get(),
-                custodialWalletManager = get(),
+                custodialManager = get(),
                 crashLogger = get(),
                 labels = get()
             )
@@ -49,7 +49,7 @@ val coincoreModule = applicationContext {
                 rxBus = get(),
                 crashLogger = get(),
                 stringUtils = get(),
-                custodialWalletManager = get(),
+                custodialManager = get(),
                 environmentSettings = get(),
                 labels = get()
             )
@@ -62,7 +62,7 @@ val coincoreModule = applicationContext {
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
-                custodialWalletManager = get(),
+                custodialManager = get(),
                 crashLogger = get(),
                 labels = get()
             )
@@ -77,7 +77,7 @@ val coincoreModule = applicationContext {
                 rxBus = get(),
                 crashLogger = get(),
                 stringUtils = get(),
-                custodialWalletManager = get(),
+                custodialManager = get(),
                 labels = get()
             )
         }
@@ -89,7 +89,7 @@ val coincoreModule = applicationContext {
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
-                custodialWalletManager = get(),
+                custodialManager = get(),
                 stringUtils = get(),
                 crashLogger = get(),
                 labels = get()

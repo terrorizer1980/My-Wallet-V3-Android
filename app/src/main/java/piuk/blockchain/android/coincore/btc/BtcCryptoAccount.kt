@@ -1,6 +1,5 @@
 package piuk.blockchain.android.coincore.btc
 
-import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.payload.PayloadManager
@@ -9,20 +8,11 @@ import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountNonCustodialBase
 import piuk.blockchain.android.coincore.impl.transactionFetchCount
 import piuk.blockchain.android.coincore.impl.transactionFetchOffset
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-
-internal class BtcCryptoAccountCustodial(
-    override val label: String,
-    override val custodialWalletManager: CustodialWalletManager,
-    override val exchangeRates: ExchangeRateDataManager
-) : CryptoSingleAccountCustodialBase() {
-    override val cryptoCurrencies = setOf(CryptoCurrency.BTC)
-}
 
 internal class BtcCryptoAccountNonCustodial(
     override val label: String,

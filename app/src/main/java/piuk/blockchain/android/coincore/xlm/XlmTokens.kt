@@ -16,7 +16,7 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 
 internal class XlmTokens(
     private val xlmDataManager: XlmDataManager,
-    private val custodialWalletManager: CustodialWalletManager,
+    custodialManager: CustodialWalletManager,
     exchangeRates: ExchangeRateDataManager,
     historicRates: ChartsDataManager,
     currencyPrefs: CurrencyPrefs,
@@ -27,7 +27,11 @@ internal class XlmTokens(
     exchangeRates,
     historicRates,
     currencyPrefs,
-    labels, crashLogger, rxBus) {
+    labels,
+    custodialManager,
+    crashLogger,
+    rxBus
+) {
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.XLM
@@ -40,15 +44,4 @@ internal class XlmTokens(
             .map {
                 listOf(XlmCryptoAccountNonCustodial(it, xlmDataManager, exchangeRates))
             }
-
-    override fun loadCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
-        Single.just(
-            listOf(
-                XlmCryptoAccountCustodial(
-                    labels.getDefaultCustodialWalletLabel(asset),
-                    custodialWalletManager,
-                    exchangeRates
-                )
-            )
-        )
 }

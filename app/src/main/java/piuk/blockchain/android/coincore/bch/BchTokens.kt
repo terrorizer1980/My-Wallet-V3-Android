@@ -24,7 +24,7 @@ import timber.log.Timber
 internal class BchTokens(
     private val bchDataManager: BchDataManager,
     private val stringUtils: StringUtils,
-    private val custodialWalletManager: CustodialWalletManager,
+    custodialManager: CustodialWalletManager,
     private val environmentSettings: EnvironmentConfig,
     exchangeRates: ExchangeRateDataManager,
     historicRates: ChartsDataManager,
@@ -35,6 +35,7 @@ internal class BchTokens(
 ) : BitcoinLikeTokens(
     exchangeRates,
     historicRates,
+    custodialManager,
     currencyPrefs,
     labels,
     crashLogger,
@@ -69,17 +70,6 @@ internal class BchTokens(
                 }
                 result
             }
-        }
-
-    override fun loadCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
-        Single.fromCallable {
-            listOf(
-                BchCryptoAccountCustodial(
-                    labels.getDefaultCustodialWalletLabel(asset),
-                    custodialWalletManager,
-                    exchangeRates
-                )
-            )
         }
 
     override fun doUpdateBalances(): Completable =

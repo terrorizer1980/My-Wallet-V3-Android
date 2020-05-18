@@ -3,6 +3,7 @@ package piuk.blockchain.android.coincore.impl
 import androidx.annotation.CallSuper
 import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.wallet.DefaultLabels
 import io.reactivex.Completable
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -13,6 +14,7 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 internal abstract class BitcoinLikeTokens(
     exchangeRates: ExchangeRateDataManager,
     historicRates: ChartsDataManager,
+    custodialManager: CustodialWalletManager,
     currencyPrefs: CurrencyPrefs,
     labels: DefaultLabels,
     crashLogger: CrashLogger,
@@ -22,6 +24,7 @@ internal abstract class BitcoinLikeTokens(
     historicRates,
     currencyPrefs,
     labels,
+    custodialManager,
     crashLogger,
     rxBus
 ) {

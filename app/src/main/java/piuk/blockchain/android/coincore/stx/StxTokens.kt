@@ -18,7 +18,7 @@ import timber.log.Timber
 
 internal class StxTokens(
     private val payloadManager: PayloadManager,
-    private val custodialWalletManager: CustodialWalletManager,
+    custodialManager: CustodialWalletManager,
     exchangeRates: ExchangeRateDataManager,
     historicRates: ChartsDataManager,
     currencyPrefs: CurrencyPrefs,
@@ -30,6 +30,7 @@ internal class StxTokens(
     historicRates,
     currencyPrefs,
     labels,
+    custodialManager,
     crashLogger,
     rxBus
 ) {
@@ -46,17 +47,6 @@ internal class StxTokens(
         }
         .doOnError { Timber.e(it) }
         .onErrorReturn { emptyList() }
-
-    override fun loadCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
-        Single.just(
-            listOf(
-                StxCryptoAccountCustodial(
-                    labels.getDefaultCustodialWalletLabel(asset),
-                    custodialWalletManager,
-                    exchangeRates
-                )
-            )
-        )
 
     private fun getStxAccount(): CryptoSingleAccount {
         val hdWallets = payloadManager.payload?.hdWallets

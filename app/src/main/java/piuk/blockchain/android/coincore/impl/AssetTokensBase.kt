@@ -2,6 +2,7 @@ package piuk.blockchain.android.coincore.impl
 
 import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
@@ -27,9 +28,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 internal abstract class AssetTokensBase(
     protected val exchangeRates: ExchangeRateDataManager,
-    protected val historicRates: ChartsDataManager,
+    private val historicRates: ChartsDataManager,
     protected val currencyPrefs: CurrencyPrefs,
     private val labels: DefaultLabels,
+    private val custodialManager: CustodialWalletManager,
     protected val crashLogger: CrashLogger,
     rxBus: RxBus
 ) : AssetTokens {
@@ -59,7 +61,7 @@ internal abstract class AssetTokensBase(
                     .ignoreElement()
             }
             .then {
-                loadCustodialAccounts(labels)
+                loadCustodialAccount()
                     .doOnSuccess { accounts.addAll(it) }
                     .ignoreElement()
             }
@@ -81,7 +83,18 @@ internal abstract class AssetTokensBase(
     }
 
     abstract fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList>
-    abstract fun loadCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList>
+
+    private fun loadCustodialAccount(): Single<CryptoSingleAccountList> =
+        Single.fromCallable {
+            listOf(
+                CustodialTradingAccount(
+                    asset,
+                    labels.getDefaultCustodialWalletLabel(asset),
+                    exchangeRates,
+                    custodialManager
+                )
+            )
+        }
 
     protected open fun onLogoutSignal(event: AuthEvent) {}
 

@@ -19,7 +19,7 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 internal class BtcTokens(
     private val payloadDataManager: PayloadDataManager,
     private val payloadManager: PayloadManager,
-    private val custodialWalletManager: CustodialWalletManager,
+    custodialManager: CustodialWalletManager,
     exchangeRates: ExchangeRateDataManager,
     historicRates: ChartsDataManager,
     currencyPrefs: CurrencyPrefs,
@@ -29,6 +29,7 @@ internal class BtcTokens(
 ) : BitcoinLikeTokens(
     exchangeRates,
     historicRates,
+    custodialManager,
     currencyPrefs,
     labels,
     crashLogger,
@@ -70,17 +71,6 @@ internal class BtcTokens(
                 }
                 result
             }
-        }
-
-    override fun loadCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
-        Single.fromCallable {
-            listOf(
-                BtcCryptoAccountCustodial(
-                    labels.getDefaultCustodialWalletLabel(asset),
-                    custodialWalletManager,
-                    exchangeRates
-                )
-            )
         }
 
     override fun doUpdateBalances(): Completable =
