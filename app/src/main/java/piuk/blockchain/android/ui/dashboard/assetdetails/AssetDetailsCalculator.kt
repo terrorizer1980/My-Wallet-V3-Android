@@ -62,7 +62,7 @@ class AssetDetailsCalculator {
         val actions: AvailableActions
     )
 
-    private fun Single<CryptoAccountGroup>.mapDetails() : Single<Details> =
+    private fun Single<CryptoAccountGroup>.mapDetails(): Single<Details> =
         this.flatMap { it.balance.map { balance -> Details(balance, it.actions) } }
 
     private fun getAssetDisplayDetails(assetTokens: AssetTokens): Single<AssetDisplayMap> {

@@ -8,7 +8,6 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.payload.PayloadManager
 import io.reactivex.Completable
 import io.reactivex.Single
-import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.impl.AssetTokensBase
