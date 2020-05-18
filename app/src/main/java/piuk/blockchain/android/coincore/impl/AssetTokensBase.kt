@@ -1,6 +1,7 @@
 package piuk.blockchain.android.coincore.impl
 
 import com.blockchain.logging.CrashLogger
+import com.blockchain.swap.nabu.datamanagers.AssetInterestDetails
 import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -88,7 +89,7 @@ internal abstract class AssetTokensBase(
     open fun loadInterestAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         Single.just(emptyList())
 
-    open fun interestRate(): Maybe<Double> = Maybe.empty()
+    open fun interestRate(): Single<AssetInterestDetails?> = Single.just(null)
 
     protected open fun onLogoutSignal(event: AuthEvent) {}
 
@@ -110,11 +111,16 @@ internal abstract class AssetTokensBase(
                 noncustodialBalance(),
                 custodialBalance()
             ) { noncustodial, custodial -> noncustodial + custodial }
-            AssetFilter.Interest -> TODO("this is going to be removed soon")
+            AssetFilter.Interest -> getInterestBalance()
         }
 
     internal abstract fun custodialBalanceMaybe(): Maybe<CryptoValue>
     internal abstract fun noncustodialBalance(): Single<CryptoValue>
+
+    private fun getInterestBalance() : Single<CryptoValue> =
+        interestRate().map {
+            CryptoValue(it.crypto, it.balance.toString().toBigInteger())
+        }
 
     private val isNonCustodialConfigured = AtomicBoolean(false)
 

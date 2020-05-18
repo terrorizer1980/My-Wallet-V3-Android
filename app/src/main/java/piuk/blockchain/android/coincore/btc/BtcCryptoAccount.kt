@@ -37,8 +37,12 @@ internal class BtcCryptoInterestAccount(
         get() = custodialWalletManager.getInterestDetails(cryptoAsset)
             .doOnSuccess { isConfigured.set(true) }
             .map { interestDetails ->
-                CryptoValue(interestDetails.crypto,
-                    interestDetails.balance.toString().toBigInteger())
+                if(interestDetails == null) {
+                    CryptoValue.zero(cryptoAsset)
+                } else {
+                    CryptoValue(interestDetails.crypto,
+                        interestDetails.balance.toString().toBigInteger())
+                }
             }.onErrorReturn {
                 Timber.d("Unable to get interest balance: $it")
                 CryptoValue.zero(cryptoAsset)

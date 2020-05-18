@@ -7,11 +7,16 @@ data class InterestAddressResponse(
 )
 
 data class InterestResponse(
+    @Json(name = "rates")
+    val rates : RateResponseData
+)
+
+data class RateResponseData(
     @Json(name = "BTC")
     val assetInterestRate: Double
 )
 
 @Json(name = "BTC")
 data class InterestAccountBalanceResponse(
-    val balanceAvailable: Long
+    val balance: Long
 )

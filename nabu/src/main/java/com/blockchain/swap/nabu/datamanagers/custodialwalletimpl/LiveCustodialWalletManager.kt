@@ -48,6 +48,8 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.flatMapIterable
 import okhttp3.internal.toLongOrDefault
+import piuk.blockchain.androidcore.utils.extensions.switchToSingleIfEmpty
+import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Calendar
 import java.util.Date
@@ -392,7 +394,7 @@ class LiveCustodialWalletManager(
 
     override fun getInterestDetails(
         crypto: CryptoCurrency
-    ): Single<AssetInterestDetails> =
+    ): Single<AssetInterestDetails?> =
         authenticator.authenticate { sessionToken ->
             // TODO when we know how we will identify an wallet without an interest account
             //  we can delete this, or reinstate it as needed
@@ -401,13 +403,16 @@ class LiveCustodialWalletManager(
             //   .flatMap { addressesResponse ->
             nabuService.getInterestRates(sessionToken).flatMap { interestResponse ->
                 nabuService.getInterestAccountBalance(sessionToken, crypto.networkTicker)
-                    .map { accountBalanceResponse ->
+                    .switchToSingleIfEmpty {
+                        Single.just(null)
+                    }.map { accountBalanceResponse ->
                         AssetInterestDetails(
                             crypto = CryptoCurrency.BTC,
-                            interestRate = interestResponse.body()?.assetInterestRate
-                                ?: 0.0,
-                            balance = accountBalanceResponse.body()?.balanceAvailable ?: 0L)
+                            interestRate = interestResponse.body()?.rates?.assetInterestRate ?: 0.0,
+                            balance = accountBalanceResponse.balance)
                     }
+            }.doOnError {
+                Timber.e("----- error on getting intereset rates: ${it.message}")
             }
             // }
         }

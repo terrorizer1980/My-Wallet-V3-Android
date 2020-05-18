@@ -54,11 +54,13 @@ class AssetDetailsCalculator {
             assetTokens.exchangeRate(),
             assetTokens.totalBalance(AssetFilter.Total),
             assetTokens.totalBalance(AssetFilter.Wallet),
-            assetTokens.totalBalance(AssetFilter.Custodial)
-        ) { fiatPrice, totalBalance, walletBalance, custodialBalance ->
+            assetTokens.totalBalance(AssetFilter.Custodial),
+            assetTokens.totalBalance(AssetFilter.Interest)
+        ) { fiatPrice, totalBalance, walletBalance, custodialBalance, interestBalance ->
             val totalFiat = totalBalance.toFiat(fiatPrice)
             val walletFiat = walletBalance.toFiat(fiatPrice)
             val custodialFiat = custodialBalance.toFiat(fiatPrice)
+            val interestFiat = interestBalance.toFiat(fiatPrice)
 
             mutableMapOf(
                 AssetFilter.Total to BalancePair(totalBalance, totalFiat),

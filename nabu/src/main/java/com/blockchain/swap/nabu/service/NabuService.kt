@@ -39,6 +39,7 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import retrofit2.HttpException
 import retrofit2.Retrofit
+import timber.log.Timber
 
 class NabuService(retrofit: Retrofit) {
 
@@ -397,8 +398,11 @@ class NabuService(retrofit: Retrofit) {
 
     fun getInterestRates(
         sessionToken: NabuSessionTokenResponse
-    ) = service.getInterestRates(authorization = sessionToken.authHeader)
-        .wrapErrorMessage()
+    ) = service.getInterestRates(authorization = sessionToken.authHeader).doOnSuccess {
+        Timber.e("---- success from interest rates: ${it.code()} - ${it.body()}")
+    }.doOnError {
+        Timber.e("---- error from interest rates: ${it.message}")
+    }.wrapErrorMessage()
 
     fun getInterestAccountBalance(
         sessionToken: NabuSessionTokenResponse,
@@ -406,7 +410,13 @@ class NabuService(retrofit: Retrofit) {
     ) = service.getInterestAccountBalance(
         authorization = sessionToken.authHeader,
         cryptoSymbol = currency
-    ).wrapErrorMessage()
+    ).flatMapMaybe {
+        when (it.code()) {
+            200 -> Maybe.just(it.body())
+            204 -> Maybe.empty()
+            else -> Maybe.error(HttpException(it))
+        }
+    }.wrapErrorMessage()
 
     companion object {
         internal const val CLIENT_TYPE = "APP"
