@@ -5,6 +5,8 @@ import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
+import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryItem
@@ -103,82 +105,168 @@ class ActivityDetailsInteractor(
         item: NonCustodialActivitySummaryItem
     ) = item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency)
         .flatMap { fiatValue ->
-            transactionInputOutputMapper.transformInputAndOutputs(item).map {
-                listOfNotNull(
-                    Amount(item.cryptoValue),
-                    Value(fiatValue),
-                    addSingleOrMultipleFromAddresses(it),
-                    addFeeForTransaction(item),
-                    checkIfShouldAddDescription(item),
-                    Action()
-                )
-            }
+            getTransactionsMapForFeeItems(item, fiatValue)
+        }.onErrorResumeNext {
+            getTransactionsMapForFeeItems(item, null)
         }
+
+    private fun getTransactionsMapForFeeItems(
+        item: NonCustodialActivitySummaryItem,
+        fiatValue: FiatValue?
+    ) = transactionInputOutputMapper.transformInputAndOutputs(item).map {
+        getListOfItemsForFees(item, fiatValue, it)
+    }.onErrorReturn {
+        getListOfItemsForFees(item, fiatValue, null)
+    }
+
+    private fun getListOfItemsForFees(
+        item: NonCustodialActivitySummaryItem,
+        fiatValue: FiatValue?,
+        transactionInOutDetails: TransactionInOutDetails?
+    ) = listOfNotNull(
+        Amount(item.cryptoValue),
+        Value(fiatValue),
+        addSingleOrMultipleFromAddresses(transactionInOutDetails),
+        addFeeForTransaction(item),
+        checkIfShouldAddDescription(item),
+        Action()
+    )
 
     fun loadReceivedItems(
         item: NonCustodialActivitySummaryItem
     ) = item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency)
         .flatMap { fiatValue ->
-            transactionInputOutputMapper.transformInputAndOutputs(item).map {
-                listOfNotNull(
-                    Amount(item.cryptoValue),
-                    Value(fiatValue),
-                    addSingleOrMultipleFromAddresses(it),
-                    addSingleOrMultipleToAddresses(it),
-                    checkIfShouldAddDescription(item),
-                    Action()
-                )
-            }
+            getTransactionsMapForReceivedItems(item, fiatValue)
+        }.onErrorResumeNext {
+            getTransactionsMapForReceivedItems(item, null)
         }
+
+    private fun getTransactionsMapForReceivedItems(
+        item: NonCustodialActivitySummaryItem,
+        fiatValue: FiatValue?
+    ) = transactionInputOutputMapper.transformInputAndOutputs(item).map {
+        getListOfItemsForReceives(item, fiatValue, it)
+    }.onErrorReturn {
+        getListOfItemsForReceives(item, fiatValue, null)
+    }
+
+    private fun getListOfItemsForReceives(
+        item: NonCustodialActivitySummaryItem,
+        fiatValue: FiatValue?,
+        transactionInOutDetails: TransactionInOutDetails?
+    ) = listOfNotNull(
+        Amount(item.cryptoValue),
+        Value(fiatValue),
+        addSingleOrMultipleFromAddresses(transactionInOutDetails),
+        addSingleOrMultipleToAddresses(transactionInOutDetails),
+        checkIfShouldAddDescription(item),
+        Action()
+    )
 
     fun loadTransferItems(
         item: NonCustodialActivitySummaryItem
     ) = item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency)
         .flatMap { fiatValue ->
-            transactionInputOutputMapper.transformInputAndOutputs(item).map {
-                listOfNotNull(
-                    Amount(item.cryptoValue),
-                    Value(fiatValue),
-                    addSingleOrMultipleFromAddresses(it),
-                    addSingleOrMultipleToAddresses(it),
-                    checkIfShouldAddDescription(item),
-                    Action()
-                )
-            }
+            getTransactionsMapForTransferItems(item, fiatValue)
+        }.onErrorResumeNext {
+            getTransactionsMapForTransferItems(item, null)
         }
+
+    private fun getTransactionsMapForTransferItems(
+        item: NonCustodialActivitySummaryItem,
+        fiatValue: FiatValue?
+    ) = transactionInputOutputMapper.transformInputAndOutputs(item).map {
+        getListOfItemsForTransfers(item, fiatValue, it)
+    }.onErrorReturn {
+        getListOfItemsForTransfers(item, fiatValue, null)
+    }
+
+    private fun getListOfItemsForTransfers(
+        item: NonCustodialActivitySummaryItem,
+        fiatValue: FiatValue?,
+        transactionInOutDetails: TransactionInOutDetails?
+    ) = listOfNotNull(
+        Amount(item.cryptoValue),
+        Value(fiatValue),
+        addSingleOrMultipleFromAddresses(transactionInOutDetails),
+        addSingleOrMultipleToAddresses(transactionInOutDetails),
+        checkIfShouldAddDescription(item),
+        Action()
+    )
 
     fun loadConfirmedSentItems(
         item: NonCustodialActivitySummaryItem
-    ) = item.fee.singleOrError().flatMap { cryptoValue ->
-        item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency).flatMap { fiatValue ->
-            transactionInputOutputMapper.transformInputAndOutputs(item).map {
-                listOfNotNull(
-                    Amount(item.cryptoValue),
-                    Fee(cryptoValue),
-                    Value(fiatValue),
-                    addSingleOrMultipleFromAddresses(it),
-                    addSingleOrMultipleToAddresses(it),
-                    checkIfShouldAddDescription(item),
-                    Action()
-                )
-            }
-        }
+    ) = item.fee.single(item.cryptoValue).flatMap { cryptoValue ->
+        getTotalFiat(item, cryptoValue, currencyPrefs.selectedFiatCurrency)
+    }.onErrorResumeNext {
+        getTotalFiat(item, null, currencyPrefs.selectedFiatCurrency)
     }
+
+    private fun getTotalFiat(
+        item: NonCustodialActivitySummaryItem,
+        cryptoValue: CryptoValue?,
+        selectedFiatCurrency: String
+    ) = item.totalFiatWhenExecuted(selectedFiatCurrency).flatMap { fiatValue ->
+        getTransactionsMapForConfirmedSentItems(cryptoValue, fiatValue, item)
+    }.onErrorResumeNext {
+        getTransactionsMapForConfirmedSentItems(cryptoValue, null, item)
+    }
+
+    private fun getTransactionsMapForConfirmedSentItems(
+        cryptoValue: CryptoValue?,
+        fiatValue: FiatValue?,
+        item: NonCustodialActivitySummaryItem
+    ) = transactionInputOutputMapper.transformInputAndOutputs(item)
+        .map {
+            getListOfItemsForConfirmedSends(cryptoValue, fiatValue, item, it)
+        }.onErrorReturn {
+            getListOfItemsForConfirmedSends(cryptoValue, fiatValue, item, null)
+        }
+
+    private fun getListOfItemsForConfirmedSends(
+        cryptoValue: CryptoValue?,
+        fiatValue: FiatValue?,
+        item: NonCustodialActivitySummaryItem,
+        transactionInOutDetails: TransactionInOutDetails?
+    ) = listOfNotNull(
+        Amount(item.cryptoValue),
+        Fee(cryptoValue),
+        Value(fiatValue),
+        addSingleOrMultipleFromAddresses(transactionInOutDetails),
+        addSingleOrMultipleToAddresses(transactionInOutDetails),
+        checkIfShouldAddDescription(item),
+        Action()
+    )
 
     fun loadUnconfirmedSentItems(
         item: NonCustodialActivitySummaryItem
     ) = item.fee.singleOrError().flatMap { cryptoValue ->
-        transactionInputOutputMapper.transformInputAndOutputs(item).map {
-            listOfNotNull(
-                Amount(item.cryptoValue),
-                Fee(cryptoValue),
-                addSingleOrMultipleFromAddresses(it),
-                addSingleOrMultipleToAddresses(it),
-                checkIfShouldAddDescription(item),
-                Action()
-            )
-        }
+        getTransactionsMapForUnconfirmedSentItems(item, cryptoValue)
+    }.onErrorResumeNext {
+        getTransactionsMapForUnconfirmedSentItems(item, null)
     }
+
+    private fun getTransactionsMapForUnconfirmedSentItems(
+        item: NonCustodialActivitySummaryItem,
+        cryptoValue: CryptoValue?
+    ) = transactionInputOutputMapper.transformInputAndOutputs(item).map {
+        getListOfItemsForUnconfirmedSends(item, cryptoValue, it)
+    }.onErrorReturn {
+        getListOfItemsForUnconfirmedSends(item, cryptoValue, null)
+    }
+
+    private fun getListOfItemsForUnconfirmedSends(
+        item: NonCustodialActivitySummaryItem,
+        cryptoValue: CryptoValue?,
+        transactionInOutDetails: TransactionInOutDetails?
+    ) = listOfNotNull(
+        Amount(item.cryptoValue),
+        Fee(cryptoValue),
+        addSingleOrMultipleFromAddresses(transactionInOutDetails),
+        addSingleOrMultipleToAddresses(transactionInOutDetails),
+        checkIfShouldAddDescription(item),
+        Action()
+    )
 
     fun updateItemDescription(
         txId: String,
@@ -212,19 +300,31 @@ class ActivityDetailsInteractor(
     }
 
     private fun addSingleOrMultipleFromAddresses(
-        it: TransactionInOutDetails
-    ) = if (it.inputs.size == 1) {
-        From(it.inputs[0].address)
-    } else {
-        From(it.inputs.joinToString("\n"))
+        it: TransactionInOutDetails?
+    ) = when {
+        it == null -> {
+            From(null)
+        }
+        it.inputs.size == 1 -> {
+            From(it.inputs[0].address)
+        }
+        else -> {
+            From(it.inputs.joinToString("\n"))
+        }
     }
 
     private fun addSingleOrMultipleToAddresses(
-        it: TransactionInOutDetails
-    ) = if (it.outputs.size == 1) {
-        To(it.outputs[0].address)
-    } else {
-        To(it.outputs.joinToString("\n"))
+        it: TransactionInOutDetails?
+    ) = when {
+        it == null -> {
+            To(null)
+        }
+        it.outputs.size == 1 -> {
+            To(it.outputs[0].address)
+        }
+        else -> {
+            To(it.outputs.joinToString("\n"))
+        }
     }
 
     private fun checkIfShouldAddDescription(
