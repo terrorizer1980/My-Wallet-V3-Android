@@ -1,4 +1,4 @@
-package piuk.blockchain.android.ui.dashboard.assetdetails.charts
+package piuk.blockchain.android.ui.dashboard.assetdetails
 
 import com.blockchain.extensions.exhaustive
 import com.blockchain.testutils.rxInit
@@ -29,7 +29,6 @@ class AssetDetailsCalculatorTest {
         computationTrampoline()
     }
 
-    private val locale = Locale.US
     private lateinit var calculator: AssetDetailsCalculator
 
     @Before

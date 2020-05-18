@@ -49,7 +49,6 @@ internal abstract class AssetTokensBase(
                 crashLogger.logException(throwable, "Coincore: Failed to load $asset wallet")
             }
             .then { loadAccounts() }
-            .then { initActivities() }
             .doOnComplete { Timber.d("Coincore: Init $asset Complete") }
             .doOnError { Timber.d("Coincore: Init $asset Failed") }
 
@@ -68,19 +67,6 @@ internal abstract class AssetTokensBase(
             .doOnError { Timber.e("Error loading accounts for ${asset.networkTicker}: $it") }
 
     abstract fun initToken(): Completable
-
-    private fun initActivities(): Completable {
-        return Single.zip(
-            accounts.map {
-                Timber.d(">>>>> Account init: ${it.label}")
-                it.activity.onErrorReturn {
-                    emptyList()
-                }
-            }
-        ) { t: Array<Any> -> t }
-            .subscribeOn(Schedulers.computation())
-            .ignoreElement()
-    }
 
     abstract fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList>
 
