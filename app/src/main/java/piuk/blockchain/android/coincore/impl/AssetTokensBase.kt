@@ -110,7 +110,7 @@ internal abstract class AssetTokensBase(
                 noncustodialBalance(),
                 custodialBalance()
             ) { noncustodial, custodial -> noncustodial + custodial }
-            AssetFilter.Interest -> TODO()
+            AssetFilter.Interest -> TODO("this is going to be removed soon")
         }
 
     internal abstract fun custodialBalanceMaybe(): Maybe<CryptoValue>
@@ -145,7 +145,7 @@ internal abstract class AssetTokensBase(
             AssetFilter.Total -> custodialActions.intersect(noncustodialActions)
             AssetFilter.Custodial -> custodialActions
             AssetFilter.Wallet -> noncustodialActions
-            AssetFilter.Interest -> TODO()
+            AssetFilter.Interest -> emptySet()
         }
 
     override fun hasActiveWallet(filter: AssetFilter): Boolean =
@@ -153,7 +153,7 @@ internal abstract class AssetTokensBase(
             AssetFilter.Total -> true
             AssetFilter.Wallet -> true
             AssetFilter.Custodial -> isNonCustodialConfigured.get()
-            AssetFilter.Interest -> TODO()
+            AssetFilter.Interest -> isNonCustodialConfigured.get()
         }
 
     // These are constant ATM, but may need to change this so hardcode here
