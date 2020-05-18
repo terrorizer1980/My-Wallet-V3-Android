@@ -10,10 +10,8 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.AssetTokens
-import piuk.blockchain.android.coincore.AvailableActions
 import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
@@ -97,31 +95,13 @@ internal abstract class AssetTokensBase(
             accounts.first { it.isDefault }
         }
 
-    private val isNonCustodialConfigured = AtomicBoolean(false)
-
-    protected open val noncustodialActions = setOf(
-        AssetAction.ViewActivity,
-        AssetAction.Send,
-        AssetAction.Receive,
-        AssetAction.Swap
-    )
-
-    protected open val custodialActions = setOf(
-        AssetAction.Send
-    )
-
-    override fun actions(filter: AssetFilter): AvailableActions =
-        when (filter) {
-            AssetFilter.Total -> custodialActions.intersect(noncustodialActions)
-            AssetFilter.Custodial -> custodialActions
-            AssetFilter.Wallet -> noncustodialActions
-        }
+    private val isCustodialConfigured = AtomicBoolean(false)
 
     override fun hasActiveWallet(filter: AssetFilter): Boolean =
         when (filter) {
             AssetFilter.Total -> true
             AssetFilter.Wallet -> true
-            AssetFilter.Custodial -> isNonCustodialConfigured.get()
+            AssetFilter.Custodial -> isCustodialConfigured.get()
         }
 
     final override fun exchangeRate(): Single<FiatValue> =

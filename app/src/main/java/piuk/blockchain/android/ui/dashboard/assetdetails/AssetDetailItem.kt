@@ -28,7 +28,8 @@ data class AssetDetailItem(
     val assetFilter: AssetFilter,
     val tokens: AssetTokens,
     val crypto: CryptoValue,
-    val fiat: FiatValue
+    val fiat: FiatValue,
+    val actions: Set<AssetAction>
 )
 
 class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -72,7 +73,7 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
             menuInflater.inflate(R.menu.menu_asset_actions, menu)
 
             // enable available actions
-            detailItem.tokens.actions(detailItem.assetFilter).forEach {
+            detailItem.actions.forEach {
                 menu.findItem(mapActionToMenuItem(it))?.isVisible = true
             }
 

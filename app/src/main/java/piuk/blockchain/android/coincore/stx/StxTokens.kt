@@ -72,8 +72,4 @@ internal class StxTokens(
             exchangeRates = exchangeRates
         )
     }
-
-    // No supported actions at this time
-    override val noncustodialActions = emptySet<AssetAction>()
-    override val custodialActions = emptySet<AssetAction>()
 }
