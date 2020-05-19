@@ -31,7 +31,7 @@ class XlmAccountActivityTest {
     private val xlmDataManager: XlmDataManager = mock()
 
     private val subject =
-        XlmCryptoAccountNonCustodial(
+        XlmCryptoWalletAccount(
             label = "TEst Xlm Account",
             address = "Test XLM Address",
             xlmManager = xlmDataManager,

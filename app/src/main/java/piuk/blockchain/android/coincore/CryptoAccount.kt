@@ -4,7 +4,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import io.reactivex.Single
-import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
+import piuk.blockchain.android.coincore.impl.CustodialTradingAccount
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 
 interface CryptoAccount {
@@ -46,4 +46,4 @@ interface CryptoAccountGroup : CryptoAccount {
 typealias CryptoSingleAccountList = List<CryptoSingleAccount>
 
 internal fun CryptoAccount.isCustodial(): Boolean =
-    this is CryptoSingleAccountCustodialBase
+    this is CustodialTradingAccount

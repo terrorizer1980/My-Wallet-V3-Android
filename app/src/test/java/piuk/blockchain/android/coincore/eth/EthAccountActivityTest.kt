@@ -27,7 +27,7 @@ class EthAccountActivityTest {
     private val currencyPrefs: CurrencyPrefs = mock()
 
     private val subject =
-        EthCryptoAccountNonCustodial(
+        EthCryptoWalletAccount(
             label = "TestEthAccount",
             address = "Test Address",
             ethDataManager = ethDataManager,

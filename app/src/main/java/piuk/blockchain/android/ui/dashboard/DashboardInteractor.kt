@@ -37,10 +37,12 @@ class DashboardInteractor(
         CryptoCurrency.activeCurrencies()
             .filter { it != CryptoCurrency.PAX }
             .forEach {
-                cd += tokens[it].totalBalance(balanceFilter)
+                cd += tokens[it].accounts(balanceFilter)
+                    .flatMap { it.balance }
                     .doOnSuccess { value ->
                         if (value.currency == CryptoCurrency.ETHER) {
-                            cd += tokens[CryptoCurrency.PAX].totalBalance(balanceFilter)
+                            cd += tokens[CryptoCurrency.PAX].accounts(balanceFilter)
+                                .flatMap { it.balance }
                                 .subscribeBy(
                                     onSuccess = { balance ->
                                         Timber.d("*****> Got balance for PAX")
@@ -99,7 +101,8 @@ class DashboardInteractor(
         )
 
     fun checkForCustodialBalance(model: DashboardModel, crypto: CryptoCurrency): Disposable? {
-        return tokens[crypto].totalBalance(AssetFilter.Custodial)
+        return tokens[crypto].accounts(AssetFilter.Custodial)
+            .flatMap { it.balance }
             .subscribeBy(
                 onSuccess = { model.process(UpdateHasCustodialBalanceIntent(crypto, !it.isZero)) },
                 onError = { Timber.e(it) }

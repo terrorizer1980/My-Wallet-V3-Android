@@ -1,6 +1,5 @@
-package piuk.blockchain.android.ui.dashboard.assetdetails.charts
+package piuk.blockchain.android.ui.dashboard.assetdetails
 
-import com.blockchain.extensions.exhaustive
 import com.blockchain.testutils.rxInit
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
@@ -10,16 +9,14 @@ import info.blockchain.wallet.prices.TimeInterval
 import info.blockchain.wallet.prices.data.PriceDatum
 import io.reactivex.Single
 import junit.framework.Assert.assertEquals
-import org.amshove.kluent.any
 import org.amshove.kluent.mock
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.AssetTokens
-import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailsCalculator
+import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.androidcore.data.charts.TimeSpan
-import java.util.Locale
 
 class AssetDetailsCalculatorTest {
 
@@ -29,17 +26,24 @@ class AssetDetailsCalculatorTest {
         computationTrampoline()
     }
 
-    private val locale = Locale.US
     private lateinit var calculator: AssetDetailsCalculator
+
+    private val token: AssetTokens = mock()
+    private val totalGroup: CryptoAccountGroup = mock()
+    private val nonCustodialGroup: CryptoAccountGroup = mock()
+    private val custodialGroup: CryptoAccountGroup = mock()
 
     @Before
     fun setUp() {
         calculator = AssetDetailsCalculator()
+
+        whenever(token.accounts(AssetFilter.Total)).thenReturn(Single.just(totalGroup))
+        whenever(token.accounts(AssetFilter.Wallet)).thenReturn(Single.just(nonCustodialGroup))
+        whenever(token.accounts(AssetFilter.Custodial)).thenReturn(Single.just(custodialGroup))
     }
 
     @Test
     fun `cryptoBalance and fiatBalance returns the right values`() {
-        val token: AssetTokens = mock()
 
         val price = FiatValue.fromMinor("USD", 5647899)
 
@@ -53,26 +57,23 @@ class AssetDetailsCalculatorTest {
         val totalFiat = walletFiat + custodialFiat
 
         val expectedResult = mapOf(
-            AssetFilter.Total to Pair(totalCrypto, totalFiat),
-            AssetFilter.Wallet to Pair(walletCrypto, walletFiat),
-            AssetFilter.Custodial to Pair(custodialCrypto, custodialFiat)
+            AssetFilter.Total to AssetDisplayInfo(totalCrypto, totalFiat, emptySet()),
+            AssetFilter.Wallet to AssetDisplayInfo(walletCrypto, walletFiat, emptySet()),
+            AssetFilter.Custodial to AssetDisplayInfo(custodialCrypto, custodialFiat, emptySet())
         )
 
         whenever(token.exchangeRate()).thenReturn(Single.just(price))
-        whenever(token.hasActiveWallet(any())).thenReturn(true)
 
-        whenever(token.totalBalance(any())).thenAnswer {
-            when (it.arguments[0] as AssetFilter) {
-                AssetFilter.Total -> Single.just(totalCrypto)
-                AssetFilter.Custodial -> Single.just(custodialCrypto)
-                AssetFilter.Wallet -> Single.just(walletCrypto)
-                AssetFilter.Interest -> Single.just(interestCrypto)
-            }.exhaustive
-        }
+        whenever(totalGroup.balance).thenReturn(Single.just(totalCrypto))
+        whenever(nonCustodialGroup.balance).thenReturn(Single.just(walletCrypto))
+        whenever(custodialGroup.balance).thenReturn(Single.just(custodialCrypto))
 
         calculator.token.accept(token)
 
-        val v = calculator.balanceMap.test().values()
+        val v = calculator.assetDisplayDetails
+            .test()
+            .values()
+
         // Using assertResult(expectedResult) instead of fetching the values and checking them results in
         // an 'AssertionException Not completed' result. I have no clue why; changing the matchers to not use all
         // three possible enum values changes the failure into an expected 'Failed, not equal' result (hence the
@@ -86,10 +87,18 @@ class AssetDetailsCalculatorTest {
         val token: AssetTokens = mock()
 
         whenever(token.exchangeRate()).thenReturn(Single.error(Throwable()))
-        whenever(token.totalBalance()).thenReturn(Single.just(CryptoValue(CryptoCurrency.BTC, 548621.toBigInteger())))
+
+        val walletCrypto = CryptoValue(CryptoCurrency.BTC, 548621.toBigInteger())
+        val custodialCrypto = CryptoValue.ZeroBtc
+        val totalCrypto = walletCrypto + custodialCrypto
+
+        whenever(totalGroup.balance).thenReturn(Single.just(totalCrypto))
+        whenever(nonCustodialGroup.balance).thenReturn(Single.just(walletCrypto))
+        whenever(custodialGroup.balance).thenReturn(Single.just(custodialCrypto))
+
         calculator.token.accept(token)
 
-        val testObserver = calculator.balanceMap.test()
+        val testObserver = calculator.assetDisplayDetails.test()
         testObserver.assertNoValues()
     }
 
@@ -97,11 +106,18 @@ class AssetDetailsCalculatorTest {
     fun `cryptoBalance and fiatBalance are never returned if totalBalance fails`() {
         val token: AssetTokens = mock()
 
+        val walletCrypto = CryptoValue(CryptoCurrency.BTC, 548621.toBigInteger())
+        val custodialCrypto = CryptoValue.ZeroBtc
+
         whenever(token.exchangeRate()).thenReturn(Single.just(FiatValue.fromMinor("USD", 5647899)))
-        whenever(token.totalBalance()).thenReturn(Single.error(Throwable()))
+
+        whenever(totalGroup.balance).thenReturn(Single.error(Throwable()))
+        whenever(nonCustodialGroup.balance).thenReturn(Single.just(walletCrypto))
+        whenever(custodialGroup.balance).thenReturn(Single.just(custodialCrypto))
+
         calculator.token.accept(token)
 
-        val testObserver = calculator.balanceMap.test()
+        val testObserver = calculator.assetDisplayDetails.test()
         testObserver.assertNoValues()
     }
 

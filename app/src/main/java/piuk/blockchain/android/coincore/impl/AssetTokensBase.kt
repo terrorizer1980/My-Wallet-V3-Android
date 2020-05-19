@@ -1,34 +1,37 @@
 package piuk.blockchain.android.coincore.impl
 
 import com.blockchain.logging.CrashLogger
-import com.blockchain.swap.nabu.datamanagers.AssetInterestDetails
+
+import com.blockchain.preferences.CurrencyPrefs
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
+import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Single
-import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.AssetTokens
-import piuk.blockchain.android.coincore.AvailableActions
 import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.androidcore.data.access.AuthEvent
+import piuk.blockchain.androidcore.data.charts.ChartsDataManager
+import piuk.blockchain.androidcore.data.charts.PriceSeries
+import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.utils.extensions.switchToSingleIfEmpty
 import piuk.blockchain.androidcore.utils.extensions.then
 import timber.log.Timber
-import java.util.concurrent.atomic.AtomicBoolean
 
 internal abstract class AssetTokensBase(
+    protected val exchangeRates: ExchangeRateDataManager,
+    private val historicRates: ChartsDataManager,
+    protected val currencyPrefs: CurrencyPrefs,
     private val labels: DefaultLabels,
+    private val custodialManager: CustodialWalletManager,
     protected val crashLogger: CrashLogger,
     rxBus: RxBus
 ) : AssetTokens {
@@ -46,7 +49,6 @@ internal abstract class AssetTokensBase(
                 crashLogger.logException(throwable, "Coincore: Failed to load $asset wallet")
             }
             .then { loadAccounts() }
-            .then { initActivities() }
             .doOnComplete { Timber.d("Coincore: Init $asset Complete") }
             .doOnError { Timber.d("Coincore: Init $asset Failed") }
 
@@ -58,7 +60,7 @@ internal abstract class AssetTokensBase(
                     .ignoreElement()
             }
             .then {
-                loadCustodialAccounts(labels)
+                loadCustodialAccount()
                     .doOnSuccess { accounts.addAll(it) }
                     .ignoreElement()
             }
@@ -71,25 +73,24 @@ internal abstract class AssetTokensBase(
 
     abstract fun initToken(): Completable
 
-    private fun initActivities(): Completable {
-        return Single.zip(
-            accounts.map {
-                Timber.d(">>>>> Account init: ${it.label}")
-                it.activity.onErrorReturn {
-                    emptyList()
-                }
-            }
-        ) { t: Array<Any> -> t }
-            .subscribeOn(Schedulers.computation())
-            .ignoreElement()
-    }
-
     abstract fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList>
-    abstract fun loadCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList>
+
     open fun loadInterestAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         Single.just(emptyList())
 
     open fun interestRate(): Single<Double> = Single.just(0.0)
+
+    private fun loadCustodialAccount(): Single<CryptoSingleAccountList> =
+        Single.fromCallable {
+            listOf(
+                CustodialTradingAccount(
+                    asset,
+                    labels.getDefaultCustodialWalletLabel(asset),
+                    exchangeRates,
+                    custodialManager
+                )
+            )
+        }
 
     protected open fun onLogoutSignal(event: AuthEvent) {}
 
@@ -103,67 +104,14 @@ internal abstract class AssetTokensBase(
             accounts.first { it.isDefault }
         }
 
-    final override fun totalBalance(filter: AssetFilter): Single<CryptoValue> =
-        when (filter) {
-            AssetFilter.Wallet -> noncustodialBalance()
-            AssetFilter.Custodial -> custodialBalance()
-            AssetFilter.Total -> Singles.zip(
-                noncustodialBalance(),
-                custodialBalance()
-            ) { noncustodial, custodial -> noncustodial + custodial }
-            AssetFilter.Interest -> interestRate().map {
-                CryptoValue(asset, it.toLong().toBigInteger())
-            }
-        }
+    final override fun exchangeRate(): Single<FiatValue> =
+        exchangeRates.fetchLastPrice(asset, currencyPrefs.selectedFiatCurrency)
 
-    internal abstract fun custodialBalanceMaybe(): Maybe<CryptoValue>
-    internal abstract fun noncustodialBalance(): Single<CryptoValue>
+    final override fun historicRate(epochWhen: Long): Single<FiatValue> =
+        exchangeRates.getHistoricPrice(asset, currencyPrefs.selectedFiatCurrency, epochWhen)
 
-    private fun mapToCryptoValue(details: AssetInterestDetails?): CryptoValue {
-        return details?.let {
-            CryptoValue(it.crypto, it.balance.toString().toBigInteger())
-        } ?: CryptoValue.zero(CryptoCurrency.BTC)
-    }
-
-    private val isNonCustodialConfigured = AtomicBoolean(false)
-
-    private fun custodialBalance(): Single<CryptoValue> =
-        custodialBalanceMaybe()
-            .doOnComplete { isNonCustodialConfigured.set(false) }
-            .doOnSuccess { isNonCustodialConfigured.set(true) }
-            .switchToSingleIfEmpty { Single.just(CryptoValue.zero(asset)) }
-            // Report and then eat errors getting custodial balances - TODO add UI element to inform the user?
-            .onErrorReturn {
-                Timber.d("Unable to get non-custodial balance: $it")
-                CryptoValue.zero(asset)
-            }
-
-    protected open val noncustodialActions = setOf(
-        AssetAction.ViewActivity,
-        AssetAction.Send,
-        AssetAction.Receive,
-        AssetAction.Swap
-    )
-
-    protected open val custodialActions = setOf(
-        AssetAction.Send
-    )
-
-    override fun actions(filter: AssetFilter): AvailableActions =
-        when (filter) {
-            AssetFilter.Total -> custodialActions.intersect(noncustodialActions)
-            AssetFilter.Custodial -> custodialActions
-            AssetFilter.Wallet -> noncustodialActions
-            AssetFilter.Interest -> emptySet()
-        }
-
-    override fun hasActiveWallet(filter: AssetFilter): Boolean =
-        when (filter) {
-            AssetFilter.Total -> true
-            AssetFilter.Wallet -> true
-            AssetFilter.Custodial -> isNonCustodialConfigured.get()
-            AssetFilter.Interest -> isNonCustodialConfigured.get()
-        }
+    override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
+        historicRates.getHistoricPriceSeries(asset, currencyPrefs.selectedFiatCurrency, period)
 
     // These are constant ATM, but may need to change this so hardcode here
     protected val transactionFetchCount = 50
