@@ -11,12 +11,20 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.withLatestFrom
 import io.reactivex.schedulers.Schedulers
+import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.AssetTokens
+import piuk.blockchain.android.coincore.AvailableActions
+import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 
-typealias BalancePair = Pair<CryptoValue, FiatValue>
-typealias BalanceMap = Map<AssetFilter, BalancePair>
+data class AssetDisplayInfo(
+    val cryptoValue: CryptoValue,
+    val fiatValue: FiatValue,
+    val actions: Set<AssetAction>
+)
+
+typealias AssetDisplayMap = Map<AssetFilter, AssetDisplayInfo>
 
 class AssetDetailsCalculator {
     // input
@@ -44,29 +52,36 @@ class AssetDetailsCalculator {
             .subscribeOn(Schedulers.io())
 
     // output
-    val balanceMap: Observable<BalanceMap> =
+    val assetDisplayDetails: Observable<AssetDisplayMap> =
         token.flatMapSingle {
-            getBalances(it)
+            getAssetDisplayDetails(it)
         }.subscribeOn(Schedulers.computation())
 
-    private fun getBalances(assetTokens: AssetTokens): Single<BalanceMap> {
+    private data class Details(
+        val balance: CryptoValue,
+        val actions: AvailableActions
+    )
+
+    private fun Single<CryptoAccountGroup>.mapDetails(): Single<Details> =
+        this.flatMap { it.balance.map { balance -> Details(balance, it.actions) } }
+
+    private fun getAssetDisplayDetails(assetTokens: AssetTokens): Single<AssetDisplayMap> {
         return Singles.zip(
             assetTokens.exchangeRate(),
-            assetTokens.totalBalance(AssetFilter.Total),
-            assetTokens.totalBalance(AssetFilter.Wallet),
-            assetTokens.totalBalance(AssetFilter.Custodial)
-        ) { fiatPrice, totalBalance, walletBalance, custodialBalance ->
-            val totalFiat = totalBalance.toFiat(fiatPrice)
-            val walletFiat = walletBalance.toFiat(fiatPrice)
-            val custodialFiat = custodialBalance.toFiat(fiatPrice)
+            assetTokens.accounts(AssetFilter.Total).mapDetails(),
+            assetTokens.accounts(AssetFilter.Wallet).mapDetails(),
+            assetTokens.accounts(AssetFilter.Custodial).mapDetails()
+        ) { fiatPrice, total, nonCustodial, custodial ->
+            val totalFiat = total.balance.toFiat(fiatPrice)
+            val walletFiat = nonCustodial.balance.toFiat(fiatPrice)
+            val custodialFiat = custodial.balance.toFiat(fiatPrice)
 
             mutableMapOf(
-                AssetFilter.Total to BalancePair(totalBalance, totalFiat),
-                AssetFilter.Wallet to BalancePair(walletBalance, walletFiat)
+                AssetFilter.Total to AssetDisplayInfo(total.balance, totalFiat, total.actions),
+                AssetFilter.Wallet to AssetDisplayInfo(nonCustodial.balance, walletFiat, nonCustodial.actions)
             ).apply {
-                if (assetTokens.hasActiveWallet(AssetFilter.Custodial)) {
-                    put(AssetFilter.Custodial, BalancePair(custodialBalance, custodialFiat))
-                }
+                // TODO: Going to need to filter this out, in the not-configured eventuality
+                put(AssetFilter.Custodial, AssetDisplayInfo(custodial.balance, custodialFiat, custodial.actions))
             }
         }
     }

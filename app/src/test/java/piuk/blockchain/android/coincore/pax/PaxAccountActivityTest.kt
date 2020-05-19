@@ -31,7 +31,7 @@ class PaxAccountActivityTest {
     private val paxAccount: Erc20Account = mock()
 
     private val subject =
-        PaxCryptoAccountNonCustodial(
+        PaxCryptoWalletAccount(
             label = "Text Pax Account",
             address = "Test Px Address",
             paxAccount = paxAccount,

@@ -82,16 +82,21 @@ private class InfoItemViewHolder(var parent: View) : RecyclerView.ViewHolder(par
         when (infoType) {
             is Created -> infoType.date.toFormattedString()
             is Amount -> infoType.cryptoValue.toStringWithSymbol()
-            is Fee -> infoType.feeValue.toStringWithSymbol()
-            is Value -> infoType.fiatAtExecution.toStringWithSymbol()
-            is To -> infoType.toAddress
-            is From -> infoType.fromAddress
+            is Fee -> infoType.feeValue?.toStringWithSymbol() ?: parent.context.getString(
+                R.string.activity_details_fee_load_fail)
+            is Value -> infoType.fiatAtExecution?.toStringWithSymbol() ?: parent.context.getString(
+                R.string.activity_details_value_load_fail)
+            is To -> infoType.toAddress ?: parent.context.getString(
+                R.string.activity_details_to_load_fail)
+            is From -> infoType.fromAddress ?: parent.context.getString(
+                R.string.activity_details_from_load_fail)
             is FeeForTransaction -> {
                 when (infoType.direction) {
                     TransactionSummary.Direction.SENT -> parent.context.getString(
                         R.string.activity_details_transaction_fee_send,
                         infoType.cryptoValue.toStringWithSymbol())
-                    else -> parent.context.getString(R.string.activity_details_transaction_fee_unknown)
+                    else -> parent.context.getString(
+                        R.string.activity_details_transaction_fee_unknown)
                 }
             }
             is BuyFee -> infoType.feeValue.toStringWithSymbol()
