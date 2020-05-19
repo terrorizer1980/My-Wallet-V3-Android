@@ -1,26 +1,16 @@
 package piuk.blockchain.android.coincore.eth
 
-import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.ethereum.EthereumAccount
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountNonCustodialBase
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 
-internal class EthCryptoAccountCustodial(
-    override val label: String,
-    override val custodialWalletManager: CustodialWalletManager,
-    override val exchangeRates: ExchangeRateDataManager
-) : CryptoSingleAccountCustodialBase() {
-    override val cryptoCurrencies = setOf(CryptoCurrency.ETHER)
-}
-
-internal class EthCryptoAccountNonCustodial(
+internal class EthCryptoWalletAccount(
     override val label: String,
     private val address: String,
     private val ethDataManager: EthDataManager,

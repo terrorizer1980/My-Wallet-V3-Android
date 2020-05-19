@@ -46,11 +46,16 @@ abstract class CryptoSingleAccountBase : CryptoSingleAccount {
     }
 }
 
-abstract class CryptoSingleAccountCustodialBase : CryptoSingleAccountBase() {
-
-    protected abstract val custodialWalletManager: CustodialWalletManager
+class CustodialTradingAccount(
+    cryptoCurrency: CryptoCurrency,
+    override val label: String,
+    override val exchangeRates: ExchangeRateDataManager,
+    val custodialWalletManager: CustodialWalletManager
+) : CryptoSingleAccountBase() {
 
     private val isNonCustodialConfigured = AtomicBoolean(false)
+
+    override val cryptoCurrencies = setOf(cryptoCurrency)
 
     override val receiveAddress: Single<String>
         get() = Single.error(NotImplementedError("Custodial accounts don't support receive"))
@@ -75,9 +80,9 @@ abstract class CryptoSingleAccountCustodialBase : CryptoSingleAccountBase() {
     override val isFunded: Boolean
         get() = isNonCustodialConfigured.get()
 
-    final override val isDefault: Boolean = false // Default is, presently, only ever a non-custodial account.
+    override val isDefault: Boolean = false // Default is, presently, only ever a non-custodial account.
 
-    final override val actions: AvailableActions
+    override val actions: AvailableActions
         get() = availableActions
 
     private val availableActions = setOf(
@@ -120,8 +125,8 @@ abstract class CryptoSingleAccountCustodialBase : CryptoSingleAccountBase() {
 
 abstract class CryptoSingleAccountNonCustodialBase : CryptoSingleAccountBase() {
 
-    override val receiveAddress: Single<String>
-        get() = Single.error(NotImplementedError("ReceiveAddress not implemented"))
+//    override val receiveAddress: Single<String>
+//        get() = Single.error(NotImplementedError("ReceiveAddress not implemented"))
 
     override val isFunded: Boolean
         get() = false
@@ -146,13 +151,13 @@ class CryptoAccountCustodialGroup(
     override val accounts: CryptoSingleAccountList
 ) : CryptoAccountGroup {
 
-    private val account: CryptoSingleAccountCustodialBase
+    private val account: CustodialTradingAccount
 
     init {
         require(accounts.size == 1)
-        require(accounts[0] is CryptoSingleAccountCustodialBase)
+        require(accounts[0] is CustodialTradingAccount)
 
-        account = accounts[0] as CryptoSingleAccountCustodialBase
+        account = accounts[0] as CustodialTradingAccount
     }
 
     override val cryptoCurrencies: Set<CryptoCurrency>

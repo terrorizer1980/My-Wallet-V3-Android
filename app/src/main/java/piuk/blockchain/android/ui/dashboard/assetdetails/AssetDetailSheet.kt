@@ -93,12 +93,12 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
             assetDetailsViewModel.token.accept(token)
             current_price_title.text = getString(R.string.dashboard_price_for_asset, cryptoCurrency.displayTicker)
 
-            compositeDisposable += assetDetailsViewModel.balanceMap
+            compositeDisposable += assetDetailsViewModel.assetDisplayDetails
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onError = { },
                     onNext = { map ->
-                        onGotBalances(view, map)
+                        onGotAssetDetails(view, map)
                     }
                 )
 
@@ -136,23 +136,23 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
         }
     }
 
-    private fun onGotBalances(view: View, balanceMap: BalanceMap) {
+    private fun onGotAssetDetails(view: View, assetDetails: AssetDisplayMap) {
         with(view) {
 
             asset_list.layoutManager = LinearLayoutManager(requireContext())
 
             val itemList = mutableListOf<AssetDetailItem>()
 
-            balanceMap[AssetFilter.Wallet]?.let {
+            assetDetails[AssetFilter.Wallet]?.let {
                 itemList.add(
-                    AssetDetailItem(AssetFilter.Wallet, token, it.first, it.second)
+                    AssetDetailItem(AssetFilter.Wallet, token, it.cryptoValue, it.fiatValue, it.actions)
                 )
             }
 
-            balanceMap[AssetFilter.Custodial]?.let {
-                if (!it.first.isZero) {
+            assetDetails[AssetFilter.Custodial]?.let {
+                if (!it.cryptoValue.isZero) {
                     itemList.add(
-                        AssetDetailItem(AssetFilter.Custodial, token, it.first, it.second)
+                        AssetDetailItem(AssetFilter.Custodial, token, it.cryptoValue, it.fiatValue, it.actions)
                     )
                 }
             }

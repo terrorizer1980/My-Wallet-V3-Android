@@ -26,7 +26,7 @@ class BtcAccountActivityTest {
     private val currencyPrefs: CurrencyPrefs = mock()
 
     private val subject =
-        BtcCryptoAccountNonCustodial(
+        BtcCryptoWalletAccount(
             label = "TestBtcAccount",
             address = "",
             payloadManager = payloadManager,
