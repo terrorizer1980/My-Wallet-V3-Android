@@ -10,7 +10,7 @@ import piuk.blockchain.android.coincore.impl.CryptoSingleAccountNonCustodialBase
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 
-internal class EthCryptoAccountNonCustodial(
+internal class EthCryptoWalletAccount(
     override val label: String,
     private val address: String,
     private val ethDataManager: EthDataManager,

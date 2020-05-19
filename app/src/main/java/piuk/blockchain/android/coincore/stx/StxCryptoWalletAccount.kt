@@ -7,7 +7,7 @@ import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountNonCustodialBase
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 
-class StxCryptoAccountNonCustodial(
+class StxCryptoWalletAccount(
     override val label: String,
     private val address: String,
     override val exchangeRates: ExchangeRateDataManager

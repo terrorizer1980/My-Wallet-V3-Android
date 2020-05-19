@@ -49,7 +49,7 @@ internal class EthTokens(
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         Single.just(
             listOf(
-                EthCryptoAccountNonCustodial(
+                EthCryptoWalletAccount(
                     ethDataManager,
                     ethDataManager.getEthWallet()?.account ?: throw Exception("No ether wallet found"),
                     exchangeRates

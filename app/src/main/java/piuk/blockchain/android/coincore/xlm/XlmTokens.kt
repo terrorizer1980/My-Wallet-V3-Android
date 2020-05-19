@@ -42,6 +42,6 @@ internal class XlmTokens(
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         xlmDataManager.defaultAccount()
             .map {
-                listOf(XlmCryptoAccountNonCustodial(it, xlmDataManager, exchangeRates))
+                listOf(XlmCryptoWalletAccount(it, xlmDataManager, exchangeRates))
             }
 }

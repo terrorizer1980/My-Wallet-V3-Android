@@ -24,7 +24,6 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.extensions.then
 import timber.log.Timber
-import java.util.concurrent.atomic.AtomicBoolean
 
 internal abstract class AssetTokensBase(
     protected val exchangeRates: ExchangeRateDataManager,
@@ -92,15 +91,6 @@ internal abstract class AssetTokensBase(
     final override fun defaultAccount(): Single<CryptoSingleAccount> =
         Single.fromCallable {
             accounts.first { it.isDefault }
-        }
-
-    private val isCustodialConfigured = AtomicBoolean(false)
-
-    override fun hasActiveWallet(filter: AssetFilter): Boolean =
-        when (filter) {
-            AssetFilter.Total -> true
-            AssetFilter.Wallet -> true
-            AssetFilter.Custodial -> isCustodialConfigured.get()
         }
 
     final override fun exchangeRate(): Single<FiatValue> =

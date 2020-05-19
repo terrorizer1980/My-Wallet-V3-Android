@@ -12,7 +12,7 @@ import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.utils.extensions.mapList
 
-internal class PaxCryptoAccountNonCustodial(
+internal class PaxCryptoWalletAccount(
     override val label: String,
     private val address: String,
     private val paxAccount: Erc20Account,

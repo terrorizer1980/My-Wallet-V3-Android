@@ -80,9 +80,8 @@ class AssetDetailsCalculator {
                 AssetFilter.Total to AssetDisplayInfo(total.balance, totalFiat, total.actions),
                 AssetFilter.Wallet to AssetDisplayInfo(nonCustodial.balance, walletFiat, nonCustodial.actions)
             ).apply {
-                if (assetTokens.hasActiveWallet(AssetFilter.Custodial)) {
-                    put(AssetFilter.Custodial, AssetDisplayInfo(custodial.balance, custodialFiat, custodial.actions))
-                }
+                // TODO: Going to need to filter this out, in the not-configured eventuality
+                put(AssetFilter.Custodial, AssetDisplayInfo(custodial.balance, custodialFiat, custodial.actions))
             }
         }
     }

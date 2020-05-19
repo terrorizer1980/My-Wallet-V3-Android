@@ -54,7 +54,7 @@ internal class PaxTokens(
 
         val label = stringUtils.getString(R.string.pax_default_account_label_1)
 
-        return PaxCryptoAccountNonCustodial(label, paxAddress, paxAccount, exchangeRates)
+        return PaxCryptoWalletAccount(label, paxAddress, paxAccount, exchangeRates)
     }
 
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =

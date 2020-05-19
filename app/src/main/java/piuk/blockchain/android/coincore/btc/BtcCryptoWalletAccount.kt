@@ -14,7 +14,7 @@ import piuk.blockchain.android.coincore.impl.transactionFetchOffset
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 
-internal class BtcCryptoAccountNonCustodial(
+internal class BtcCryptoWalletAccount(
     override val label: String,
     private val address: String,
     private val payloadManager: PayloadManager,

@@ -15,7 +15,7 @@ import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.utils.extensions.mapList
 
-internal class BchCryptoAccountNonCustodial(
+internal class BchCryptoWalletAccount(
     override val label: String,
     private val address: String,
     private val bchManager: BchDataManager,

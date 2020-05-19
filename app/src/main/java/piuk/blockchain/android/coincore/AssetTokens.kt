@@ -33,11 +33,4 @@ interface AssetTokens {
     fun exchangeRate(): Single<FiatValue>
     fun historicRate(epochWhen: Long): Single<FiatValue>
     fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries>
-
-    /** Has this user got a configured wallet for asset type?
-    // The balance methods will return zero for un-configured wallets - ie custodial - but we need a way
-    // to differentiate between zero and not configured, so call this in the dashboard asset view when
-    // deciding if to show custodial etc **/
-    @Deprecated(message = "CoinCore update")
-    fun hasActiveWallet(filter: AssetFilter): Boolean
 }

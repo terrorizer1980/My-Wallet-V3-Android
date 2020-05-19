@@ -55,7 +55,7 @@ internal class StxTokens(
         val stxAccount = hdWallets[0].stxAccount
             ?: throw IllegalStateException("Wallet not available")
 
-        return StxCryptoAccountNonCustodial(
+        return StxCryptoWalletAccount(
             label = "STX Account",
             address = stxAccount.bitcoinSerializedBase58Address,
             exchangeRates = exchangeRates

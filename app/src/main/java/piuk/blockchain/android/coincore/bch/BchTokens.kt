@@ -59,7 +59,7 @@ internal class BchTokens(
                 val accounts = getAccountMetadataList()
                 accounts.forEachIndexed { i, a ->
                     result.add(
-                        BchCryptoAccountNonCustodial(
+                        BchCryptoWalletAccount(
                             a,
                             bchDataManager,
                             i == defaultIndex,

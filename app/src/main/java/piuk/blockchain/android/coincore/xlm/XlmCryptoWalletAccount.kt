@@ -11,7 +11,7 @@ import piuk.blockchain.android.coincore.impl.CryptoSingleAccountNonCustodialBase
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.utils.extensions.mapList
 
-internal class XlmCryptoAccountNonCustodial(
+internal class XlmCryptoWalletAccount(
     override val label: String = "",
     private val address: String,
     private val xlmManager: XlmDataManager,

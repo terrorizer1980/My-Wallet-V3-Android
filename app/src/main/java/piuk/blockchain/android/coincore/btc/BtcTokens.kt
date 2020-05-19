@@ -49,7 +49,7 @@ internal class BtcTokens(
                 val defaultIndex = defaultAccountIndex
                 accounts.forEachIndexed { i, a ->
                     result.add(
-                        BtcCryptoAccountNonCustodial(
+                        BtcCryptoWalletAccount(
                             a,
                             payloadManager,
                             payloadDataManager,
@@ -61,7 +61,7 @@ internal class BtcTokens(
 
                 legacyAddresses.forEach { a ->
                     result.add(
-                        BtcCryptoAccountNonCustodial(
+                        BtcCryptoWalletAccount(
                             a,
                             payloadManager,
                             payloadDataManager,
