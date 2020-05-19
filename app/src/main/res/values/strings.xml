@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- common -->
+    <string name="common_hyphenated_strings">%1$s - %2$s</string>
+
     <plurals name="transfer_label_plural">
         <item quantity="one">1 imported address</item>
         <item quantity="other">%d imported addresses</item>
@@ -1692,6 +1695,8 @@
     <string name="activity_custodial_pending_value">Bank Transfer</string>
     <string name="checkout_bank_transfer_label">Bank Transfer</string>
     <string name="activity_loading_error">Failed to load activity, please try again later</string>
+
+    <!-- Activity Details -->
     <string name="activity_details_created">Date</string>
     <string name="activity_details_completed">Completed</string>
     <string name="activity_details_fee">Fee</string>
@@ -1699,7 +1704,7 @@
     <string name="activity_details_value">Value</string>
     <string name="activity_details_to">To</string>
     <string name="activity_details_from">From</string>
-    <string name="activity_details_empty"/>
+    <string name="activity_details_empty" />
     <string name="activity_details_action">View on Blockchain Explorer</string>
     <string name="activity_details_cancel_action">Cancel Buy</string>
     <string name="activity_detail_description_action">Add a description</string>
@@ -1727,6 +1732,14 @@
     <string name="activity_details_buy_again">Buy Again</string>
     <string name="activity_details_description_updated">Description updated</string>
     <string name="activity_details_description_not_updated">Description failed to update</string>
+    <string name="activity_details_transaction_fee_send">Sending %1$s</string>
+    <string name="activity_details_transaction_fee_unknown">Unknown</string>
+    <string name="activity_details_payment_load_fail">Couldn\'t load card details</string>
+    <string name="activity_details_fee_load_fail">Couldn\'t load fee information</string>
+    <string name="activity_details_value_load_fail">Couldn\'t load value information</string>
+    <string name="activity_details_to_load_fail">Couldn\'t load To address information</string>
+    <string name="activity_details_from_load_fail">Couldn\'t load From address information</string>
+
     <string name="order_pending">Pending</string>
     <string name="order_complete">Complete</string>
     <string name="expired">Expired</string>

@@ -100,7 +100,8 @@ class CustodialTradingAccount(
             timeStampMs = buyOrder.created.time,
             status = buyOrder.state,
             fee = buyOrder.fee ?: FiatValue.zero(buyOrder.fiat.currencyCode),
-            account = this
+            account = this,
+            paymentMethodId = buyOrder.paymentMethodId
         )
 
     // Stop gap filter, until we finalise which item we wish to display to the user.

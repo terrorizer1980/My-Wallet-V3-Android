@@ -15,13 +15,14 @@ import java.util.Date
 sealed class ActivityDetailsType
 data class Created(val date: Date) : ActivityDetailsType()
 data class Amount(val cryptoValue: CryptoValue) : ActivityDetailsType()
-data class Fee(val feeValue: CryptoValue) : ActivityDetailsType()
-data class Value(val fiatAtExecution: FiatValue) : ActivityDetailsType()
-data class From(val fromAddress: String) : ActivityDetailsType()
-
-// TODO this will be updated to have info on what transaction the fee is for
-data class FeeForTransaction(val transactionFee: String) : ActivityDetailsType()
-data class To(val toAddress: String) : ActivityDetailsType()
+data class Fee(val feeValue: CryptoValue?) : ActivityDetailsType()
+data class Value(val fiatAtExecution: FiatValue?) : ActivityDetailsType()
+data class From(val fromAddress: String?) : ActivityDetailsType()
+data class FeeForTransaction(
+    val direction: TransactionSummary.Direction,
+    val cryptoValue: CryptoValue
+) : ActivityDetailsType()
+data class To(val toAddress: String?) : ActivityDetailsType()
 data class Description(val description: String? = null) : ActivityDetailsType()
 data class Action(val action: String = "") : ActivityDetailsType()
 data class CancelAction(val cancelAction: String = "") : ActivityDetailsType()
@@ -29,7 +30,9 @@ data class BuyFee(val feeValue: FiatValue) : ActivityDetailsType()
 data class BuyPurchaseAmount(val fundedFiat: FiatValue) : ActivityDetailsType()
 data class BuyTransactionId(val txId: String) : ActivityDetailsType()
 data class BuyCryptoWallet(val crypto: CryptoCurrency) : ActivityDetailsType()
-data class BuyPaymentMethod(val paymentMethod: String) : ActivityDetailsType()
+data class BuyPaymentMethod(val paymentDetails: PaymentDetails) : ActivityDetailsType()
+
+data class PaymentDetails(val paymentMethodId: String, val label: String?, val endDigits: String?)
 
 enum class DescriptionState {
     NOT_SET,

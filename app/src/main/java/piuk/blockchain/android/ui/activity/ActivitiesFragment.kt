@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockchain.annotations.CommonCode
+import com.blockchain.notifications.analytics.ActivityAnalytics
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
+import com.blockchain.notifications.analytics.activityShown
 import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -95,8 +97,10 @@ class ActivitiesFragment
 
         if (this.state?.bottomSheet != newState.bottomSheet) {
             when (newState.bottomSheet) {
-                ActivitiesSheet.ACCOUNT_SELECTOR -> showBottomSheet(
-                    AccountSelectSheet.newInstance())
+                ActivitiesSheet.ACCOUNT_SELECTOR -> {
+                    analytics.logEvent(ActivityAnalytics.WALLET_PICKER_SHOWN)
+                    showBottomSheet(AccountSelectSheet.newInstance())
+                }
                 ActivitiesSheet.ACTIVITY_DETAILS -> {
                     newState.selectedCryptoCurrency?.let {
                         showBottomSheet(
@@ -273,6 +277,7 @@ class ActivitiesFragment
     }
 
     override fun onAccountSelected(account: CryptoAccount) {
+        analytics.logEvent(activityShown(account.label))
         model.process(AccountSelectedIntent(account, false))
     }
 

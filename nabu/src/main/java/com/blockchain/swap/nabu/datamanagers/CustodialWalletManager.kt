@@ -85,6 +85,8 @@ interface CustodialWalletManager {
     // For test/dev
     fun cancelAllPendingBuys(): Completable
 
+    fun updateSupportedCardTypes(fiatCurrency: String): Completable
+
     fun fetchSuggestedPaymentMethod(
         fiatCurrency: String,
         isTier2Approved: Boolean

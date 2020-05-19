@@ -48,7 +48,7 @@ internal class PaxCryptoWalletAccount(
             return Singles.zip(
                 feedTransactions,
                 paxAccount.getAccountHash(),
-                ethDataManager.getLatestBlockNumber().singleOrError()
+                ethDataManager.getLatestBlockNumber()
             ).map { (transactions, accountHash, latestBlockNumber) ->
                 transactions.map { transaction ->
                     PaxActivitySummaryItem(

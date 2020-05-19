@@ -152,7 +152,8 @@ class SimpleBuyInteractor(
             Single<SimpleBuyIntent.PaymentMethodsUpdated> =
         tierService.tiers().flatMap { tier ->
             custodialWalletManager.fetchSuggestedPaymentMethod(fiatCurrency,
-                tier.combinedState == Kyc2TierState.Tier2Approved).map {
+                tier.combinedState == Kyc2TierState.Tier2Approved
+            ).map {
                 SimpleBuyIntent.PaymentMethodsUpdated(
                     it,
                     tier.combinedState == Kyc2TierState.Tier2Approved,

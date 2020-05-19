@@ -48,6 +48,7 @@ import java.util.Collections;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -171,9 +172,11 @@ public class SettingsPresenterTest extends RxTest {
         Settings settings = new Settings();
         when(settingsDataManager.fetchSettings()).thenReturn(Observable.error(new Throwable()));
         when(pitLinkState.isLinked()).thenReturn(false);
+        when(kycStatusHelper.getSettingsKycState2Tier()).thenReturn(Single.just(Kyc2TierState.Tier2Approved));
         when(pitLinking.getState()).thenReturn(Observable.just(pitLinkState));
         when(featureFlag.getEnabled()).thenReturn(Single.just(false));
         when(cardsFeatureFlag.getEnabled()).thenReturn(Single.just(false));
+        when(custodialWalletManager.updateSupportedCardTypes(any())).thenReturn(Completable.complete());
         when(custodialWalletManager.fetchUnawareLimitsCards(anyList()))
                 .thenReturn(Single.just(Collections.emptyList()));
 
