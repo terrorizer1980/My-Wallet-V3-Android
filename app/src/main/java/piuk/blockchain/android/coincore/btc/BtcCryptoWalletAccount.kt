@@ -37,7 +37,7 @@ internal class BtcCryptoInterestAccount(
                 isConfigured.set(true)
             }.doOnComplete {
                 isConfigured.set(false)
-            }.switchIfEmpty (
+            }.switchIfEmpty(
                 Single.just(CryptoValue.zero(cryptoAsset))
             )
 

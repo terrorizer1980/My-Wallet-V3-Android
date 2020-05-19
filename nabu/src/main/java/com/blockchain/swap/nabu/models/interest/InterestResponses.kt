@@ -8,7 +8,7 @@ data class InterestAddressResponse(
 
 data class InterestResponse(
     @Json(name = "rates")
-    val rates : BtcRateResponseData
+    val rates: BtcRateResponseData
 )
 
 data class BtcRateResponseData(
