@@ -74,7 +74,7 @@ internal class BtcTokens(
             }
         }
 
-    override fun interestRate(): Maybe<Double> =  TODO()
+    override fun interestRate(): Maybe<Double> = TODO()
 
     override fun doUpdateBalances(): Completable =
         payloadDataManager.updateAllBalances()
