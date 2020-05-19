@@ -59,11 +59,12 @@ class AssetDetailsCalculator {
 
     private data class Details(
         val balance: CryptoValue,
-        val actions: AvailableActions
+        val actions: AvailableActions,
+        val shouldShow: Boolean
     )
 
     private fun Single<CryptoAccountGroup>.mapDetails(): Single<Details> =
-        this.flatMap { it.balance.map { balance -> Details(balance, it.actions) } }
+        this.flatMap { it.balance.map { balance -> Details(balance, it.actions, it.isFunded) } }
 
     private fun getAssetDisplayDetails(assetTokens: AssetTokens): Single<AssetDisplayMap> {
         return Singles.zip(
@@ -80,8 +81,12 @@ class AssetDetailsCalculator {
                 AssetFilter.Total to AssetDisplayInfo(total.balance, totalFiat, total.actions),
                 AssetFilter.Wallet to AssetDisplayInfo(nonCustodial.balance, walletFiat, nonCustodial.actions)
             ).apply {
-                // TODO: Going to need to filter this out, in the not-configured eventuality
-                put(AssetFilter.Custodial, AssetDisplayInfo(custodial.balance, custodialFiat, custodial.actions))
+                if(custodial.shouldShow) {
+                    put(
+                        AssetFilter.Custodial,
+                        AssetDisplayInfo(custodial.balance, custodialFiat, custodial.actions)
+                    )
+                }
             }
         }
     }
