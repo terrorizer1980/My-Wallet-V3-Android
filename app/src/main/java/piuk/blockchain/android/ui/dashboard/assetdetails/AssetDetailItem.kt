@@ -2,6 +2,8 @@ package piuk.blockchain.android.ui.dashboard.assetdetails
 
 import android.view.Gravity
 import android.view.View
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
@@ -29,7 +31,8 @@ data class AssetDetailItem(
     val tokens: AssetTokens,
     val crypto: CryptoValue,
     val fiat: FiatValue,
-    val actions: Set<AssetAction>
+    val actions: Set<AssetAction>,
+    val interestRate: Double
 )
 
 class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -42,17 +45,26 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         with(itemView) {
             icon.setCoinIcon(item.tokens.asset)
             asset_name.text = resources.getString(item.tokens.asset.assetName())
-            status_date.setText(
-                when (item.assetFilter) {
-                    AssetFilter.Total -> R.string.dashboard_asset_balance_total
-                    AssetFilter.Wallet -> R.string.dashboard_asset_balance_wallet
-                    AssetFilter.Custodial -> R.string.dashboard_asset_balance_custodial
-                    AssetFilter.Interest -> R.string.dashboard_asset_balance_interest
-                }
-            )
-            setOnClickListenerDebounced { doShowMenu(item, onActionSelected, analytics) }
+            status_date.text = when (item.assetFilter) {
+                AssetFilter.Total -> resources.getString(R.string.dashboard_asset_balance_total)
+                AssetFilter.Wallet -> resources.getString(
+                    R.string.dashboard_asset_balance_wallet)
+                AssetFilter.Custodial -> resources.getString(
+                    R.string.dashboard_asset_balance_custodial)
+                AssetFilter.Interest -> resources.getString(
+                    R.string.dashboard_asset_balance_interest, item.interestRate)
+            }
 
-            asset_spend_locked.goneIf { item.assetFilter == AssetFilter.Wallet }
+            if (item.assetFilter == AssetFilter.Interest) {
+                action_menu.visibility = INVISIBLE
+            } else {
+                action_menu.visibility = VISIBLE
+                setOnClickListenerDebounced { doShowMenu(item, onActionSelected, analytics) }
+            }
+
+            asset_spend_locked.goneIf {
+                item.assetFilter == AssetFilter.Wallet || item.assetFilter == AssetFilter.Interest
+            }
 
             asset_balance_crypto.text = item.crypto.toStringWithSymbol()
             asset_balance_fiat.text = item.fiat.toStringWithSymbol()

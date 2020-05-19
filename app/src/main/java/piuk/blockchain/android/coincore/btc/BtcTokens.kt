@@ -73,6 +73,17 @@ internal class BtcTokens(
             }
         }
 
+    override fun loadInterestAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
+        Single.fromCallable {
+            listOf(
+                BtcCryptoInterestAccount(
+                    labels.getDefaultInterestWalletLabel(asset),
+                    custodialManager,
+                    exchangeRates
+                )
+            )
+        }
+
     override fun interestRate(): Single<Double> =
         custodialManager.getInterestAccountRates(asset)
 

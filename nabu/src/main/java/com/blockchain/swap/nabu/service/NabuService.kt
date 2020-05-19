@@ -3,7 +3,6 @@ package com.blockchain.swap.nabu.service
 import com.blockchain.swap.nabu.api.nabu.Nabu
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyError
 import com.blockchain.swap.nabu.extensions.wrapErrorMessage
-import com.blockchain.swap.nabu.models.interest.InterestAccountBalanceResponse
 import com.blockchain.swap.nabu.models.nabu.AddAddressRequest
 import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
 import com.blockchain.swap.nabu.models.nabu.ApplicantIdRequest
@@ -40,7 +39,6 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import retrofit2.HttpException
 import retrofit2.Retrofit
-import timber.log.Timber
 
 class NabuService(retrofit: Retrofit) {
 
@@ -408,10 +406,9 @@ class NabuService(retrofit: Retrofit) {
         authorization = sessionToken.authHeader,
         cryptoSymbol = currency
     ).flatMapMaybe {
-        Timber.e("------ flatmapmaybe getInterestAccountBalance")
         when (it.code()) {
             // fixme there is a bug in the api at the moment where 200 returns empty body, update to Maybe.just(it.body())
-            200 -> Maybe.empty<InterestAccountBalanceResponse>()
+            200 -> Maybe.just(it.body()?.copy(balance = 5L))
             204 -> Maybe.empty()
             else -> Maybe.error(HttpException(it))
         }

@@ -17,11 +17,13 @@ import piuk.blockchain.android.coincore.AssetTokens
 import piuk.blockchain.android.coincore.AvailableActions
 import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.androidcore.data.charts.TimeSpan
+import timber.log.Timber
 
 data class AssetDisplayInfo(
     val cryptoValue: CryptoValue,
     val fiatValue: FiatValue,
-    val actions: Set<AssetAction>
+    val actions: Set<AssetAction>,
+    val interestRate: Double
 )
 
 typealias AssetDisplayMap = Map<AssetFilter, AssetDisplayInfo>
@@ -43,7 +45,8 @@ class AssetDetailsCalculator {
     }.subscribeOn(Schedulers.io())
 
     val historicPrices: Observable<List<PriceDatum>> =
-        (timeSpan.distinctUntilChanged().withLatestFrom(token).doOnNext { _chartLoading.accept(true) })
+        (timeSpan.distinctUntilChanged().withLatestFrom(token)
+            .doOnNext { _chartLoading.accept(true) })
             .switchMapSingle { (timeSpan, token) ->
                 token.historicRateSeries(timeSpan, TimeInterval.FIFTEEN_MINUTES)
                     .onErrorResumeNext(Single.just(emptyList()))
@@ -63,26 +66,53 @@ class AssetDetailsCalculator {
     )
 
     private fun Single<CryptoAccountGroup>.mapDetails(): Single<Details> =
-        this.flatMap { it.balance.map { balance -> Details(balance, it.actions) } }
+        this.flatMap {
+            it.balance.map { balance ->
+                Details(balance, it.actions)
+            }
+        }
 
     private fun getAssetDisplayDetails(assetTokens: AssetTokens): Single<AssetDisplayMap> {
         return Singles.zip(
             assetTokens.exchangeRate(),
-            assetTokens.accounts(AssetFilter.Total).mapDetails(),
-            assetTokens.accounts(AssetFilter.Wallet).mapDetails(),
-            assetTokens.accounts(AssetFilter.Custodial).mapDetails()
-        ) { fiatPrice, total, nonCustodial, custodial ->
+            assetTokens.accounts(AssetFilter.Total).doOnError {
+                Timber.e("----- issue with zip Total ${it.message}")
+            }.mapDetails(),
+            assetTokens.accounts(AssetFilter.Wallet).doOnError {
+                Timber.e("----- issue with zip Wallet ${it.message}")
+            }.mapDetails(),
+            assetTokens.accounts(AssetFilter.Custodial).doOnError {
+                Timber.e("----- issue with zip Custodial ${it.message}")
+            }.mapDetails(),
+            assetTokens.accounts(AssetFilter.Interest).doOnError {
+                Timber.e("----- issue with zip Interest ${it.message}")
+            }.mapDetails(),
+            assetTokens.interestRate().doOnError {
+                Timber.e("----- issue with zip interest rate ${it.message}")
+            }
+        ) { fiatPrice, total, nonCustodial, custodial, interest, interestRate ->
             val totalFiat = total.balance.toFiat(fiatPrice)
             val walletFiat = nonCustodial.balance.toFiat(fiatPrice)
             val custodialFiat = custodial.balance.toFiat(fiatPrice)
+            val interestFiat = interest.balance.toFiat(fiatPrice)
 
             mutableMapOf(
-                AssetFilter.Total to AssetDisplayInfo(total.balance, totalFiat, total.actions),
-                AssetFilter.Wallet to AssetDisplayInfo(nonCustodial.balance, walletFiat, nonCustodial.actions)
+                AssetFilter.Total to AssetDisplayInfo(total.balance, totalFiat, total.actions,
+                    interestRate),
+                AssetFilter.Wallet to AssetDisplayInfo(nonCustodial.balance, walletFiat,
+                    nonCustodial.actions, interestRate)
             ).apply {
                 // TODO: Going to need to filter this out, in the not-configured eventuality
-                put(AssetFilter.Custodial, AssetDisplayInfo(custodial.balance, custodialFiat, custodial.actions))
+                put(AssetFilter.Custodial,
+                    AssetDisplayInfo(custodial.balance, custodialFiat, custodial.actions, interestRate))
+
+                put(AssetFilter.Interest,
+                    AssetDisplayInfo(interest.balance, interestFiat, interest.actions, interestRate))
             }
         }
+    }
+
+    companion object {
+        const val NOT_USED: Double = -99.0
     }
 }

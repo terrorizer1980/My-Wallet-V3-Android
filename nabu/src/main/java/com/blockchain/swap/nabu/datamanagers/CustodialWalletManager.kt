@@ -109,12 +109,6 @@ interface CustodialWalletManager {
     fun getInterestAccountRates(crypto: CryptoCurrency): Single<Double>
 }
 
-data class AssetInterestDetails(
-    val crypto: CryptoCurrency,
-    val interestRate: Double,
-    val balance: Long
-)
-
 data class BuyOrder(
     val id: String,
     val pair: String,

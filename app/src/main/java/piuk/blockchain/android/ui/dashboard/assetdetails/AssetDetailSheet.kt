@@ -2,9 +2,10 @@ package piuk.blockchain.android.ui.dashboard.assetdetails
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.core.content.ContextCompat
-import androidx.appcompat.widget.AppCompatTextView
 import android.view.View
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockchain.extensions.exhaustive
 import com.blockchain.preferences.CurrencyPrefs
@@ -28,11 +29,12 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.AssetFilter
-import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.AssetTokens
+import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.CryptoAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
+import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailsCalculator.Companion.NOT_USED
 import piuk.blockchain.android.ui.dashboard.setDeltaColour
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
@@ -65,7 +67,8 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
     }
 
     override val host: Host by lazy {
-        super.host as? Host ?: throw IllegalStateException("Host fragment is not a AssetDetailSheet.Host")
+        super.host as? Host ?: throw IllegalStateException(
+            "Host fragment is not a AssetDetailSheet.Host")
     }
 
     private val cryptoCurrency: CryptoCurrency by lazy {
@@ -91,7 +94,8 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
             configureTabs(view.chart_price_periods)
 
             assetDetailsViewModel.token.accept(token)
-            current_price_title.text = getString(R.string.dashboard_price_for_asset, cryptoCurrency.displayTicker)
+            current_price_title.text =
+                getString(R.string.dashboard_price_for_asset, cryptoCurrency.displayTicker)
 
             compositeDisposable += assetDetailsViewModel.assetDisplayDetails
                 .observeOn(AndroidSchedulers.mainThread())
@@ -140,19 +144,31 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
         with(view) {
 
             asset_list.layoutManager = LinearLayoutManager(requireContext())
-
+            asset_list.addItemDecoration(
+                DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
             val itemList = mutableListOf<AssetDetailItem>()
 
             assetDetails[AssetFilter.Wallet]?.let {
                 itemList.add(
-                    AssetDetailItem(AssetFilter.Wallet, token, it.cryptoValue, it.fiatValue, it.actions)
+                    AssetDetailItem(AssetFilter.Wallet, token, it.cryptoValue, it.fiatValue,
+                        it.actions, it.interestRate)
                 )
             }
 
             assetDetails[AssetFilter.Custodial]?.let {
                 if (!it.cryptoValue.isZero) {
                     itemList.add(
-                        AssetDetailItem(AssetFilter.Custodial, token, it.cryptoValue, it.fiatValue, it.actions)
+                        AssetDetailItem(AssetFilter.Custodial, token, it.cryptoValue, it.fiatValue,
+                            it.actions, it.interestRate)
+                    )
+                }
+            }
+
+            assetDetails[AssetFilter.Interest]?.let {
+                if (!it.cryptoValue.isZero && it.interestRate != NOT_USED) {
+                    itemList.add(
+                        AssetDetailItem(AssetFilter.Interest, token, it.cryptoValue, it.fiatValue,
+                            it.actions, it.interestRate)
                     )
                 }
             }

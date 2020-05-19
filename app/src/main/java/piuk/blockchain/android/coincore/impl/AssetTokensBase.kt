@@ -66,7 +66,9 @@ internal abstract class AssetTokensBase(
             }
             .then {
                 loadInterestAccounts(labels)
-                    .doOnSuccess { accounts.addAll(it) }
+                    .doOnSuccess {
+                        accounts.addAll(it)
+                    }
                     .ignoreElement()
             }
             .doOnError { Timber.e("Error loading accounts for ${asset.networkTicker}: $it") }
@@ -78,7 +80,7 @@ internal abstract class AssetTokensBase(
     open fun loadInterestAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         Single.just(emptyList())
 
-    open fun interestRate(): Single<Double> = Single.just(0.0)
+    override fun interestRate(): Single<Double> = Single.just(0.0)
 
     private fun loadCustodialAccount(): Single<CryptoSingleAccountList> =
         Single.fromCallable {
