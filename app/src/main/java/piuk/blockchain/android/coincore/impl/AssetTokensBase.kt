@@ -89,7 +89,7 @@ internal abstract class AssetTokensBase(
     open fun loadInterestAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         Single.just(emptyList())
 
-    open fun interestRate(): Single<AssetInterestDetails?> = Single.just(null)
+    open fun interestRate(): Single<Double> = Single.just(0.0)
 
     protected open fun onLogoutSignal(event: AuthEvent) {}
 
@@ -111,16 +111,19 @@ internal abstract class AssetTokensBase(
                 noncustodialBalance(),
                 custodialBalance()
             ) { noncustodial, custodial -> noncustodial + custodial }
-            AssetFilter.Interest -> getInterestBalance()
+            AssetFilter.Interest -> interestRate().map {
+                CryptoValue(asset, it.toLong().toBigInteger())
+            }
         }
 
     internal abstract fun custodialBalanceMaybe(): Maybe<CryptoValue>
     internal abstract fun noncustodialBalance(): Single<CryptoValue>
 
-    private fun getInterestBalance() : Single<CryptoValue> =
-        interestRate().map {
+    private fun mapToCryptoValue(details: AssetInterestDetails?): CryptoValue {
+        return details?.let {
             CryptoValue(it.crypto, it.balance.toString().toBigInteger())
-        }
+        } ?: CryptoValue.zero(CryptoCurrency.BTC)
+    }
 
     private val isNonCustodialConfigured = AtomicBoolean(false)
 

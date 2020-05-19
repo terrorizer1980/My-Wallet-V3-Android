@@ -14,6 +14,7 @@ import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.AssetTokens
 import piuk.blockchain.androidcore.data.charts.TimeSpan
+import timber.log.Timber
 
 typealias BalancePair = Pair<CryptoValue, FiatValue>
 typealias BalanceMap = Map<AssetFilter, BalancePair>
@@ -50,6 +51,7 @@ class AssetDetailsCalculator {
         }.subscribeOn(Schedulers.computation())
 
     private fun getBalances(assetTokens: AssetTokens): Single<BalanceMap> {
+        Timber.e("---- get balances from asset detail calculator")
         return Singles.zip(
             assetTokens.exchangeRate(),
             assetTokens.totalBalance(AssetFilter.Total),
@@ -61,7 +63,7 @@ class AssetDetailsCalculator {
             val walletFiat = walletBalance.toFiat(fiatPrice)
             val custodialFiat = custodialBalance.toFiat(fiatPrice)
             val interestFiat = interestBalance.toFiat(fiatPrice)
-
+            Timber.e("----- balance fr interest $interestBalance")
             mutableMapOf(
                 AssetFilter.Total to BalancePair(totalBalance, totalFiat),
                 AssetFilter.Wallet to BalancePair(walletBalance, walletFiat)

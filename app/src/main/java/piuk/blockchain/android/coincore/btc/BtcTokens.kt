@@ -2,7 +2,6 @@ package piuk.blockchain.android.coincore.btc
 
 import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
-import com.blockchain.swap.nabu.datamanagers.AssetInterestDetails
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.wallet.DefaultLabels
 import com.blockchain.wallet.toAccountReference
@@ -129,7 +128,8 @@ internal class BtcTokens(
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
         historicRates.getHistoricPriceSeries(CryptoCurrency.BTC, currencyPrefs.selectedFiatCurrency, period)
 
-    override fun interestRate(): Single<AssetInterestDetails?> =
-        custodialWalletManager.getInterestDetails(CryptoCurrency.BTC)
+    override fun interestRate(): Single<Double> =
+        custodialWalletManager.getInterestAccountRates(asset)
+
 
 }

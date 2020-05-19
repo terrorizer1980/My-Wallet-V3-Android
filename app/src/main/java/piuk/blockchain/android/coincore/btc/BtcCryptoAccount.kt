@@ -18,7 +18,6 @@ import piuk.blockchain.android.coincore.impl.transactionFetchCount
 import piuk.blockchain.android.coincore.impl.transactionFetchOffset
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class BtcCryptoInterestAccount(
@@ -34,19 +33,14 @@ internal class BtcCryptoInterestAccount(
         get() = Single.error(NotImplementedError("Interest accounts don't support receive"))
 
     override val balance: Single<CryptoValue>
-        get() = custodialWalletManager.getInterestDetails(cryptoAsset)
-            .doOnSuccess { isConfigured.set(true) }
-            .map { interestDetails ->
-                if(interestDetails == null) {
-                    CryptoValue.zero(cryptoAsset)
-                } else {
-                    CryptoValue(interestDetails.crypto,
-                        interestDetails.balance.toString().toBigInteger())
-                }
-            }.onErrorReturn {
-                Timber.d("Unable to get interest balance: $it")
-                CryptoValue.zero(cryptoAsset)
-            }
+        get() = custodialWalletManager.getInterestAccountDetails(cryptoAsset)
+            .doOnSuccess {
+                isConfigured.set(true)
+            }.doOnComplete {
+                isConfigured.set(false)
+            }.switchIfEmpty (
+                Single.just(CryptoValue.zero(cryptoAsset))
+            )
 
     override val activity: Single<ActivitySummaryList>
         get() = Single.just(emptyList())
@@ -87,17 +81,18 @@ internal class BtcCryptoAccountNonCustodial(
 
     override val activity: Single<ActivitySummaryList>
         get() = Single.fromCallable {
-                    payloadManager.getAccountTransactions(address, transactionFetchCount, transactionFetchOffset)
-                    .map {
-                        BtcActivitySummaryItem(
-                            it,
-                            payloadDataManager,
-                            exchangeRates,
-                            this
-                        ) as ActivitySummaryItem
+            payloadManager.getAccountTransactions(address, transactionFetchCount,
+                transactionFetchOffset)
+                .map {
+                    BtcActivitySummaryItem(
+                        it,
+                        payloadDataManager,
+                        exchangeRates,
+                        this
+                    ) as ActivitySummaryItem
                 }
         }
-        .doOnSuccess { setHasTransactions(it.isNotEmpty()) }
+            .doOnSuccess { setHasTransactions(it.isNotEmpty()) }
 
     constructor(
         jsonAccount: Account,

@@ -104,7 +104,9 @@ interface CustodialWalletManager {
 
     fun confirmOrder(orderId: String, attributes: CardPartnerAttributes?): Single<BuyOrder>
 
-    fun getInterestDetails(crypto: CryptoCurrency): Single<AssetInterestDetails?>
+    fun getInterestAccountDetails(crypto: CryptoCurrency): Maybe<CryptoValue>
+
+    fun getInterestAccountRates(crypto: CryptoCurrency): Single<Double>
 }
 
 data class AssetInterestDetails(

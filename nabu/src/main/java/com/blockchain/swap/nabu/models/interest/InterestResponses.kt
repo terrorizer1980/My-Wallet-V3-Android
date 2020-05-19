@@ -8,12 +8,12 @@ data class InterestAddressResponse(
 
 data class InterestResponse(
     @Json(name = "rates")
-    val rates : RateResponseData
+    val rates : BtcRateResponseData
 )
 
-data class RateResponseData(
+data class BtcRateResponseData(
     @Json(name = "BTC")
-    val assetInterestRate: Double
+    val BTC: Double
 )
 
 @Json(name = "BTC")

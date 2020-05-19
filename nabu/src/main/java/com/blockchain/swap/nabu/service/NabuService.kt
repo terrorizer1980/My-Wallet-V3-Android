@@ -3,6 +3,7 @@ package com.blockchain.swap.nabu.service
 import com.blockchain.swap.nabu.api.nabu.Nabu
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyError
 import com.blockchain.swap.nabu.extensions.wrapErrorMessage
+import com.blockchain.swap.nabu.models.interest.InterestAccountBalanceResponse
 import com.blockchain.swap.nabu.models.nabu.AddAddressRequest
 import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
 import com.blockchain.swap.nabu.models.nabu.ApplicantIdRequest
@@ -398,11 +399,7 @@ class NabuService(retrofit: Retrofit) {
 
     fun getInterestRates(
         sessionToken: NabuSessionTokenResponse
-    ) = service.getInterestRates(authorization = sessionToken.authHeader).doOnSuccess {
-        Timber.e("---- success from interest rates: ${it.code()} - ${it.body()}")
-    }.doOnError {
-        Timber.e("---- error from interest rates: ${it.message}")
-    }.wrapErrorMessage()
+    ) = service.getInterestRates(authorization = sessionToken.authHeader).wrapErrorMessage()
 
     fun getInterestAccountBalance(
         sessionToken: NabuSessionTokenResponse,
@@ -411,8 +408,10 @@ class NabuService(retrofit: Retrofit) {
         authorization = sessionToken.authHeader,
         cryptoSymbol = currency
     ).flatMapMaybe {
+        Timber.e("------ flatmapmaybe getInterestAccountBalance")
         when (it.code()) {
-            200 -> Maybe.just(it.body())
+            // fixme there is a bug in the api at the moment where 200 returns empty body, update to Maybe.just(it.body())
+            200 -> Maybe.empty<InterestAccountBalanceResponse>()
             204 -> Maybe.empty()
             else -> Maybe.error(HttpException(it))
         }

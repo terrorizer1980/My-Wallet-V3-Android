@@ -3,7 +3,6 @@ package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 import com.blockchain.preferences.SimpleBuyPrefs
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.swap.nabu.Authenticator
-import com.blockchain.swap.nabu.datamanagers.AssetInterestDetails
 import com.blockchain.swap.nabu.datamanagers.BankAccount
 import com.blockchain.swap.nabu.datamanagers.BillingAddress
 import com.blockchain.swap.nabu.datamanagers.BuyLimits
@@ -48,8 +47,6 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.flatMapIterable
 import okhttp3.internal.toLongOrDefault
-import piuk.blockchain.androidcore.utils.extensions.switchToSingleIfEmpty
-import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Calendar
 import java.util.Date
@@ -392,68 +389,63 @@ class LiveCustodialWalletManager(
             it.toBuyOrder()
         }
 
-    override fun getInterestDetails(
-        crypto: CryptoCurrency
-    ): Single<AssetInterestDetails?> =
+    override fun getInterestAccountRates(crypto: CryptoCurrency): Single<Double> =
         authenticator.authenticate { sessionToken ->
-            // TODO when we know how we will identify an wallet without an interest account
-            //  we can delete this, or reinstate it as needed
-
-            // nabuService.getInterestAddresses(sessionToken, crypto.networkTicker)
-            //   .flatMap { addressesResponse ->
-            nabuService.getInterestRates(sessionToken).flatMap { interestResponse ->
-                nabuService.getInterestAccountBalance(sessionToken, crypto.networkTicker)
-                    .switchToSingleIfEmpty {
-                        Single.just(null)
-                    }.map { accountBalanceResponse ->
-                        AssetInterestDetails(
-                            crypto = CryptoCurrency.BTC,
-                            interestRate = interestResponse.body()?.rates?.assetInterestRate ?: 0.0,
-                            balance = accountBalanceResponse.balance)
-                    }
-            }.doOnError {
-                Timber.e("----- error on getting intereset rates: ${it.message}")
+            nabuService.getInterestRates(sessionToken).map {
+                it.body()?.rates?.BTC ?: 0.0
             }
-            // }
         }
 
-    private fun CardResponse.toCardPaymentMethod(cardLimits: PaymentLimits) =
-        PaymentMethod.Card(
-            cardId = id,
-            limits = cardLimits ?: throw java.lang.IllegalStateException(),
-            label = card?.label ?: "",
-            endDigits = card?.number ?: "",
-            partner = partner.toSupportedPartner(),
-            expireDate = card?.let {
-                Calendar.getInstance().apply {
-                    set(it.expireYear,
-                        it.expireMonth,
-                        0)
-                }.time
-            } ?: Date(),
-            cardType = card?.type ?: CardType.UNKNOWN,
-            status = state.toCardStatus()
-        )
-
-    private fun String.isActive(): Boolean =
-        toCardStatus() == CardStatus.ACTIVE
-
-    private fun String.isActiveOrExpired(): Boolean =
-        isActive() || toCardStatus() == CardStatus.EXPIRED
-
-    private fun String.toCardStatus(): CardStatus =
-        when (this) {
-            CardResponse.ACTIVE -> CardStatus.ACTIVE
-            CardResponse.BLOCKED -> CardStatus.BLOCKED
-            CardResponse.PENDING -> CardStatus.PENDING
-            CardResponse.CREATED -> CardStatus.CREATED
-            CardResponse.EXPIRED -> CardStatus.EXPIRED
-            else -> CardStatus.UNKNOWN
+    override fun getInterestAccountDetails(
+        crypto: CryptoCurrency
+    ): Maybe<CryptoValue> =
+        authenticator.authenticateMaybe { sessionToken ->
+            nabuService.getInterestAccountBalance(sessionToken, crypto.networkTicker)
+                .map { accountBalanceResponse ->
+                    CryptoValue.fromMinor(
+                        currency = crypto,
+                        minor = accountBalanceResponse.balance.toBigInteger()
+                    )
+                }
         }
 
-    companion object {
-        private const val PAYMENT_METHODS = "BANK_ACCOUNT,PAYMENT_CARD"
+private fun CardResponse.toCardPaymentMethod(cardLimits: PaymentLimits) =
+    PaymentMethod.Card(
+        cardId = id,
+        limits = cardLimits ?: throw java.lang.IllegalStateException(),
+        label = card?.label ?: "",
+        endDigits = card?.number ?: "",
+        partner = partner.toSupportedPartner(),
+        expireDate = card?.let {
+            Calendar.getInstance().apply {
+                set(it.expireYear,
+                    it.expireMonth,
+                    0)
+            }.time
+        } ?: Date(),
+        cardType = card?.type ?: CardType.UNKNOWN,
+        status = state.toCardStatus()
+    )
+
+private fun String.isActive(): Boolean =
+    toCardStatus() == CardStatus.ACTIVE
+
+private fun String.isActiveOrExpired(): Boolean =
+    isActive() || toCardStatus() == CardStatus.EXPIRED
+
+private fun String.toCardStatus(): CardStatus =
+    when (this) {
+        CardResponse.ACTIVE -> CardStatus.ACTIVE
+        CardResponse.BLOCKED -> CardStatus.BLOCKED
+        CardResponse.PENDING -> CardStatus.PENDING
+        CardResponse.CREATED -> CardStatus.CREATED
+        CardResponse.EXPIRED -> CardStatus.EXPIRED
+        else -> CardStatus.UNKNOWN
     }
+
+companion object {
+    private const val PAYMENT_METHODS = "BANK_ACCOUNT,PAYMENT_CARD"
+}
 }
 
 private fun String.toSupportedPartner(): Partner =
