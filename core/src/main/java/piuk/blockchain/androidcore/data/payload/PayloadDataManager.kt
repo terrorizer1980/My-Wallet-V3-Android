@@ -26,6 +26,7 @@ import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.metadata.MetadataCredentials
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.rxjava.RxPinning
+import piuk.blockchain.androidcore.utils.RefreshUpdater
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcore.utils.rxjava.IgnorableDefaultObserver
 import java.io.IOException
@@ -465,7 +466,6 @@ class PayloadDataManager(
      */
     fun getAddressBalance(address: String): CryptoValue =
         CryptoValue.fromMinor(CryptoCurrency.BTC, payloadManager.getAddressBalance(address))
-
 
     // Update if timeout of forceRefresh, get the balance - pull the code from ActivityCache/BtcCoinLikeToken
     private val balanceUpdater = RefreshUpdater<CryptoValue>(

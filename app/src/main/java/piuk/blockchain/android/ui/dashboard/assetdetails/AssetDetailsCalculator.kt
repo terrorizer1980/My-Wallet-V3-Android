@@ -81,7 +81,7 @@ class AssetDetailsCalculator {
                 AssetFilter.Total to AssetDisplayInfo(total.balance, totalFiat, total.actions),
                 AssetFilter.Wallet to AssetDisplayInfo(nonCustodial.balance, walletFiat, nonCustodial.actions)
             ).apply {
-                if(custodial.shouldShow) {
+                if (custodial.shouldShow) {
                     put(
                         AssetFilter.Custodial,
                         AssetDisplayInfo(custodial.balance, custodialFiat, custodial.actions)
