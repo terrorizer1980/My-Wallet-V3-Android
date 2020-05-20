@@ -10,7 +10,7 @@ import io.reactivex.Single
 import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
-import piuk.blockchain.android.coincore.impl.BitcoinLikeTokens
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
@@ -18,7 +18,6 @@ import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.utils.extensions.then
 import timber.log.Timber
 
 internal class BchTokens(
@@ -32,12 +31,12 @@ internal class BchTokens(
     labels: DefaultLabels,
     crashLogger: CrashLogger,
     rxBus: RxBus
-) : BitcoinLikeTokens(
+) : AssetTokensBase(
     exchangeRates,
     historicRates,
-    custodialManager,
     currencyPrefs,
     labels,
+    custodialManager,
     crashLogger,
     rxBus
 ) {
@@ -46,7 +45,6 @@ internal class BchTokens(
 
     override fun initToken(): Completable =
         bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
-            .then { updater() }
             .doOnError { Timber.e("Unable to init BCH, because: $it") }
             .onErrorComplete()
 
@@ -71,10 +69,6 @@ internal class BchTokens(
                 result
             }
         }
-
-    override fun doUpdateBalances(): Completable =
-        bchDataManager.updateAllBalances()
-            .doOnComplete { Timber.d("Got btc balance") }
 
     override fun onLogoutSignal(event: AuthEvent) {
         if (event != AuthEvent.LOGIN) {
