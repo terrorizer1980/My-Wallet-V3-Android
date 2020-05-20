@@ -67,6 +67,49 @@ class AssetDetailsCalculatorTest {
         whenever(nonCustodialGroup.balance).thenReturn(Single.just(walletCrypto))
         whenever(custodialGroup.balance).thenReturn(Single.just(custodialCrypto))
 
+        whenever(custodialGroup.isFunded).thenReturn(true)
+
+        calculator.token.accept(token)
+
+        val v = calculator.assetDisplayDetails
+            .test()
+            .values()
+
+        // Using assertResult(expectedResult) instead of fetching the values and checking them results in
+        // an 'AssertionException Not completed' result. I have no clue why; changing the matchers to not use all
+        // three possible enum values changes the failure into an expected 'Failed, not equal' result (hence the
+        // doAnswer() nonsense instead of eq() etc - I tried many things)
+        // All very strange.
+        assertEquals(expectedResult, v[0])
+    }
+
+
+    @Test
+    fun `custodial not show if unfunded`() {
+
+        val price = FiatValue.fromMinor("USD", 5647899)
+
+        val walletCrypto = CryptoValue(CryptoCurrency.BTC, 548621.toBigInteger())
+        val custodialCrypto = CryptoValue.ZeroBtc
+        val totalCrypto = walletCrypto + custodialCrypto
+
+        val walletFiat = FiatValue.fromMinor("USD", 30985)
+        val custodialFiat = FiatValue.fromMinor("USD", 0)
+        val totalFiat = walletFiat + custodialFiat
+
+        val expectedResult = mapOf(
+            AssetFilter.Total to AssetDisplayInfo(totalCrypto, totalFiat, emptySet()),
+            AssetFilter.Wallet to AssetDisplayInfo(walletCrypto, walletFiat, emptySet())
+        )
+
+        whenever(token.exchangeRate()).thenReturn(Single.just(price))
+
+        whenever(totalGroup.balance).thenReturn(Single.just(totalCrypto))
+        whenever(nonCustodialGroup.balance).thenReturn(Single.just(walletCrypto))
+        whenever(custodialGroup.balance).thenReturn(Single.just(custodialCrypto))
+
+        whenever(custodialGroup.isFunded).thenReturn(false)
+
         calculator.token.accept(token)
 
         val v = calculator.assetDisplayDetails

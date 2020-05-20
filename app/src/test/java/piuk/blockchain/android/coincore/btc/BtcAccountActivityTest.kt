@@ -19,7 +19,6 @@ import java.math.BigInteger
 
 class BtcAccountActivityTest {
 
-    private val payloadManager: PayloadManager = mock()
     private val currencyState: CurrencyState = mock()
     private val payloadDataManager: PayloadDataManager = mock()
     private val exchangeRates: ExchangeRateDataManager = mock()
@@ -29,7 +28,6 @@ class BtcAccountActivityTest {
         BtcCryptoWalletAccount(
             label = "TestBtcAccount",
             address = "",
-            payloadManager = payloadManager,
             payloadDataManager = payloadDataManager,
             isDefault = true,
             exchangeRates = exchangeRates
@@ -64,7 +62,7 @@ class BtcAccountActivityTest {
 
         val transactionSummaries = listOf(summary)
 
-        whenever(payloadManager.getAccountTransactions(any(), any(), any()))
+        whenever(payloadDataManager.getAccountTransactions(any(), any(), any()))
             .thenReturn(transactionSummaries)
 
         subject.activity
@@ -72,7 +70,7 @@ class BtcAccountActivityTest {
             .assertComplete()
             .assertNoErrors()
 
-        verify(payloadManager).getAccountTransactions(any(), any(), any())
+        verify(payloadDataManager).getAccountTransactions(any(), any(), any())
 
         // TODO: Validate returned list
     }
