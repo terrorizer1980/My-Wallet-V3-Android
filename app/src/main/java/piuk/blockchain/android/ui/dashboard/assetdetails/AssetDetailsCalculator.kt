@@ -96,7 +96,7 @@ class AssetDetailsCalculator {
                     AssetDisplayInfo(custodial.balance, custodialFiat, custodial.actions,
                         NOT_USED))
 
-                if(interestRate != NOT_USED) {
+                if (interestRate != NOT_USED) {
                     put(AssetFilter.Interest,
                         AssetDisplayInfo(interest.balance, interestFiat, interest.actions,
                             interestRate))
