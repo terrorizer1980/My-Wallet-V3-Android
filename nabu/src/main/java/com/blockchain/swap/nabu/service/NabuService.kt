@@ -389,16 +389,9 @@ class NabuService(retrofit: Retrofit) {
         authorization = sessionToken.authHeader
     ).wrapErrorMessage()
 
-    fun getInterestAddresses(
-        sessionToken: NabuSessionTokenResponse,
-        currency: String
-    ) = service.getInterestAddress(authorization = sessionToken.authHeader, cryptoSymbol = currency)
-        .wrapErrorMessage()
-
     fun getInterestRates(
         sessionToken: NabuSessionTokenResponse
-    ) = service.getInterestRates(authorization = sessionToken.authHeader)
-        .wrapErrorMessage()
+    ) = service.getInterestRates(authorization = sessionToken.authHeader).wrapErrorMessage()
 
     fun getInterestAccountBalance(
         sessionToken: NabuSessionTokenResponse,
@@ -406,7 +399,13 @@ class NabuService(retrofit: Retrofit) {
     ) = service.getInterestAccountBalance(
         authorization = sessionToken.authHeader,
         cryptoSymbol = currency
-    ).wrapErrorMessage()
+    ).flatMapMaybe {
+        when (it.code()) {
+            200 -> Maybe.just(it.body())
+            204 -> Maybe.empty()
+            else -> Maybe.error(HttpException(it))
+        }
+    }.wrapErrorMessage()
 
     companion object {
         internal const val CLIENT_TYPE = "APP"

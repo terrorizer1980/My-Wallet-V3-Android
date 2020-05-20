@@ -7,7 +7,6 @@ import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.payload.PayloadManager
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
@@ -20,7 +19,7 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 internal class BtcTokens(
     private val payloadDataManager: PayloadDataManager,
     private val payloadManager: PayloadManager,
-    custodialManager: CustodialWalletManager,
+    private val custodialManager: CustodialWalletManager,
     exchangeRates: ExchangeRateDataManager,
     historicRates: ChartsDataManager,
     currencyPrefs: CurrencyPrefs,
@@ -74,7 +73,8 @@ internal class BtcTokens(
             }
         }
 
-    override fun interestRate(): Maybe<Double> = TODO()
+    override fun interestRate(): Single<Double> =
+        custodialManager.getInterestAccountRates(asset)
 
     override fun doUpdateBalances(): Completable =
         payloadDataManager.updateAllBalances()

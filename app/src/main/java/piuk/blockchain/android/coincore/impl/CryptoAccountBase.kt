@@ -15,7 +15,6 @@ import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.CustodialActivitySummaryItem
-import piuk.blockchain.android.coincore.btc.BtcCryptoInterestAccount
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.utils.extensions.mapList
@@ -127,6 +126,44 @@ class CustodialTradingAccount(
     }
 }
 
+internal class CryptoInterestAccount(
+    cryptoCurrency: CryptoCurrency,
+    override val label: String,
+    val custodialWalletManager: CustodialWalletManager,
+    override val exchangeRates: ExchangeRateDataManager
+) : CryptoSingleAccountBase() {
+    override val cryptoCurrencies = setOf(cryptoCurrency)
+
+    private val isConfigured = AtomicBoolean(false)
+
+    override val receiveAddress: Single<String>
+        get() = Single.error(NotImplementedError("Interest accounts don't support receive"))
+
+    override val balance: Single<CryptoValue>
+        get() = custodialWalletManager.getInterestAccountDetails(cryptoAsset)
+            .doOnSuccess {
+                isConfigured.set(true)
+            }.doOnComplete {
+                isConfigured.set(false)
+            }.switchIfEmpty(
+                Single.just(CryptoValue.zero(cryptoAsset))
+            )
+
+    override val activity: Single<ActivitySummaryList>
+        get() = Single.just(emptyList())
+
+    override val isFunded: Boolean
+        get() = isConfigured.get()
+
+    override val isDefault: Boolean =
+        false // Default is, presently, only ever a non-custodial account.
+
+    override val actions: AvailableActions
+        get() = availableActions
+
+    private val availableActions = emptySet<AssetAction>()
+}
+
 abstract class CryptoSingleAccountNonCustodialBase : CryptoSingleAccountBase() {
 
 //    override val receiveAddress: Single<String>
@@ -197,13 +234,13 @@ class CryptoAccountInterestGroup(
     override val accounts: CryptoSingleAccountList
 ) : CryptoAccountGroup {
 
-    private val account: BtcCryptoInterestAccount
+    private val account: CryptoInterestAccount
 
     init {
         require(accounts.size == 1)
-        require(accounts[0] is BtcCryptoInterestAccount)
+        require(accounts[0] is CryptoInterestAccount)
 
-        account = accounts[0] as BtcCryptoInterestAccount
+        account = accounts[0] as CryptoInterestAccount
     }
 
     override val cryptoCurrencies: Set<CryptoCurrency>

@@ -1,6 +1,7 @@
 package piuk.blockchain.android.coincore.impl
 
 import com.blockchain.logging.CrashLogger
+
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.wallet.DefaultLabels
@@ -8,7 +9,6 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -75,10 +75,19 @@ internal abstract class AssetTokensBase(
 
     abstract fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList>
 
-    open fun loadInterestAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
-        Single.just(emptyList())
+    private fun loadInterestAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
+        Single.fromCallable {
+            listOf(
+                CryptoInterestAccount(
+                    asset,
+                    labels.getDefaultInterestWalletLabel(asset),
+                    custodialManager,
+                    exchangeRates
+                )
+            )
+        }
 
-    open fun interestRate(): Maybe<Double> = Maybe.empty()
+    override fun interestRate(): Single<Double> = Single.just(0.0)
 
     private fun loadCustodialAccount(): Single<CryptoSingleAccountList> =
         Single.fromCallable {

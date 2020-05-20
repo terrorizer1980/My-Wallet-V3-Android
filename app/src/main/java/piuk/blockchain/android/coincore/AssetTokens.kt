@@ -30,6 +30,7 @@ interface AssetTokens {
 
     fun defaultAccount(): Single<CryptoSingleAccount>
     fun accounts(filter: AssetFilter = AssetFilter.Total): Single<CryptoAccountGroup>
+    fun interestRate(): Single<Double>
 
     fun exchangeRate(): Single<FiatValue>
     fun historicRate(epochWhen: Long): Single<FiatValue>
