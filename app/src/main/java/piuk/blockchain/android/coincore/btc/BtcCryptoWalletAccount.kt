@@ -1,6 +1,5 @@
 package piuk.blockchain.android.coincore.btc
 
-import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.payload.PayloadManager
@@ -9,52 +8,11 @@ import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.AssetAction
-import piuk.blockchain.android.coincore.AvailableActions
-import piuk.blockchain.android.coincore.impl.CryptoSingleAccountBase
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountNonCustodialBase
 import piuk.blockchain.android.coincore.impl.transactionFetchCount
 import piuk.blockchain.android.coincore.impl.transactionFetchOffset
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import java.util.concurrent.atomic.AtomicBoolean
-
-internal class BtcCryptoInterestAccount(
-    override val label: String,
-    val custodialWalletManager: CustodialWalletManager,
-    override val exchangeRates: ExchangeRateDataManager
-) : CryptoSingleAccountBase() {
-    override val cryptoCurrencies = setOf(CryptoCurrency.BTC)
-
-    private val isConfigured = AtomicBoolean(false)
-
-    override val receiveAddress: Single<String>
-        get() = Single.error(NotImplementedError("Interest accounts don't support receive"))
-
-    override val balance: Single<CryptoValue>
-        get() = custodialWalletManager.getInterestAccountDetails(cryptoAsset)
-            .doOnSuccess {
-                isConfigured.set(true)
-            }.doOnComplete {
-                isConfigured.set(false)
-            }.switchIfEmpty(
-                Single.just(CryptoValue.zero(cryptoAsset))
-            )
-
-    override val activity: Single<ActivitySummaryList>
-        get() = Single.just(emptyList())
-
-    override val isFunded: Boolean
-        get() = isConfigured.get()
-
-    override val isDefault: Boolean =
-        false // Default is, presently, only ever a non-custodial account.
-
-    override val actions: AvailableActions
-        get() = availableActions
-
-    private val availableActions = emptySet<AssetAction>()
-}
 
 internal class BtcCryptoWalletAccount(
     override val label: String,

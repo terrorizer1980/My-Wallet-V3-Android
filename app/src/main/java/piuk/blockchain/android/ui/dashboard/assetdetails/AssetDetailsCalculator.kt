@@ -17,7 +17,6 @@ import piuk.blockchain.android.coincore.AssetTokens
 import piuk.blockchain.android.coincore.AvailableActions
 import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.androidcore.data.charts.TimeSpan
-import timber.log.Timber
 
 data class AssetDisplayInfo(
     val cryptoValue: CryptoValue,
@@ -75,21 +74,11 @@ class AssetDetailsCalculator {
     private fun getAssetDisplayDetails(assetTokens: AssetTokens): Single<AssetDisplayMap> {
         return Singles.zip(
             assetTokens.exchangeRate(),
-            assetTokens.accounts(AssetFilter.Total).doOnError {
-                Timber.e("----- issue with zip Total ${it.message}")
-            }.mapDetails(),
-            assetTokens.accounts(AssetFilter.Wallet).doOnError {
-                Timber.e("----- issue with zip Wallet ${it.message}")
-            }.mapDetails(),
-            assetTokens.accounts(AssetFilter.Custodial).doOnError {
-                Timber.e("----- issue with zip Custodial ${it.message}")
-            }.mapDetails(),
-            assetTokens.accounts(AssetFilter.Interest).doOnError {
-                Timber.e("----- issue with zip Interest ${it.message}")
-            }.mapDetails(),
-            assetTokens.interestRate().doOnError {
-                Timber.e("----- issue with zip interest rate ${it.message}")
-            }
+            assetTokens.accounts(AssetFilter.Total).mapDetails(),
+            assetTokens.accounts(AssetFilter.Wallet).mapDetails(),
+            assetTokens.accounts(AssetFilter.Custodial).mapDetails(),
+            assetTokens.accounts(AssetFilter.Interest).mapDetails(),
+            assetTokens.interestRate()
         ) { fiatPrice, total, nonCustodial, custodial, interest, interestRate ->
             val totalFiat = total.balance.toFiat(fiatPrice)
             val walletFiat = nonCustodial.balance.toFiat(fiatPrice)
@@ -98,16 +87,20 @@ class AssetDetailsCalculator {
 
             mutableMapOf(
                 AssetFilter.Total to AssetDisplayInfo(total.balance, totalFiat, total.actions,
-                    interestRate),
+                    NOT_USED),
                 AssetFilter.Wallet to AssetDisplayInfo(nonCustodial.balance, walletFiat,
-                    nonCustodial.actions, interestRate)
+                    nonCustodial.actions, NOT_USED)
             ).apply {
                 // TODO: Going to need to filter this out, in the not-configured eventuality
                 put(AssetFilter.Custodial,
-                    AssetDisplayInfo(custodial.balance, custodialFiat, custodial.actions, interestRate))
+                    AssetDisplayInfo(custodial.balance, custodialFiat, custodial.actions,
+                        NOT_USED))
 
-                put(AssetFilter.Interest,
-                    AssetDisplayInfo(interest.balance, interestFiat, interest.actions, interestRate))
+                if(interestRate != NOT_USED) {
+                    put(AssetFilter.Interest,
+                        AssetDisplayInfo(interest.balance, interestFiat, interest.actions,
+                            interestRate))
+                }
             }
         }
     }

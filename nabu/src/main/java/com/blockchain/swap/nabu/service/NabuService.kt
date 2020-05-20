@@ -389,12 +389,6 @@ class NabuService(retrofit: Retrofit) {
         authorization = sessionToken.authHeader
     ).wrapErrorMessage()
 
-    fun getInterestAddresses(
-        sessionToken: NabuSessionTokenResponse,
-        currency: String
-    ) = service.getInterestAddress(authorization = sessionToken.authHeader, cryptoSymbol = currency)
-        .wrapErrorMessage()
-
     fun getInterestRates(
         sessionToken: NabuSessionTokenResponse
     ) = service.getInterestRates(authorization = sessionToken.authHeader).wrapErrorMessage()
@@ -407,8 +401,7 @@ class NabuService(retrofit: Retrofit) {
         cryptoSymbol = currency
     ).flatMapMaybe {
         when (it.code()) {
-            // fixme there is a bug in the api at the moment where 200 returns empty body, update to Maybe.just(it.body())
-            200 -> Maybe.just(it.body()?.copy(balance = 5L))
+            200 -> Maybe.just(it.body())
             204 -> Maybe.empty()
             else -> Maybe.error(HttpException(it))
         }

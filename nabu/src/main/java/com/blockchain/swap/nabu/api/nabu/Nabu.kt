@@ -3,7 +3,6 @@ package com.blockchain.swap.nabu.api.nabu
 import com.blockchain.swap.nabu.models.cards.CardResponse
 import com.blockchain.swap.nabu.models.cards.PaymentMethodsResponse
 import com.blockchain.swap.nabu.models.interest.InterestAccountBalanceResponse
-import com.blockchain.swap.nabu.models.interest.InterestAddressResponse
 import com.blockchain.swap.nabu.models.interest.InterestResponse
 import com.blockchain.swap.nabu.models.nabu.AddAddressRequest
 import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
@@ -308,12 +307,6 @@ internal interface Nabu {
         @Header("authorization") authorization: String,
         @Body request: TransferRequest
     ): Completable
-
-    @GET(NABU_INTEREST_ADDRESS)
-    fun getInterestAddress(
-        @Header("authorization") authorization: String,
-        @Query("ccy") cryptoSymbol: String
-    ): Single<Response<InterestAddressResponse>>
 
     @GET(NABU_INTEREST_RATES)
     fun getInterestRates(

@@ -34,7 +34,6 @@ import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.CryptoAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
-import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailsCalculator.Companion.NOT_USED
 import piuk.blockchain.android.ui.dashboard.setDeltaColour
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
@@ -156,21 +155,17 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
             }
 
             assetDetails[AssetFilter.Custodial]?.let {
-                if (!it.cryptoValue.isZero) {
-                    itemList.add(
-                        AssetDetailItem(AssetFilter.Custodial, token, it.cryptoValue, it.fiatValue,
-                            it.actions, it.interestRate)
-                    )
-                }
+                itemList.add(
+                    AssetDetailItem(AssetFilter.Custodial, token, it.cryptoValue, it.fiatValue,
+                        it.actions, it.interestRate)
+                )
             }
 
             assetDetails[AssetFilter.Interest]?.let {
-                if (!it.cryptoValue.isZero && it.interestRate != NOT_USED) {
-                    itemList.add(
-                        AssetDetailItem(AssetFilter.Interest, token, it.cryptoValue, it.fiatValue,
-                            it.actions, it.interestRate)
-                    )
-                }
+                itemList.add(
+                    AssetDetailItem(AssetFilter.Interest, token, it.cryptoValue, it.fiatValue,
+                        it.actions, it.interestRate)
+                )
             }
 
             asset_list.adapter = AssetDetailAdapter(itemList, ::onAssetActionSelected, analytics)
