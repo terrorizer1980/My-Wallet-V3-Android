@@ -236,12 +236,12 @@ class PayloadDataManagerTest {
         // Arrange
         val address = "ADDRESS"
         val hashMap: LinkedHashMap<String, Balance> = LinkedHashMap(mapOf(Pair(address, Balance())))
-        whenever(payloadService.getBalanceOfAddresses(listOf(address)))
+        whenever(payloadService.getBalanceOfBtcAddresses(listOf(address)))
             .thenReturn(Observable.just(hashMap))
         // Act
-        val testObserver = subject.getBalanceOfAddresses(listOf(address)).test()
+        val testObserver = subject.getBalanceOfBtcAddresses(listOf(address)).test()
         // Assert
-        verify(payloadService).getBalanceOfAddresses(listOf(address))
+        verify(payloadService).getBalanceOfBtcAddresses(listOf(address))
         verifyNoMoreInteractions(payloadService)
         testObserver.assertComplete()
         testObserver.assertValue(hashMap)
