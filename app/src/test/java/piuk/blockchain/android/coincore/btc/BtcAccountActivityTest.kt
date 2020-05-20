@@ -8,7 +8,6 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.multiaddress.TransactionSummary
-import info.blockchain.wallet.payload.PayloadManager
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

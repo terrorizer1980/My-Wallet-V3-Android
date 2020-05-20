@@ -83,7 +83,6 @@ class AssetDetailsCalculatorTest {
         assertEquals(expectedResult, v[0])
     }
 
-
     @Test
     fun `custodial not show if unfunded`() {
 
