@@ -143,7 +143,7 @@ data class Quote(
     val date: Date,
     val fee: FiatValue,
     val estimatedAmount: CryptoValue,
-    val rate: CryptoValue
+    val rate: FiatValue
 )
 
 data class BankAccount(val details: List<BankDetail>)
