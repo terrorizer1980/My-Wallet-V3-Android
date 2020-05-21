@@ -3,13 +3,7 @@ package com.blockchain.swap.nabu.models.interest
 import com.squareup.moshi.Json
 
 data class InterestResponse(
-    @Json(name = "rates")
-    val rates: BtcRateResponseData
-)
-
-data class BtcRateResponseData(
-    @Json(name = "BTC")
-    val BTC: Double
+    val rate: Double
 )
 
 @Json(name = "BTC")

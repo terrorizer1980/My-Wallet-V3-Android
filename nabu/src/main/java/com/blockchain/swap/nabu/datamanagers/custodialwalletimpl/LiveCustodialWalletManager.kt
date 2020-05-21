@@ -391,8 +391,8 @@ class LiveCustodialWalletManager(
 
     override fun getInterestAccountRates(crypto: CryptoCurrency): Single<Double> =
         authenticator.authenticate { sessionToken ->
-            nabuService.getInterestRates(sessionToken).map {
-                it.body()?.rates?.BTC ?: 0.0
+            nabuService.getInterestRates(sessionToken, crypto.networkTicker).map {
+                it.body()?.rate ?: 0.0
             }
         }
 

@@ -390,8 +390,10 @@ class NabuService(retrofit: Retrofit) {
     ).wrapErrorMessage()
 
     fun getInterestRates(
-        sessionToken: NabuSessionTokenResponse
-    ) = service.getInterestRates(authorization = sessionToken.authHeader).wrapErrorMessage()
+        sessionToken: NabuSessionTokenResponse,
+        currency: String
+    ) = service.getInterestRates(authorization = sessionToken.authHeader, currency = currency)
+        .wrapErrorMessage()
 
     fun getInterestAccountBalance(
         sessionToken: NabuSessionTokenResponse,
