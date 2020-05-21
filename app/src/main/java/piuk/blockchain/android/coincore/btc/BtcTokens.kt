@@ -17,7 +17,7 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 
 internal class BtcTokens(
     private val payloadDataManager: PayloadDataManager,
-    private val custodialManager: CustodialWalletManager,
+    custodialManager: CustodialWalletManager,
     exchangeRates: ExchangeRateDataManager,
     historicRates: ChartsDataManager,
     currencyPrefs: CurrencyPrefs,
@@ -68,7 +68,4 @@ internal class BtcTokens(
                 result
             }
         }
-
-    override fun interestRate(): Single<Double> =
-        custodialManager.getInterestAccountRates(asset)
 }

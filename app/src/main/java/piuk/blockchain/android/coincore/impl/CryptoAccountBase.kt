@@ -186,58 +186,21 @@ abstract class CryptoSingleAccountNonCustodialBase : CryptoSingleAccountBase() {
 
 class CryptoAccountCustodialGroup(
     override val label: String,
-    override val accounts: CryptoSingleAccountList
+    override val accounts: CryptoSingleAccountList,
+    isInterestAccount: Boolean
 ) : CryptoAccountGroup {
 
-    private val account: CustodialTradingAccount
+    private val account: CryptoSingleAccountBase
 
     init {
         require(accounts.size == 1)
-        require(accounts[0] is CustodialTradingAccount)
-
-        account = accounts[0] as CustodialTradingAccount
-    }
-
-    override val cryptoCurrencies: Set<CryptoCurrency>
-        get() = account.cryptoCurrencies
-
-    override val balance: Single<CryptoValue>
-        get() = account.balance
-
-    override val activity: Single<ActivitySummaryList>
-        get() = account.activity
-
-    override val actions: AvailableActions
-        get() = account.actions
-
-    override val isFunded: Boolean
-        get() = account.isFunded
-
-    override val hasTransactions: Boolean
-        get() = account.hasTransactions
-
-    override fun fiatBalance(
-        fiat: String,
-        exchangeRates: ExchangeRateDataManager
-    ): Single<FiatValue> =
-        balance.map { it.toFiat(exchangeRates, fiat) }
-
-    override fun includes(cryptoAccount: CryptoSingleAccount): Boolean =
-        accounts.contains(cryptoAccount)
-}
-
-class CryptoAccountInterestGroup(
-    override val label: String,
-    override val accounts: CryptoSingleAccountList
-) : CryptoAccountGroup {
-
-    private val account: CryptoInterestAccount
-
-    init {
-        require(accounts.size == 1)
-        require(accounts[0] is CryptoInterestAccount)
-
-        account = accounts[0] as CryptoInterestAccount
+        account = if(isInterestAccount) {
+            require(accounts[0] is CryptoInterestAccount)
+            accounts[0] as CryptoInterestAccount
+        } else {
+            require(accounts[0] is CustodialTradingAccount)
+            accounts[0] as CustodialTradingAccount
+        }
     }
 
     override val cryptoCurrencies: Set<CryptoCurrency>

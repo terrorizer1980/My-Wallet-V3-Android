@@ -29,9 +29,10 @@ private fun buildInterestGroup(
     labels: DefaultLabels,
     accountList: List<CryptoSingleAccount>
 ): CryptoAccountGroup =
-    CryptoAccountInterestGroup(
+    CryptoAccountCustodialGroup(
         labels.getDefaultInterestWalletLabel(asset),
-        accountList.filterIsInstance<CryptoInterestAccount>()
+        accountList.filterIsInstance<CryptoInterestAccount>(),
+        true
     )
 
 private fun buildCustodialGroup(
@@ -41,7 +42,8 @@ private fun buildCustodialGroup(
 ): CryptoAccountGroup =
     CryptoAccountCustodialGroup(
         labels.getDefaultCustodialWalletLabel(asset),
-        accountList.filterIsInstance<CustodialTradingAccount>()
+        accountList.filterIsInstance<CustodialTradingAccount>(),
+        false
     )
 
 private fun buildNonCustodialGroup(

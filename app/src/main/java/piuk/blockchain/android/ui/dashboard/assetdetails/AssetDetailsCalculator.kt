@@ -85,7 +85,8 @@ class AssetDetailsCalculator {
 
             mutableMapOf(
                 AssetFilter.Total to AssetDisplayInfo(total.balance, totalFiat, total.actions),
-                AssetFilter.Wallet to AssetDisplayInfo(nonCustodial.balance, walletFiat, nonCustodial.actions)
+                AssetFilter.Wallet to AssetDisplayInfo(nonCustodial.balance, walletFiat,
+                    nonCustodial.actions)
             ).apply {
                 if (custodial.shouldShow) {
                     put(
@@ -94,7 +95,7 @@ class AssetDetailsCalculator {
                     )
                 }
 
-                if (interestRate != NOT_USED) {
+                if (interest.shouldShow) {
                     put(AssetFilter.Interest,
                         AssetDisplayInfo(interest.balance, interestFiat, interest.actions,
                             interestRate))

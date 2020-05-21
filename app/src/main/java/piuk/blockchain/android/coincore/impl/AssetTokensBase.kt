@@ -87,7 +87,7 @@ internal abstract class AssetTokensBase(
             )
         }
 
-    override fun interestRate(): Single<Double> = Single.just(0.0)
+    override fun interestRate(): Single<Double> = custodialManager.getInterestAccountRates(asset)
 
     private fun loadCustodialAccount(): Single<CryptoSingleAccountList> =
         Single.fromCallable {

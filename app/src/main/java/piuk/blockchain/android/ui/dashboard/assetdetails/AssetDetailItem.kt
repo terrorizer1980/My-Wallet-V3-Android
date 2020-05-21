@@ -2,8 +2,6 @@ package piuk.blockchain.android.ui.dashboard.assetdetails
 
 import android.view.Gravity
 import android.view.View
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
@@ -24,7 +22,9 @@ import piuk.blockchain.android.util.assetName
 import piuk.blockchain.android.util.setCoinIcon
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
+import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.setOnClickListenerDebounced
+import piuk.blockchain.androidcoreui.utils.extensions.visible
 
 data class AssetDetailItem(
     val assetFilter: AssetFilter,
@@ -55,10 +55,10 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
                     R.string.dashboard_asset_balance_interest, item.interestRate)
             }
 
-            if (item.assetFilter == AssetFilter.Interest) {
-                action_menu.visibility = INVISIBLE
+            if (item.actions.isEmpty()) {
+                action_menu.invisible()
             } else {
-                action_menu.visibility = VISIBLE
+                action_menu.visible()
                 setOnClickListenerDebounced { doShowMenu(item, onActionSelected, analytics) }
             }
 
