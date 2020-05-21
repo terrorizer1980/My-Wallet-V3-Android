@@ -194,7 +194,7 @@ class CryptoAccountCustodialGroup(
 
     init {
         require(accounts.size == 1)
-        account = if(isInterestAccount) {
+        account = if (isInterestAccount) {
             require(accounts[0] is CryptoInterestAccount)
             accounts[0] as CryptoInterestAccount
         } else {
