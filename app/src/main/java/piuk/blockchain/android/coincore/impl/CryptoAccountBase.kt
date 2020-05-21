@@ -186,21 +186,15 @@ abstract class CryptoSingleAccountNonCustodialBase : CryptoSingleAccountBase() {
 
 class CryptoAccountCustodialGroup(
     override val label: String,
-    override val accounts: CryptoSingleAccountList,
-    isInterestAccount: Boolean
+    override val accounts: CryptoSingleAccountList
 ) : CryptoAccountGroup {
 
     private val account: CryptoSingleAccountBase
 
     init {
         require(accounts.size == 1)
-        account = if (isInterestAccount) {
-            require(accounts[0] is CryptoInterestAccount)
-            accounts[0] as CryptoInterestAccount
-        } else {
-            require(accounts[0] is CustodialTradingAccount)
-            accounts[0] as CustodialTradingAccount
-        }
+        require(accounts[0] is CryptoInterestAccount || accounts[0] is CustodialTradingAccount)
+        account = accounts[0] as CryptoSingleAccountBase
     }
 
     override val cryptoCurrencies: Set<CryptoCurrency>
