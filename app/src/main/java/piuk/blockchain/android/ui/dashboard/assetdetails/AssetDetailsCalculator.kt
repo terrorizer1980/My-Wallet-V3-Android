@@ -16,13 +16,14 @@ import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.AssetTokens
 import piuk.blockchain.android.coincore.AvailableActions
 import piuk.blockchain.android.coincore.CryptoAccountGroup
+import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailsCalculator.Companion.NOT_USED
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 
 data class AssetDisplayInfo(
     val cryptoValue: CryptoValue,
     val fiatValue: FiatValue,
     val actions: Set<AssetAction>,
-    val interestRate: Double
+    val interestRate: Double = NOT_USED
 )
 
 typealias AssetDisplayMap = Map<AssetFilter, AssetDisplayInfo>
@@ -61,15 +62,12 @@ class AssetDetailsCalculator {
 
     private data class Details(
         val balance: CryptoValue,
-        val actions: AvailableActions
+        val actions: AvailableActions,
+        val shouldShow: Boolean
     )
 
     private fun Single<CryptoAccountGroup>.mapDetails(): Single<Details> =
-        this.flatMap {
-            it.balance.map { balance ->
-                Details(balance, it.actions)
-            }
-        }
+        this.flatMap { it.balance.map { balance -> Details(balance, it.actions, it.isFunded) } }
 
     private fun getAssetDisplayDetails(assetTokens: AssetTokens): Single<AssetDisplayMap> {
         return Singles.zip(
@@ -86,15 +84,15 @@ class AssetDetailsCalculator {
             val interestFiat = interest.balance.toFiat(fiatPrice)
 
             mutableMapOf(
-                AssetFilter.Total to AssetDisplayInfo(total.balance, totalFiat, total.actions,
-                    NOT_USED),
-                AssetFilter.Wallet to AssetDisplayInfo(nonCustodial.balance, walletFiat,
-                    nonCustodial.actions, NOT_USED)
+                AssetFilter.Total to AssetDisplayInfo(total.balance, totalFiat, total.actions),
+                AssetFilter.Wallet to AssetDisplayInfo(nonCustodial.balance, walletFiat, nonCustodial.actions)
             ).apply {
-                // TODO: Going to need to filter this out, in the not-configured eventuality
-                put(AssetFilter.Custodial,
-                    AssetDisplayInfo(custodial.balance, custodialFiat, custodial.actions,
-                        NOT_USED))
+                if (custodial.shouldShow) {
+                    put(
+                        AssetFilter.Custodial,
+                        AssetDisplayInfo(custodial.balance, custodialFiat, custodial.actions)
+                    )
+                }
 
                 if (interestRate != NOT_USED) {
                     put(AssetFilter.Interest,

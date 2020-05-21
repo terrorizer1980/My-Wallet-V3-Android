@@ -44,7 +44,7 @@ abstract class CryptoSingleAccountBase : CryptoSingleAccount {
     override fun includes(cryptoAccount: CryptoSingleAccount): Boolean =
         cryptoAccount == this
 
-    fun setHasTransactions(hasTransactions: Boolean) {
+    protected fun setHasTransactions(hasTransactions: Boolean) {
         this.hasTransactions = hasTransactions
     }
 }
@@ -56,7 +56,7 @@ class CustodialTradingAccount(
     val custodialWalletManager: CustodialWalletManager
 ) : CryptoSingleAccountBase() {
 
-    private val isNonCustodialConfigured = AtomicBoolean(false)
+    private val isConfigured = AtomicBoolean(false)
 
     override val cryptoCurrencies = setOf(cryptoCurrency)
 
@@ -65,8 +65,8 @@ class CustodialTradingAccount(
 
     override val balance: Single<CryptoValue>
         get() = custodialWalletManager.getBalanceForAsset(cryptoAsset)
-            .doOnComplete { isNonCustodialConfigured.set(false) }
-            .doOnSuccess { isNonCustodialConfigured.set(true) }
+            .doOnComplete { isConfigured.set(false) }
+            .doOnSuccess { isConfigured.set(true) }
             .switchToSingleIfEmpty { Single.just(CryptoValue.zero(cryptoAsset)) }
             .onErrorReturn {
                 Timber.d("Unable to get non-custodial balance: $it")
@@ -81,7 +81,7 @@ class CustodialTradingAccount(
             .onErrorReturn { emptyList() }
 
     override val isFunded: Boolean
-        get() = isNonCustodialConfigured.get()
+        get() = isConfigured.get()
 
     override val isDefault: Boolean = false // Default is, presently, only ever a non-custodial account.
 
@@ -165,9 +165,6 @@ internal class CryptoInterestAccount(
 }
 
 abstract class CryptoSingleAccountNonCustodialBase : CryptoSingleAccountBase() {
-
-//    override val receiveAddress: Single<String>
-//        get() = Single.error(NotImplementedError("ReceiveAddress not implemented"))
 
     override val isFunded: Boolean
         get() = false
@@ -294,7 +291,7 @@ class CryptoAccountCompoundGroup(
         return sum
     }
 
-    // Al; the activities for all the accounts
+    // All the activities for all the accounts
     override val activity: Single<ActivitySummaryList>
         get() = Single.zip(
             accounts.map { it.activity }
