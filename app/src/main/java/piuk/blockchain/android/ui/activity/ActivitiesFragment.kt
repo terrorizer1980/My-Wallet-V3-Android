@@ -45,8 +45,7 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import timber.log.Timber
 
-class ActivitiesFragment
-    : HomeScreenMviFragment<ActivitiesModel, ActivitiesIntent, ActivitiesState>(),
+class ActivitiesFragment : HomeScreenMviFragment<ActivitiesModel, ActivitiesIntent, ActivitiesState>(),
     AccountSelectSheet.Host, ActivityDetailsBottomSheet.Host, BankDetailsBottomSheet.Host,
     SimpleBuyCancelOrderBottomSheet.Host {
 

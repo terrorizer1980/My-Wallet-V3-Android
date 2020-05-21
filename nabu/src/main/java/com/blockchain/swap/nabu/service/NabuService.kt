@@ -377,10 +377,12 @@ class NabuService(retrofit: Retrofit) {
 
     fun getPaymentMethods(
         sessionToken: NabuSessionTokenResponse,
-        currency: String
+        currency: String,
+        checkEligibility: Boolean
     ) = service.getPaymentMethods(
         authorization = sessionToken.authHeader,
-        currency = currency
+        currency = currency,
+        checkEligibility = checkEligibility
     ).wrapErrorMessage()
 
     fun getCards(
