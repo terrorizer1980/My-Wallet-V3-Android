@@ -128,6 +128,9 @@
     <string name="check_connectivity_exit">Blockchain Wallet cannot obtain an Internet connection.
         Please check the connectivity on your device and try again.
     </string>
+
+    <string name="server_unreachable_exit">Unable to connect to server, please try again later.</string>
+
     <string name="double_encryption_password_error">Double encrypt password error. Please try again.</string>
     <string name="btn_scan_pairing_code">Scan Pairing Code</string>
     <string name="btn_manual_pairing">Manual Pairing</string>

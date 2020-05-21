@@ -80,7 +80,7 @@ class LiveCustodialWalletManager(
                 fee = FiatValue.fromMinor(amount.currencyCode,
                     quoteResponse.fee.times(amountCrypto.amount.toLong())),
                 estimatedAmount = amountCrypto,
-                rate = CryptoValue(crypto, quoteResponse.rate.toBigInteger())
+                rate = FiatValue.fromMinor(amount.currencyCode, quoteResponse.rate)
             )
         }
 
@@ -246,9 +246,9 @@ class LiveCustodialWalletManager(
             .flatMapCompletable { deleteBuyOrder(it.id) }
     }
 
-    override fun updateSupportedCardTypes(fiatCurrency: String): Completable =
+    override fun updateSupportedCardTypes(fiatCurrency: String, isTier2Approved: Boolean): Completable =
         authenticator.authenticate {
-            nabuService.getPaymentMethods(it, fiatCurrency).doOnSuccess {
+            nabuService.getPaymentMethods(it, fiatCurrency, isTier2Approved).doOnSuccess {
                 updateSupportedCards(it)
             }
         }.ignoreElement()
@@ -261,12 +261,12 @@ class LiveCustodialWalletManager(
             if (enabled)
                 allPaymentsMethods(fiatCurrency, isTier2Approved)
             else
-                onlyBank(fiatCurrency)
+                onlyBank(fiatCurrency, isTier2Approved)
         }
 
-    private fun onlyBank(fiatCurrency: String) =
+    private fun onlyBank(fiatCurrency: String, tier2Approved: Boolean) =
         authenticator.authenticate {
-            nabuService.getPaymentMethods(it, fiatCurrency).map { response ->
+            nabuService.getPaymentMethods(it, fiatCurrency, tier2Approved).map { response ->
                 response.methods.firstOrNull { it.type == PaymentMethodType.BANK_ACCOUNT }
                     ?.let { paymentMethodResponse ->
                         listOf(PaymentMethod.BankTransfer(
@@ -288,7 +288,7 @@ class LiveCustodialWalletManager(
     private fun allPaymentsMethods(fiatCurrency: String, isTier2Approved: Boolean) = authenticator.authenticate {
         Singles.zip(
             nabuService.getCards(it).onErrorReturn { emptyList() },
-            nabuService.getPaymentMethods(it, fiatCurrency).doOnSuccess {
+            nabuService.getPaymentMethods(it, fiatCurrency, isTier2Approved).doOnSuccess {
                 updateSupportedCards(it)
             }
         )
