@@ -162,7 +162,9 @@ class ActivitiesFragment : HomeScreenMviFragment<ActivitiesModel, ActivitiesInte
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = {
-                    fiat_balance.text = it.toStringWithSymbol()
+                    fiat_balance.text =
+                        getString(R.string.common_spaced_strings, it.toStringWithSymbol(),
+                            it.currencyCode)
                 },
                 onError = {
                     Timber.e("Unable to get balance for ${account.label}")
