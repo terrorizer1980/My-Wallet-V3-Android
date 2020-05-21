@@ -46,7 +46,7 @@ private class CustodialActivityItemViewHolder(
     ) {
         with(itemView) {
             icon.setIcon(tx.status)
-            if(tx.status != OrderState.PENDING_EXECUTION) {
+            if (tx.status != OrderState.PENDING_EXECUTION) {
                 icon.setAssetTint(tx.cryptoCurrency)
             }
 
