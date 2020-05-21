@@ -62,7 +62,7 @@ class AccountSelectSheet : SlidingModalBottomDialog() {
         with(view.account_list) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = theAdapter
-            
+
             addItemDecoration(
                 DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
 
