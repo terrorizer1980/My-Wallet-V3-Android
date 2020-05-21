@@ -103,6 +103,10 @@ interface CustodialWalletManager {
     ): Single<List<PaymentMethod.Card>> // fetches the available
 
     fun confirmOrder(orderId: String, attributes: CardPartnerAttributes?): Single<BuyOrder>
+
+    fun getInterestAccountDetails(crypto: CryptoCurrency): Maybe<CryptoValue>
+
+    fun getInterestAccountRates(crypto: CryptoCurrency): Single<Double>
 }
 
 data class BuyOrder(

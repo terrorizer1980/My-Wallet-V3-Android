@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.blockchain.annotations.CommonCode
 import com.blockchain.notifications.analytics.ActivityAnalytics
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
-import com.blockchain.notifications.analytics.activityShown
 import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -276,7 +275,6 @@ class ActivitiesFragment : HomeScreenMviFragment<ActivitiesModel, ActivitiesInte
     }
 
     override fun onAccountSelected(account: CryptoAccount) {
-        analytics.logEvent(activityShown(account.label))
         model.process(AccountSelectedIntent(account, false))
     }
 
