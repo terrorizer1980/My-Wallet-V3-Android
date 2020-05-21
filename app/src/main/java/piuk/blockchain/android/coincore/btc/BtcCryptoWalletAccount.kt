@@ -43,7 +43,7 @@ internal class BtcCryptoWalletAccount(
                         ) as ActivitySummaryItem
                 }
         }
-        .doOnSuccess { setHasTransactions(it.isNotEmpty()) }
+            .doOnSuccess { setHasTransactions(it.isNotEmpty()) }
 
     constructor(
         jsonAccount: Account,
