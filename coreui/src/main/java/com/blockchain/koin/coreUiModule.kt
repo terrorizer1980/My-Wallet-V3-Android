@@ -11,7 +11,7 @@ import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.remoteconfig.RemoteConfig
 import com.blockchain.remoteconfig.RemoteConfiguration
 import com.blockchain.ui.chooser.AccountChooserPresenter
-import com.crashlytics.android.answers.Answers
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import org.koin.dsl.module.applicationContext
@@ -41,7 +41,7 @@ val coreUiModule = applicationContext {
         .bind(RemoteConfig::class)
         .bind(ABTestExperiment::class)
 
-    factory { Answers.getInstance() }
+    factory { FirebaseAnalytics.getInstance(get()) }
 
     factory { AnswersEventLogger(get()) as EventLogger }
 

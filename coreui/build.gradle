@@ -73,7 +73,8 @@ dependencies {
     api Libraries.rxFingerprint
 
     // Logging
-    api(Libraries.crashlytics) { transitive = true }
+    api(Libraries.firebaseCrashlytics) { transitive = true }
+    api(Libraries.firebaseAnalytics)
 
     // Custom Views
     api Libraries.konfetti
@@ -95,4 +96,5 @@ dependencies {
     testImplementation(Libraries.mockitoKotlin) {
         ['kotlin-stdlib', 'kotlin-reflect'].each { exclude module: it }
     }
+    implementation 'com.google.firebase:firebase-core:17.0.1'
 }

@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
@@ -36,7 +37,6 @@ android {
         buildConfigLong "EXIT_APP_COOLDOWN_MILLIS", 2 * 1000
 
         buildConfigString "SHAPE_SHIFT_API_KEY", buildProperties.secrets['shapeShiftApiKey']
-        manifestPlaceholders = [FABRIC_API_KEY: buildProperties.secrets['fabricApiKey'].string]
         resConfigs 'en',
                 'cs',
                 'de',
