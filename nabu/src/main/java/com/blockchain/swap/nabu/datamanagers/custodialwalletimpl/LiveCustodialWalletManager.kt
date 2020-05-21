@@ -80,7 +80,7 @@ class LiveCustodialWalletManager(
                 fee = FiatValue.fromMinor(amount.currencyCode,
                     quoteResponse.fee.times(amountCrypto.amount.toLong())),
                 estimatedAmount = amountCrypto,
-                rate = CryptoValue(crypto, quoteResponse.rate.toBigInteger())
+                rate = FiatValue.fromMinor(amount.currencyCode, quoteResponse.rate)
             )
         }
 
