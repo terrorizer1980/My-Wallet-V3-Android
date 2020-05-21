@@ -87,23 +87,23 @@ private fun ImageView.setAssetTint(cryptoCurrency: CryptoCurrency) {
     setBackgroundResource(R.drawable.bkgd_tx_circle)
     when (cryptoCurrency) {
         CryptoCurrency.BTC -> {
-            background.setTint(ContextCompat.getColor(context, R.color.orange_000))
+            background.setTint(ContextCompat.getColor(context, R.color.btc_bkgd))
             drawable.setTint(ContextCompat.getColor(context, R.color.btc))
         }
         CryptoCurrency.BCH -> {
-            background.setTint(ContextCompat.getColor(context, R.color.bch_000))
+            background.setTint(ContextCompat.getColor(context, R.color.bch_bkgd))
             drawable.setTint(ContextCompat.getColor(context, R.color.bch))
         }
         CryptoCurrency.ETHER -> {
-            background.setTint(ContextCompat.getColor(context, R.color.purple_000))
+            background.setTint(ContextCompat.getColor(context, R.color.ether_bkgd))
             drawable.setTint(ContextCompat.getColor(context, R.color.eth))
         }
         CryptoCurrency.PAX -> {
-            background.setTint(ContextCompat.getColor(context, R.color.pax_000))
+            background.setTint(ContextCompat.getColor(context, R.color.pax_bkgd))
             drawable.setTint(ContextCompat.getColor(context, R.color.pax))
         }
         CryptoCurrency.XLM -> {
-            background.setTint(ContextCompat.getColor(context, R.color.grey_000))
+            background.setTint(ContextCompat.getColor(context, R.color.xlm_bkgd))
             drawable.setTint(ContextCompat.getColor(context, R.color.xlm))
         }
         else -> {
