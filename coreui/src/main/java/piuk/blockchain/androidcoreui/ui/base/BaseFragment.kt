@@ -2,9 +2,8 @@ package piuk.blockchain.androidcoreui.ui.base
 
 import androidx.annotation.CallSuper
 import androidx.viewpager.widget.ViewPager
-import com.crashlytics.android.answers.ContentViewEvent
 import piuk.blockchain.androidcoreui.BuildConfig
-import piuk.blockchain.androidcoreui.utils.logging.Logging
+import piuk.blockchain.androidcoreui.utils.logging.Logging1
 
 /**
  * Logs Fragments that have been visited for statistics purposes using Crashlytics' answers.
@@ -46,7 +45,7 @@ abstract class BaseFragment<VIEW : View, PRESENTER : BasePresenter<VIEW>> :
             logged = true
 
             if (!BuildConfig.DEBUG) {
-                Logging.logContentView(ContentViewEvent().putContentName(javaClass.simpleName))
+                Logging1.instance.logContentView(javaClass.simpleName)
             }
         }
     }

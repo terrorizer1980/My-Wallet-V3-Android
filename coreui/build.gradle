@@ -96,5 +96,5 @@ dependencies {
     testImplementation(Libraries.mockitoKotlin) {
         ['kotlin-stdlib', 'kotlin-reflect'].each { exclude module: it }
     }
-    implementation 'com.google.firebase:firebase-core:17.0.1'
+    //implementation 'com.google.firebase:firebase-core:17.0.1'
 }

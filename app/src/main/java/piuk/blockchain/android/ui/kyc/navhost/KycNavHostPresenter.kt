@@ -1,17 +1,11 @@
 package piuk.blockchain.android.ui.kyc.navhost
 
-import piuk.blockchain.android.ui.kyc.BaseKycPresenter
 import com.blockchain.exceptions.MetadataNotFoundException
+import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.blockchain.swap.nabu.models.nabu.KycState
 import com.blockchain.swap.nabu.models.nabu.NabuUser
 import com.blockchain.swap.nabu.models.nabu.UserState
-import piuk.blockchain.android.ui.kyc.logging.KycResumedEvent
-import piuk.blockchain.android.campaign.CampaignType
-import piuk.blockchain.android.ui.kyc.profile.models.ProfileModel
-import piuk.blockchain.android.ui.kyc.reentry.KycNavigator
-import piuk.blockchain.android.ui.kyc.reentry.ReentryDecision
-import com.blockchain.swap.nabu.NabuToken
-import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.blockchain.swap.nabu.service.TierUpdater
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,8 +14,14 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
 import piuk.blockchain.android.campaign.CampaignRegistration
+import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.campaign.SunriverCampaignRegistration
-import piuk.blockchain.androidcoreui.utils.logging.Logging
+import piuk.blockchain.android.ui.kyc.BaseKycPresenter
+import piuk.blockchain.android.ui.kyc.logging.KycResumedEvent1
+import piuk.blockchain.android.ui.kyc.profile.models.ProfileModel
+import piuk.blockchain.android.ui.kyc.reentry.KycNavigator
+import piuk.blockchain.android.ui.kyc.reentry.ReentryDecision
+import piuk.blockchain.androidcoreui.utils.logging.Logging1
 import timber.log.Timber
 
 class KycNavHostPresenter(
@@ -107,7 +107,7 @@ class KycNavHostPresenter(
                 val reentryPoint = reentryDecision.findReentryPoint(user)
                 val directions = kycNavigator.userAndReentryPointToDirections(user, reentryPoint)
                 view.navigate(directions)
-                Logging.logCustom(KycResumedEvent(reentryPoint))
+                Logging1.instance.logEvent(KycResumedEvent1(reentryPoint))
             }
         } else if (view.campaignType == CampaignType.Sunriver) {
             view.navigateToKycSplash()

@@ -1,33 +1,10 @@
 package piuk.blockchain.androidcoreui.utils.logging
 
-import com.crashlytics.android.answers.CustomEvent
-
 fun RecoverWalletEvent1(successful: Boolean) =
-    LoggingEvent("Recover Wallet", Pair("Success", successful))
-
-class RecoverWalletEvent : CustomEvent("Recover Wallet") {
-
-    fun putSuccess(successful: Boolean): RecoverWalletEvent {
-        putCustomAttribute("Success", if (successful) "true" else "false")
-        return this
-    }
-}
+    LoggingEvent("Recover Wallet", mapOf(Pair("Success", successful)))
 
 fun PairingEvent1(pairingMethod: PairingMethod) =
-    LoggingEvent("Wallet Pairing", Pair("Pairing method", pairingMethod.name))
-
-class PairingEvent : CustomEvent("Wallet Pairing") {
-
-    fun putSuccess(successful: Boolean): PairingEvent {
-        putCustomAttribute("Success", if (successful) "true" else "false")
-        return this
-    }
-
-    fun putMethod(pairingMethod: PairingMethod): PairingEvent {
-        putCustomAttribute("Pairing method", pairingMethod.name)
-        return this
-    }
-}
+    LoggingEvent("Wallet Pairing", mapOf(Pair("Pairing method", pairingMethod.name)))
 
 @Suppress("UNUSED_PARAMETER")
 enum class PairingMethod(name: String) {
@@ -37,14 +14,7 @@ enum class PairingMethod(name: String) {
 }
 
 fun ImportEvent1(addressType: AddressType) =
-    LoggingEvent("Address Imported", Pair("Address Type", addressType.name))
-
-class ImportEvent(addressType: AddressType) : CustomEvent("Address Imported") {
-
-    init {
-        putCustomAttribute("Address Type", addressType.name)
-    }
-}
+    LoggingEvent("Address Imported", mapOf(Pair("Address Type", addressType.name)))
 
 @Suppress("UNUSED_PARAMETER")
 enum class AddressType(name: String) {
@@ -52,48 +22,20 @@ enum class AddressType(name: String) {
     WATCH_ONLY("Watch Only")
 }
 
-
 fun CreateAccountEvent1(number: Int) =
-    LoggingEvent("Account Created", Pair("Number of Accounts", number))
-class CreateAccountEvent(number: Int) : CustomEvent("Account Created") {
+    LoggingEvent("Account Created", mapOf(Pair("Number of Accounts", number)))
 
-    init {
-        putCustomAttribute("Number of Accounts", number)
-    }
-}
 
 fun AppLaunchEvent1(playServicesFound: Boolean) =
     LoggingEvent("App Launched",
-        Pair("Play Services found", playServicesFound))
-
+        mapOf(Pair("Play Services found", playServicesFound)))
 
 fun SecondPasswordEvent1(secondPasswordEnabled: Boolean) =
     LoggingEvent("Second password event",
-        Pair("Second password enabled", secondPasswordEnabled))
-class SecondPasswordEvent(secondPasswordEnabled: Boolean) : CustomEvent("Second password event") {
-
-    init {
-        putCustomAttribute(
-            "Second password enabled",
-            if (secondPasswordEnabled) "true" else "false"
-        )
-    }
-}
+        mapOf(Pair("Second password enabled", secondPasswordEnabled)))
 
 fun LauncherShortcutEvent1(type: String) =
-    LoggingEvent("Launcher Shortcut", Pair("Launcher Shortcut used", type))
-class LauncherShortcutEvent(type: String) : CustomEvent("Launcher Shortcut") {
+    LoggingEvent("Launcher Shortcut", mapOf(Pair("Launcher Shortcut used", type)))
 
-    init {
-        putCustomAttribute("Launcher Shortcut used", type)
-    }
-}
-
-fun WalletUpgradeEvent1(successful: String) =
-    LoggingEvent("Wallet Upgraded", Pair("Successful", successful))
-class WalletUpgradeEvent(successful: Boolean) : CustomEvent("Wallet Upgraded") {
-
-    init {
-        putCustomAttribute("Successful", if (successful) "true" else "false")
-    }
-}
+fun WalletUpgradeEvent1(successful: Boolean) =
+    LoggingEvent("Wallet Upgraded", mapOf(Pair("Successful", successful)))

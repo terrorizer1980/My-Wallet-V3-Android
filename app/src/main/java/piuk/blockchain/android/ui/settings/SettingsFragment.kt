@@ -140,10 +140,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView, RemoveCardBot
         settingsPresenter.onViewReady()
 
         analytics.logEvent(AnalyticsEvents.Settings)
-        Logging.logContentView(
-            ContentViewEvent()
-                .putContentName(javaClass.simpleName)
-        )
+        Logging1.instance.logContentView(javaClass.simpleName)
     }
 
     override fun setUpUi() {

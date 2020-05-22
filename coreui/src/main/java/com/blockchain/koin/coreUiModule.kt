@@ -17,7 +17,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.androidcoreui.BuildConfig
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
-import piuk.blockchain.androidcoreui.utils.logging.AnswersEventLogger
+import piuk.blockchain.androidcoreui.utils.logging.InjectableLogging
 
 val coreUiModule = applicationContext {
 
@@ -43,7 +43,7 @@ val coreUiModule = applicationContext {
 
     factory { FirebaseAnalytics.getInstance(get()) }
 
-    factory { AnswersEventLogger(get()) as EventLogger }
+    factory { InjectableLogging(get()) as EventLogger }
 
     bean {
         OverlayDetection(get())

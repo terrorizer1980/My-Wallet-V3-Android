@@ -7,14 +7,14 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcoreui.utils.logging.Logging
-import piuk.blockchain.androidcoreui.utils.logging.WalletUpgradeEvent
 import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.android.util.StringUtils
+import piuk.blockchain.androidcoreui.utils.logging.Logging1
+import piuk.blockchain.androidcoreui.utils.logging.WalletUpgradeEvent1
 
 internal class UpgradeWalletPresenter constructor(
     private val prefs: PersistentPrefs,
@@ -76,11 +76,11 @@ internal class UpgradeWalletPresenter constructor(
             .doOnComplete { accessState.isNewlyCreated = true }
             .subscribe(
                 {
-                    Logging.logCustom(WalletUpgradeEvent(true))
+                    Logging1.instance.logEvent(WalletUpgradeEvent1((true)))
                     view.onUpgradeCompleted()
                 },
                 { throwable ->
-                    Logging.logCustom(WalletUpgradeEvent(false))
+                    Logging1.instance.logEvent(WalletUpgradeEvent1((false)))
                     crashLogger.logException(throwable)
                     view.onUpgradeFailed()
                 })

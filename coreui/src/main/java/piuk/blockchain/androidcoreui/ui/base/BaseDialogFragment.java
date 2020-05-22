@@ -1,13 +1,11 @@
 package piuk.blockchain.androidcoreui.ui.base;
 
 import android.os.Bundle;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
-
-import com.crashlytics.android.answers.ContentViewEvent;
-
-import piuk.blockchain.androidcoreui.utils.logging.Logging;
+import piuk.blockchain.androidcoreui.utils.logging.Logging1;
 
 public abstract class BaseDialogFragment<VIEW extends View, PRESENTER extends BasePresenter<VIEW>>
         extends AppCompatDialogFragment {
@@ -22,8 +20,7 @@ public abstract class BaseDialogFragment<VIEW extends View, PRESENTER extends Ba
         presenter = createPresenter();
         presenter.initView(getMvpView());
 
-        Logging.INSTANCE.logContentView(new ContentViewEvent()
-                .putContentName(getClass().getSimpleName()));
+        Logging1.Companion.getInstance().logContentView(getClass().getSimpleName());
     }
 
     @CallSuper

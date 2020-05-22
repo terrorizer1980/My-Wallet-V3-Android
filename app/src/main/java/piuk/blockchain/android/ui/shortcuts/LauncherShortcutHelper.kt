@@ -19,7 +19,9 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.logging.LauncherShortcutEvent
+import piuk.blockchain.androidcoreui.utils.logging.LauncherShortcutEvent1
 import piuk.blockchain.androidcoreui.utils.logging.Logging.logCustom
+import piuk.blockchain.androidcoreui.utils.logging.Logging1
 
 class LauncherShortcutHelper(
     private val ctx: Context
@@ -123,9 +125,7 @@ class LauncherShortcutHelper(
     @RequiresApi(api = Build.VERSION_CODES.N_MR1)
     private fun doLogShortcutUsed(shortcutId: String) {
         shortcutManager.reportShortcutUsed(shortcutId)
-        logCustom(
-            LauncherShortcutEvent(shortcutId)
-        )
+        Logging1.instance.logEvent(LauncherShortcutEvent1(shortcutId))
     }
 
     private fun areShortcutsEnabled(): Boolean {

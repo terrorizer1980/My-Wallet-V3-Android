@@ -13,6 +13,7 @@ import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.logging.Logging
+import piuk.blockchain.androidcoreui.utils.logging.Logging1
 import java.math.BigInteger
 import java.text.DecimalFormatSymbols
 
@@ -85,11 +86,7 @@ abstract class SendStrategy<View : SendView>(
     fun getDefaultDecimalSeparator() = DecimalFormatSymbols.getInstance().decimalSeparator.toString()
 
     protected fun logPaymentSentEvent(success: Boolean, currency: CryptoCurrency, amount: BigInteger) {
-        Logging.logCustom(
-            PaymentSentEvent()
-                .putSuccess(success)
-                .putAmountForRange(CryptoValue(currency, amount))
-        )
+        Logging1.instance.logEvent(PaymentSentEvent1(success, CryptoValue(currency, amount)))
     }
 
     protected val fiatCurrency: String by unsafeLazy {

@@ -1,50 +1,25 @@
 package piuk.blockchain.android.ui.swap.logging
 
-import com.crashlytics.android.answers.CustomEvent
+import piuk.blockchain.androidcoreui.utils.logging.LoggingEvent
 
-internal class FixTypeEvent(fixType: FixType) : CustomEvent("Fix type switched") {
+fun FixTypeEvent1(fixType: FixType) =
+    LoggingEvent("Fix type switched", mapOf(Pair("Input Type", fixType.name)))
 
-    init {
-        putCustomAttribute("Input Type", fixType.name)
-    }
-}
-
-internal enum class FixType(val type: String) {
+enum class FixType(val type: String) {
     BaseFiat("Base fiat"),
     BaseCrypto("Base crypto"),
     CounterFiat("Counter fiat"),
     CounterCrypto("Counter crypto")
 }
 
-internal class AccountSwapEvent : CustomEvent("Account to/from swapped") {
+fun WebsocketConnectionFailureEvent1() =
+    LoggingEvent("Websocket connection failure", mapOf(Pair("Websocket connection failed", true)))
 
-    init {
-        putCustomAttribute("Account swapped", "true")
-    }
-}
 
-internal class MarketRatesViewedEvent : CustomEvent("Market rates viewed") {
+fun AmountErrorEvent1(errorType: AmountErrorType) =
+    LoggingEvent("Min/Max error", mapOf(Pair("Min/Max error type", errorType.error)))
 
-    init {
-        putCustomAttribute("Rates viewed", "true")
-    }
-}
-
-internal class WebsocketConnectionFailureEvent : CustomEvent("Websocket connection failure") {
-
-    init {
-        putCustomAttribute("Websocket connection failed", "true")
-    }
-}
-
-internal class AmountErrorEvent(errorType: AmountErrorType) : CustomEvent("Min/Max error") {
-
-    init {
-        putCustomAttribute("Min/Max error type", errorType.error)
-    }
-}
-
-internal enum class AmountErrorType(val error: String) {
+ enum class AmountErrorType(val error: String) {
     OverBalance("Over user's balance"),
     OverMax("Over max"),
     UnderMin("Under min")

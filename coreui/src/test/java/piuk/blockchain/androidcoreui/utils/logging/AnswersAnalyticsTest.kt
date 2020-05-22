@@ -1,15 +1,9 @@
 package piuk.blockchain.androidcoreui.utils.logging
 
-import com.blockchain.logging.CustomEventBuilder
-import com.crashlytics.android.answers.Answers
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
-import org.junit.Test
 
 class AnswersAnalyticsTest {
 
-    @Test
+   /* @Test
     fun `should log custom event`() {
         val answers: Answers = mock()
 
@@ -24,5 +18,5 @@ class AnswersAnalyticsTest {
             putCustomAttribute(key, value)
             return this
         }
-    }
+    }*/
 }
