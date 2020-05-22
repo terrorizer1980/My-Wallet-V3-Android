@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.blockchain.koin.KoinStarter
 import com.blockchain.logging.CrashLogger
+import com.blockchain.ui.CurrentContextAccess
+import com.facebook.stetho.Stetho
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.security.ProviderInstaller
@@ -17,17 +19,16 @@ import info.blockchain.wallet.FrameworkInterface
 import info.blockchain.wallet.api.Environment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.plugins.RxJavaPlugins
-import org.bitcoinj.core.NetworkParameters
-import piuk.blockchain.android.data.connectivity.ConnectivityManager
-import com.blockchain.ui.CurrentContextAccess
-import com.facebook.stetho.Stetho
 import io.reactivex.rxkotlin.subscribeBy
+import org.bitcoinj.core.NetworkParameters
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.data.coinswebsocket.service.CoinsWebSocketService
+import piuk.blockchain.android.data.connectivity.ConnectivityManager
 import piuk.blockchain.android.ui.auth.LogoutActivity
 import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.android.ui.ssl.SSLVerifyActivity
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.lifecycle.AppLifecycleListener
 import piuk.blockchain.android.util.lifecycle.LifecycleInterestedComponent
@@ -39,9 +40,8 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle
 import piuk.blockchain.androidcoreui.BuildConfig
-import piuk.blockchain.android.util.AppUtil
-import piuk.blockchain.androidcoreui.utils.logging.AppLaunchEvent
-import piuk.blockchain.androidcoreui.utils.logging.Logging
+import piuk.blockchain.androidcoreui.utils.logging.AppLaunchEvent1
+import piuk.blockchain.androidcoreui.utils.logging.Logging1
 import retrofit2.Retrofit
 import timber.log.Timber
 
@@ -119,7 +119,8 @@ open class BlockchainApplication : Application(), FrameworkInterface {
         registerActivityLifecycleCallbacks(currentContextAccess.createCallBacks())
 
         // Report Google Play Services availability
-        Logging.logCustom(AppLaunchEvent(isGooglePlayServicesAvailable(this)))
+        Logging1.instance.init(this)
+        Logging1.instance.logEvent(AppLaunchEvent1(isGooglePlayServicesAvailable(this)))
 
         initRxBus()
     }

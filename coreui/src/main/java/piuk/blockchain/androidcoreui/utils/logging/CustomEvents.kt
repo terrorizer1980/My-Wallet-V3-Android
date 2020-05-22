@@ -2,6 +2,9 @@ package piuk.blockchain.androidcoreui.utils.logging
 
 import com.crashlytics.android.answers.CustomEvent
 
+fun RecoverWalletEvent1(successful: Boolean) =
+    LoggingEvent("Recover Wallet", Pair("Success", successful))
+
 class RecoverWalletEvent : CustomEvent("Recover Wallet") {
 
     fun putSuccess(successful: Boolean): RecoverWalletEvent {
@@ -9,6 +12,9 @@ class RecoverWalletEvent : CustomEvent("Recover Wallet") {
         return this
     }
 }
+
+fun PairingEvent1(pairingMethod: PairingMethod) =
+    LoggingEvent("Wallet Pairing", Pair("Pairing method", pairingMethod.name))
 
 class PairingEvent : CustomEvent("Wallet Pairing") {
 
@@ -30,6 +36,9 @@ enum class PairingMethod(name: String) {
     REVERSE("Reverse")
 }
 
+fun ImportEvent1(addressType: AddressType) =
+    LoggingEvent("Address Imported", Pair("Address Type", addressType.name))
+
 class ImportEvent(addressType: AddressType) : CustomEvent("Address Imported") {
 
     init {
@@ -43,6 +52,9 @@ enum class AddressType(name: String) {
     WATCH_ONLY("Watch Only")
 }
 
+
+fun CreateAccountEvent1(number: Int) =
+    LoggingEvent("Account Created", Pair("Number of Accounts", number))
 class CreateAccountEvent(number: Int) : CustomEvent("Account Created") {
 
     init {
@@ -50,13 +62,14 @@ class CreateAccountEvent(number: Int) : CustomEvent("Account Created") {
     }
 }
 
-class AppLaunchEvent(playServicesFound: Boolean) : CustomEvent("App Launched") {
+fun AppLaunchEvent1(playServicesFound: Boolean) =
+    LoggingEvent("App Launched",
+        Pair("Play Services found", playServicesFound))
 
-    init {
-        putCustomAttribute("Play Services found", if (playServicesFound) "true" else "false")
-    }
-}
 
+fun SecondPasswordEvent1(secondPasswordEnabled: Boolean) =
+    LoggingEvent("Second password event",
+        Pair("Second password enabled", secondPasswordEnabled))
 class SecondPasswordEvent(secondPasswordEnabled: Boolean) : CustomEvent("Second password event") {
 
     init {
@@ -67,35 +80,8 @@ class SecondPasswordEvent(secondPasswordEnabled: Boolean) : CustomEvent("Second 
     }
 }
 
-class ContactsEvent(eventType: ContactEventType) : CustomEvent("Contacts Event") {
-
-    init {
-        putCustomAttribute("Contacts event", eventType.name)
-    }
-}
-
-@Suppress("UNUSED_PARAMETER")
-enum class ContactEventType(name: String) {
-    RPR("Request for payment request sent"),
-    PR("Payment request sent"),
-    PAYMENT_BROADCASTED("Payment broadcasted"),
-    INVITE_SENT("Invite sent"),
-    INVITE_ACCEPTED("Invite accepted")
-}
-
-class ShapeShiftEvent : CustomEvent("ShapeShift Used") {
-
-    fun putPair(from: String, to: String): ShapeShiftEvent {
-        putCustomAttribute("Currency Pair", "$from to $to")
-        return this
-    }
-
-    fun putSuccess(successful: Boolean): ShapeShiftEvent {
-        putCustomAttribute("Success", if (successful) "true" else "false")
-        return this
-    }
-}
-
+fun LauncherShortcutEvent1(type: String) =
+    LoggingEvent("Launcher Shortcut", Pair("Launcher Shortcut used", type))
 class LauncherShortcutEvent(type: String) : CustomEvent("Launcher Shortcut") {
 
     init {
@@ -103,6 +89,8 @@ class LauncherShortcutEvent(type: String) : CustomEvent("Launcher Shortcut") {
     }
 }
 
+fun WalletUpgradeEvent1(successful: String) =
+    LoggingEvent("Wallet Upgraded", Pair("Successful", successful))
 class WalletUpgradeEvent(successful: Boolean) : CustomEvent("Wallet Upgraded") {
 
     init {

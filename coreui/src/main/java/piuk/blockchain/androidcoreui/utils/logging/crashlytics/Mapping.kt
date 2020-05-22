@@ -1,9 +1,10 @@
 package piuk.blockchain.androidcoreui.utils.logging.crashlytics
 
 import com.blockchain.logging.CustomEventBuilder
+import com.google.firebase.events.Event
 
 fun CustomEventBuilder.buildCrashlyticsEvent() =
-    CustomEvent(eventName)
+    Event(eventName)
         .apply {
             build { key, value ->
                 putCustomAttribute(key, value)
