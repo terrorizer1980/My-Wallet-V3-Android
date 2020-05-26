@@ -29,7 +29,7 @@ data class AssetDisplayInfo(
 
 typealias AssetDisplayMap = Map<AssetFilter, AssetDisplayInfo>
 
-class AssetDetailsCalculator(val interestFeatureFlag: FeatureFlag) {
+class AssetDetailsCalculator(private val interestFeatureFlag: FeatureFlag) {
     // input
     val token = BehaviorRelay.create<AssetTokens>()
     val timeSpan = BehaviorRelay.createDefault<TimeSpan>(TimeSpan.MONTH)
