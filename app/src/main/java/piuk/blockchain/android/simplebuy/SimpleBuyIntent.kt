@@ -282,6 +282,8 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
                 orderExchangePrice = buyOrder.price,
                 isLoading = false
             )
+
+        override fun isValidFor(oldState: SimpleBuyState): Boolean = true
     }
 
     class UpdateSelectedPaymentMethod(
