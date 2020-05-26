@@ -2,7 +2,6 @@ package piuk.blockchain.android.coincore.btc
 
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
-import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.Single
