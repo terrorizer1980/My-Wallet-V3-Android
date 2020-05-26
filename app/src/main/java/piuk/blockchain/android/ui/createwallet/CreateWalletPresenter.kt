@@ -5,7 +5,6 @@ import android.app.LauncherActivity
 import android.content.Intent
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
-import com.crashlytics.android.answers.SignUpEvent
 import info.blockchain.wallet.util.FormatsUtil
 import info.blockchain.wallet.util.PasswordUtil
 import piuk.blockchain.android.R

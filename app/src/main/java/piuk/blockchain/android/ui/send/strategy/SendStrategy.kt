@@ -12,7 +12,6 @@ import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
-import piuk.blockchain.androidcoreui.utils.logging.Logging
 import piuk.blockchain.androidcoreui.utils.logging.Logging1
 import java.math.BigInteger
 import java.text.DecimalFormatSymbols

@@ -12,9 +12,7 @@ import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.logging.Logging
 import piuk.blockchain.androidcoreui.utils.logging.Logging1
-import piuk.blockchain.androidcoreui.utils.logging.PairingEvent
 import piuk.blockchain.androidcoreui.utils.logging.PairingEvent1
 import piuk.blockchain.androidcoreui.utils.logging.PairingMethod
 

@@ -73,8 +73,8 @@ dependencies {
     api Libraries.rxFingerprint
 
     // Logging
-    api(Libraries.firebaseCrashlytics) { transitive = true }
-    api(Libraries.firebaseAnalytics)
+    implementation(Libraries.firebaseCrashlytics)
+    implementation(Libraries.firebaseAnalytics)
 
     // Custom Views
     api Libraries.konfetti

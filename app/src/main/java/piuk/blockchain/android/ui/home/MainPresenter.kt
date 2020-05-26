@@ -44,9 +44,7 @@ import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.logging.Logging
 import piuk.blockchain.androidcoreui.utils.logging.Logging1
-import piuk.blockchain.androidcoreui.utils.logging.SecondPasswordEvent
 import piuk.blockchain.androidcoreui.utils.logging.SecondPasswordEvent1
 import timber.log.Timber
 

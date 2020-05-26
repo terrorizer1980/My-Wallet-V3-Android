@@ -37,7 +37,6 @@ import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
 import com.blockchain.ui.dialog.MaterialProgressDialog
 import com.blockchain.ui.urllinks.URL_PRIVACY_POLICY
 import com.blockchain.ui.urllinks.URL_TOS_POLICY
-import com.crashlytics.android.answers.ContentViewEvent
 import com.mukesh.countrypicker.fragments.CountryPicker
 import info.blockchain.wallet.api.data.Settings
 import info.blockchain.wallet.util.FormatsUtil
@@ -71,7 +70,7 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
-import piuk.blockchain.androidcoreui.utils.logging.Logging
+import piuk.blockchain.androidcoreui.utils.logging.Logging1
 
 class SettingsFragment : PreferenceFragmentCompat(), SettingsView, RemoveCardBottomSheet.Host {
 

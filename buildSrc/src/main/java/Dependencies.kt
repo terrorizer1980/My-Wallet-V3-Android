@@ -15,7 +15,7 @@ object Versions {
     // Build tools and languages
     const val androidPlugin = "3.4.1"
     const val kotlin = "1.3.30"
-    const val googleServicesPlugin = "4.3.2"
+    const val googleServicesPlugin = "4.3.3"
     const val coveralls = "2.8.2"
     const val buildProperties = "0.4"
     const val ktlint = "0.27.0"
@@ -37,12 +37,13 @@ object Versions {
     const val lifecycle = "2.1.0"
 
     // Support Libraries
-    const val googleServices = "16.0.0"
+    const val googleServices = "17.1.0"
+    const val googleServicesPlaces = "17.0.0"
     const val googlePlayCore = "1.6.1"
-    const val firebaseMessaging = "17.3.3"
-    const val firebaseCore = "16.0.4"
-    const val firebaseConfig = "16.0.1"
-    const val firebaseDynamicLink = "16.1.2"
+    const val firebaseMessaging = "20.2.0"
+    const val firebaseCore = "17.4.2"
+    const val firebaseConfig = "19.1.0"
+    const val firebaseDynamicLink = "19.0.0"
     const val supportTesting = "1.0.2"
 
     // Networking, RxJava
@@ -73,7 +74,7 @@ object Versions {
     const val commonsIo = "2.6"
     const val urlBuilder = "2.0.9"
     const val yearclass = "2.0.0"
-    const val protobuf = "3.9.0"
+    const val protobuf = "3.12.0"
     const val findbugs = "3.0.2"
     const val guava = "28.0-android"
     const val dexter = "5.0.0"
@@ -103,7 +104,7 @@ object Versions {
     const val slf4j = "1.7.20"
     const val firebaseCrashlytics = "17.0.0"
     const val firebaseCrashlyticsPlugin = "2.1.0"
-    const val firebaseAnalytics = "17.4.1"
+    const val firebaseAnalytics = "17.4.2"
 
     // Debugging
     const val stetho = "1.5.1"
@@ -167,7 +168,7 @@ object Libraries {
     const val googlePlayServicesBase =
         "com.google.android.gms:play-services-base:${Versions.googleServices}"
     const val googlePlaces =
-        "com.google.android.gms:play-services-places:${Versions.googleServices}"
+        "com.google.android.gms:play-services-places:${Versions.googleServicesPlaces}"
     const val googlePlayCore = "com.google.android.play:core:${Versions.googlePlayCore}"
 
     // Networking, RxJava

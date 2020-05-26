@@ -18,9 +18,7 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
-import piuk.blockchain.androidcoreui.utils.logging.LauncherShortcutEvent
 import piuk.blockchain.androidcoreui.utils.logging.LauncherShortcutEvent1
-import piuk.blockchain.androidcoreui.utils.logging.Logging.logCustom
 import piuk.blockchain.androidcoreui.utils.logging.Logging1
 
 class LauncherShortcutHelper(
