@@ -15,11 +15,10 @@ enum class FixType(val type: String) {
 fun WebsocketConnectionFailureEvent1() =
     LoggingEvent("Websocket connection failure", mapOf(Pair("Websocket connection failed", true)))
 
-
 fun AmountErrorEvent1(errorType: AmountErrorType) =
     LoggingEvent("Min/Max error", mapOf(Pair("Min/Max error type", errorType.error)))
 
- enum class AmountErrorType(val error: String) {
+enum class AmountErrorType(val error: String) {
     OverBalance("Over user's balance"),
     OverMax("Over max"),
     UnderMin("Under min")

@@ -28,7 +28,6 @@ class FcmCallbackService : FirebaseMessagingService(), KoinComponent {
     private val accessState: AccessState by inject()
     private val analytics: Analytics by inject()
 
-
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {

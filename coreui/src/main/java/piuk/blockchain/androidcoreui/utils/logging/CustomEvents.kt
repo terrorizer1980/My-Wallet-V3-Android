@@ -25,7 +25,6 @@ enum class AddressType(name: String) {
 fun CreateAccountEvent1(number: Int) =
     LoggingEvent("Account Created", mapOf(Pair("Number of Accounts", number)))
 
-
 fun AppLaunchEvent1(playServicesFound: Boolean) =
     LoggingEvent("App Launched",
         mapOf(Pair("Play Services found", playServicesFound)))

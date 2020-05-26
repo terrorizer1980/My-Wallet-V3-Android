@@ -7,7 +7,7 @@ import com.blockchain.logging.EventLogger
 import com.google.firebase.analytics.FirebaseAnalytics
 import piuk.blockchain.androidcoreui.BuildConfig
 
-class InjectableLogging(context: Context) :EventLogger{
+class InjectableLogging(context: Context) : EventLogger {
     private var analytics: FirebaseAnalytics = FirebaseAnalytics.getInstance(context)
 
     override fun logEvent(customEventBuilder: CustomEventBuilder) {
@@ -69,7 +69,6 @@ class Logging1 private constructor() {
             analytics.logEvent(FirebaseAnalytics.Event.SHARE, b)
         }
     }
-
 
     private object HOLDER {
         val INSTANCE = Logging1()
