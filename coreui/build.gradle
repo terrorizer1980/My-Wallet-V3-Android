@@ -84,7 +84,9 @@ dependencies {
     api Libraries.dexter
 
     // Firebase
-    implementation Libraries.firebaseConfig
+    implementation (Libraries.firebaseConfig) {
+        exclude group:'com.google.protobuf', module: 'protobuf-lite'
+    }
 
     // Unit Test dependencies
     testImplementation project(':testutils-android')

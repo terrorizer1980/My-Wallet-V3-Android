@@ -53,6 +53,7 @@ dependencies {
     // Logging
     implementation Libraries.slf4j
     // BitcoinJ dependencies
+    implementation Libraries.protobuf
     implementation Libraries.findbugs
     api Libraries.guava
 
