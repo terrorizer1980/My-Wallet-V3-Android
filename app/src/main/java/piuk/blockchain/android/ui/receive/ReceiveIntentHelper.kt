@@ -17,7 +17,7 @@ import org.bitcoinj.uri.BitcoinURI
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.BitcoinLinkGenerator
 import piuk.blockchain.android.util.AppUtil
-import piuk.blockchain.androidcoreui.utils.logging.Logging1
+import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
 import java.io.File
 import java.io.FileNotFoundException
@@ -91,7 +91,7 @@ class ReceiveIntentHelper(private val context: Context, private val appUtil: App
                 it.remove()
             }
 
-            Logging1.instance.logShare("QR Code + URI")
+            Logging.INSTANCE.logShare("QR Code + URI")
 
             return dataList
         } else {

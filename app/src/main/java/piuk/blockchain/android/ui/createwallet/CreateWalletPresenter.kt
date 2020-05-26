@@ -17,8 +17,8 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.logging.Logging1
-import piuk.blockchain.androidcoreui.utils.logging.RecoverWalletEvent1
+import piuk.blockchain.androidcoreui.utils.logging.Logging
+import piuk.blockchain.androidcoreui.utils.logging.recoverWalletEvent
 import timber.log.Timber
 
 class CreateWalletPresenter(
@@ -114,14 +114,14 @@ class CreateWalletPresenter(
                 {
                     prefs.setValue(PersistentPrefs.KEY_EMAIL, email)
                     view.startPinEntryActivity()
-                    Logging1.instance.logSignUp(true)
+                    Logging.INSTANCE.logSignUp(true)
                     analytics.logEvent(AnalyticsEvents.WalletCreation)
                 },
                 {
                     Timber.e(it)
                     view.showToast(R.string.hd_error, ToastCustom.TYPE_ERROR)
                     appUtil.clearCredentialsAndRestart(LauncherActivity::class.java)
-                    Logging1.instance.logSignUp(false)
+                    Logging.INSTANCE.logSignUp(false)
                 }
             )
     }
@@ -146,12 +146,12 @@ class CreateWalletPresenter(
                     prefs.setValue(PersistentPrefs.KEY_EMAIL, email)
                     prefs.setValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, true)
                     view.startPinEntryActivity()
-                    Logging1.instance.logEvent(RecoverWalletEvent1(true))
+                    Logging.INSTANCE.logEvent(recoverWalletEvent(true))
                 },
                 {
                     Timber.e(it)
                     view.showToast(R.string.restore_failed, ToastCustom.TYPE_ERROR)
-                    Logging1.instance.logEvent(RecoverWalletEvent1(false))
+                    Logging.INSTANCE.logEvent(recoverWalletEvent(false))
                 }
             )
     }

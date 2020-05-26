@@ -11,11 +11,15 @@ class InjectableLogging(context: Context) : EventLogger {
     private var analytics: FirebaseAnalytics = FirebaseAnalytics.getInstance(context)
 
     override fun logEvent(customEventBuilder: CustomEventBuilder) {
-        TODO("Not yet implemented")
+        val b = Bundle()
+        customEventBuilder.build { key, value ->
+            b.putString(key, value)
+        }
+        analytics.logEvent(customEventBuilder.eventName, b)
     }
 }
 
-class Logging1 private constructor() {
+class Logging private constructor() {
     private val shouldLog = BuildConfig.USE_CRASHLYTICS
     private lateinit var analytics: FirebaseAnalytics
 
@@ -71,11 +75,11 @@ class Logging1 private constructor() {
     }
 
     private object HOLDER {
-        val INSTANCE = Logging1()
+        val INSTANCE = Logging()
     }
 
     companion object {
-        val instance: Logging1 by lazy { HOLDER.INSTANCE }
+        val INSTANCE: Logging by lazy { HOLDER.INSTANCE }
     }
 }
 

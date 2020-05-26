@@ -70,7 +70,7 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
-import piuk.blockchain.androidcoreui.utils.logging.Logging1
+import piuk.blockchain.androidcoreui.utils.logging.Logging
 
 class SettingsFragment : PreferenceFragmentCompat(), SettingsView, RemoveCardBottomSheet.Host {
 
@@ -139,7 +139,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView, RemoveCardBot
         settingsPresenter.onViewReady()
 
         analytics.logEvent(AnalyticsEvents.Settings)
-        Logging1.instance.logContentView(javaClass.simpleName)
+        Logging.INSTANCE.logContentView(javaClass.simpleName)
     }
 
     override fun setUpUi() {

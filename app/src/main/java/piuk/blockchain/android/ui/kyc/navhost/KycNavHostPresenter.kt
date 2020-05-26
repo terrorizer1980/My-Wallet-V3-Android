@@ -17,11 +17,11 @@ import piuk.blockchain.android.campaign.CampaignRegistration
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.campaign.SunriverCampaignRegistration
 import piuk.blockchain.android.ui.kyc.BaseKycPresenter
-import piuk.blockchain.android.ui.kyc.logging.KycResumedEvent1
+import piuk.blockchain.android.ui.kyc.logging.kycResumedEvent
 import piuk.blockchain.android.ui.kyc.profile.models.ProfileModel
 import piuk.blockchain.android.ui.kyc.reentry.KycNavigator
 import piuk.blockchain.android.ui.kyc.reentry.ReentryDecision
-import piuk.blockchain.androidcoreui.utils.logging.Logging1
+import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
 
 class KycNavHostPresenter(
@@ -107,7 +107,7 @@ class KycNavHostPresenter(
                 val reentryPoint = reentryDecision.findReentryPoint(user)
                 val directions = kycNavigator.userAndReentryPointToDirections(user, reentryPoint)
                 view.navigate(directions)
-                Logging1.instance.logEvent(KycResumedEvent1(reentryPoint))
+                Logging.INSTANCE.logEvent(kycResumedEvent(reentryPoint))
             }
         } else if (view.campaignType == CampaignType.Sunriver) {
             view.navigateToKycSplash()

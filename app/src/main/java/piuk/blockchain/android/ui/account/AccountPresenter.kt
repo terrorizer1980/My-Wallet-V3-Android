@@ -38,9 +38,9 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.logging.AddressType
-import piuk.blockchain.androidcoreui.utils.logging.CreateAccountEvent1
-import piuk.blockchain.androidcoreui.utils.logging.ImportEvent1
-import piuk.blockchain.androidcoreui.utils.logging.Logging1
+import piuk.blockchain.androidcoreui.utils.logging.createAccountEvent
+import piuk.blockchain.androidcoreui.utils.logging.importEvent
+import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
 import java.math.BigInteger
 import kotlin.properties.Delegates
@@ -154,7 +154,7 @@ class AccountPresenter internal constructor(
                     view.showToast(R.string.remote_save_ok, ToastCustom.TYPE_OK)
                     onViewReady()
                     analytics.logEvent(WalletAnalytics.AddNewWallet)
-                    Logging1.instance.logEvent(CreateAccountEvent1(payloadDataManager.accounts.size))
+                    Logging.INSTANCE.logEvent(createAccountEvent(payloadDataManager.accounts.size))
                 },
                 { throwable ->
                     when (throwable) {
@@ -279,7 +279,7 @@ class AccountPresenter internal constructor(
                 {
                     analytics.logEvent(AddressAnalytics.ImportBTCAddress)
                     view.showRenameImportedAddressDialog(legacyAddress)
-                    Logging1.instance.logEvent(ImportEvent1(AddressType.WATCH_ONLY))
+                    Logging.INSTANCE.logEvent(importEvent(AddressType.WATCH_ONLY))
                 },
                 {
                     view.showToast(R.string.remote_save_ko, ToastCustom.TYPE_ERROR)
@@ -342,7 +342,7 @@ class AccountPresenter internal constructor(
                         onViewReady()
                         view.showRenameImportedAddressDialog(it)
                         analytics.logEvent(AddressAnalytics.ImportBTCAddress)
-                        Logging1.instance.logEvent(ImportEvent1(AddressType.PRIVATE_KEY))
+                        Logging.INSTANCE.logEvent(importEvent(AddressType.PRIVATE_KEY))
                     },
                     {
                         view.showToast(R.string.remote_save_ko, ToastCustom.TYPE_ERROR)

@@ -38,12 +38,12 @@ import piuk.blockchain.android.ui.swap.homebrew.exchange.REQUEST_CODE_CHOOSE_REC
 import piuk.blockchain.android.ui.swap.homebrew.exchange.REQUEST_CODE_CHOOSE_SENDING_ACCOUNT
 import piuk.blockchain.android.ui.swap.homebrew.exchange.SwapInfoBottomDialog
 import piuk.blockchain.android.ui.swap.homebrew.exchange.confirmation.ExchangeConfirmationFragment
-import piuk.blockchain.android.ui.swap.logging.WebsocketConnectionFailureEvent1
+import piuk.blockchain.android.ui.swap.logging.websocketConnectionFailureEvent
 import piuk.blockchain.android.ui.swap.showErrorDialog
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseAuthActivity
-import piuk.blockchain.androidcoreui.utils.logging.Logging1
+import piuk.blockchain.androidcoreui.utils.logging.Logging
 
 class HomebrewNavHostActivity : BaseAuthActivity(),
     HomebrewHostActivityListener,
@@ -219,7 +219,7 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
                         show()
                     }
 
-                    Logging1.instance.logEvent(WebsocketConnectionFailureEvent1())
+                    Logging.INSTANCE.logEvent(websocketConnectionFailureEvent())
                 }
             }
 

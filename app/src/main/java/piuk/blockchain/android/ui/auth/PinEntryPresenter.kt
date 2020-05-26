@@ -24,7 +24,6 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.android.util.DialogButtonCallback
-import com.blockchain.notifications.analytics.logEvent
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
@@ -37,7 +36,7 @@ import piuk.blockchain.androidcore.utils.annotations.Thunk
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.android.util.AppUtil
-import piuk.blockchain.androidcoreui.utils.logging.Logging1
+import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
 import java.net.SocketTimeoutException
 
@@ -254,7 +253,7 @@ class PinEntryPresenter(
 
         setAccountLabelIfNecessary()
 
-        Logging1.instance.logLogin(true)
+        Logging.INSTANCE.logLogin(true)
 
         if (!wallet.isUpgraded) {
             view.goToUpgradeWalletActivity()
@@ -264,7 +263,7 @@ class PinEntryPresenter(
     }
 
     private fun handlePayloadUpdateError(t: Throwable) {
-        Logging1.instance.logLogin(false)
+        Logging.INSTANCE.logLogin(false)
 
         when (t) {
             is InvalidCredentialsException -> view.goToPasswordRequiredActivity()

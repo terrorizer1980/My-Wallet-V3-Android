@@ -6,7 +6,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 
 import piuk.blockchain.androidcoreui.BuildConfig;
-import piuk.blockchain.androidcoreui.utils.logging.Logging1;
+import piuk.blockchain.androidcoreui.utils.logging.Logging;
 
 @Deprecated // "Use the kotlin-friendly MvpActivity, MvpPresenter, MvpView instead"
 public abstract class BaseMvpActivity<VIEW extends View, PRESENTER extends BasePresenter<VIEW>>
@@ -30,7 +30,7 @@ public abstract class BaseMvpActivity<VIEW extends View, PRESENTER extends BaseP
      */
     protected void logScreenView() {
         if (!BuildConfig.DEBUG) {
-            Logging1.Companion.getInstance().logContentView(getClass().getSimpleName());
+            Logging.Companion.getINSTANCE().logContentView(getClass().getSimpleName());
         }
     }
 

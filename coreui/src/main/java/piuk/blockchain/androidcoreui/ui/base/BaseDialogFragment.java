@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
-import piuk.blockchain.androidcoreui.utils.logging.Logging1;
+import piuk.blockchain.androidcoreui.utils.logging.Logging;
 
 public abstract class BaseDialogFragment<VIEW extends View, PRESENTER extends BasePresenter<VIEW>>
         extends AppCompatDialogFragment {
@@ -20,7 +20,7 @@ public abstract class BaseDialogFragment<VIEW extends View, PRESENTER extends Ba
         presenter = createPresenter();
         presenter.initView(getMvpView());
 
-        Logging1.Companion.getInstance().logContentView(getClass().getSimpleName());
+        Logging.Companion.getINSTANCE().logContentView(getClass().getSimpleName());
     }
 
     @CallSuper

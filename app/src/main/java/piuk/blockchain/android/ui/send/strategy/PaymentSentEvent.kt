@@ -4,7 +4,7 @@ import info.blockchain.balance.CryptoValue
 import piuk.blockchain.androidcoreui.utils.extensions.getBoundary
 import piuk.blockchain.androidcoreui.utils.logging.LoggingEvent
 
-fun PaymentSentEvent1(success: Boolean, amountSent: CryptoValue) =
+fun paymentSentEvent(success: Boolean, amountSent: CryptoValue) =
     LoggingEvent("Payment Sent", mapOf(
         Pair("Success", success),
         Pair("Amount", amountSent.toBigDecimal().getBoundary() + " " + amountSent.currency.networkTicker),

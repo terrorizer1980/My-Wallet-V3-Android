@@ -40,8 +40,8 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle
 import piuk.blockchain.androidcoreui.BuildConfig
-import piuk.blockchain.androidcoreui.utils.logging.AppLaunchEvent1
-import piuk.blockchain.androidcoreui.utils.logging.Logging1
+import piuk.blockchain.androidcoreui.utils.logging.appLaunchEvent
+import piuk.blockchain.androidcoreui.utils.logging.Logging
 import retrofit2.Retrofit
 import timber.log.Timber
 
@@ -119,8 +119,8 @@ open class BlockchainApplication : Application(), FrameworkInterface {
         registerActivityLifecycleCallbacks(currentContextAccess.createCallBacks())
 
         // Report Google Play Services availability
-        Logging1.instance.init(this)
-        Logging1.instance.logEvent(AppLaunchEvent1(isGooglePlayServicesAvailable(this)))
+        Logging.INSTANCE.init(this)
+        Logging.INSTANCE.logEvent(appLaunchEvent(isGooglePlayServicesAvailable(this)))
 
         initRxBus()
     }

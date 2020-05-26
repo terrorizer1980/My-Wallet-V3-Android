@@ -49,17 +49,17 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.swap.customviews.Maximums
 import piuk.blockchain.android.ui.swap.customviews.ThreePartText
 import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewHostActivityListener
-import piuk.blockchain.android.ui.swap.logging.AmountErrorEvent1
+import piuk.blockchain.android.ui.swap.logging.amountErrorEvent
 import piuk.blockchain.android.ui.swap.logging.AmountErrorType
 import piuk.blockchain.android.ui.swap.logging.FixType
-import piuk.blockchain.android.ui.swap.logging.FixTypeEvent1
+import piuk.blockchain.android.ui.swap.logging.fixTypeEvent
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.coinIconWhite
 import piuk.blockchain.android.util.colorRes
 import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.getResolvedColor
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
-import piuk.blockchain.androidcoreui.utils.logging.Logging1
+import piuk.blockchain.androidcoreui.utils.logging.Logging
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -204,7 +204,7 @@ internal class ExchangeFragment : Fragment() {
         compositeDisposable += inputTypeRelay.map { it.toLoggingFixType() }
             .distinctUntilChanged()
             .subscribeBy {
-                Logging1.instance.logEvent(FixTypeEvent1(it))
+                Logging.INSTANCE.logEvent(fixTypeEvent(it))
             }
 
         compositeDisposable += exchangeModel
@@ -394,7 +394,7 @@ internal class ExchangeFragment : Fragment() {
             QuoteValidity.OverUserBalance -> AmountErrorType.OverBalance
         }
 
-        errorType?.let { Logging1.instance.logEvent(AmountErrorEvent1(it)) }
+        errorType?.let { Logging.INSTANCE.logEvent(amountErrorEvent(it)) }
     }
 
     private fun ExchangeViewState.formatSpendableString(): CharSequence {

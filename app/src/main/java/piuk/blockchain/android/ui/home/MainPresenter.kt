@@ -44,8 +44,8 @@ import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.logging.Logging1
-import piuk.blockchain.androidcoreui.utils.logging.SecondPasswordEvent1
+import piuk.blockchain.androidcoreui.utils.logging.Logging
+import piuk.blockchain.androidcoreui.utils.logging.secondPasswordEvent
 import timber.log.Timber
 
 interface MainView : MvpView, HomeNavigator {
@@ -343,7 +343,7 @@ class MainPresenter internal constructor(
 
     private fun logEvents() {
         analytics.logEventOnce(AnalyticsEvents.WalletSignupFirstLogIn)
-        Logging1.instance.logEvent(SecondPasswordEvent1(payloadDataManager.isDoubleEncrypted))
+        Logging.INSTANCE.logEvent(secondPasswordEvent(payloadDataManager.isDoubleEncrypted))
     }
 
     internal fun clearLoginState() {
