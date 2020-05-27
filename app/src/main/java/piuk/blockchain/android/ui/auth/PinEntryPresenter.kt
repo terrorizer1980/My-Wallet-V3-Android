@@ -269,33 +269,28 @@ class PinEntryPresenter(
             is InvalidCredentialsException -> view.goToPasswordRequiredActivity()
             is ServerConnectionException,
             is SocketTimeoutException -> {
-                view.showToast(R.string.server_unreachable_exit, ToastCustom.TYPE_ERROR)
-                appUtil.restartApp(LauncherActivity::class.java)
+                showFatalErrorToastAndRestart(R.string.server_unreachable_exit, t)
             }
             is UnsupportedVersionException -> view.showWalletVersionNotSupportedDialog(t.message)
             is DecryptionException -> view.goToPasswordRequiredActivity()
             is PayloadException -> {
                 // This shouldn't happen - Payload retrieved from server couldn't be parsed
-                view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
-                appUtil.restartApp(LauncherActivity::class.java)
+                showFatalErrorToastAndRestart(R.string.unexpected_error, t)
             }
             is HDWalletException -> {
                 // This shouldn't happen. HD fatal error - not safe to continue - don't clear credentials
-                view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
-                appUtil.restartApp(LauncherActivity::class.java)
+                showFatalErrorToastAndRestart(R.string.unexpected_error, t)
             }
             is InvalidCipherTextException -> {
                 // Password changed on web, needs re-pairing
-                view.showToast(R.string.password_changed_explanation, ToastCustom.TYPE_ERROR)
                 crashLogger.logEvent("password changed elsewhere. Pin is reset")
                 accessState.clearPin()
-                appUtil.clearCredentialsAndRestart(LauncherActivity::class.java)
+                appUtil.clearCredentials()
+                showFatalErrorToastAndRestart(R.string.password_changed_explanation, t)
             }
             is AccountLockedException -> view.showAccountLockedDialog()
             else -> {
-                crashLogger.logException(t)
-                view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
-                appUtil.restartApp(LauncherActivity::class.java)
+                showFatalErrorToastAndRestart(R.string.unexpected_error, t)
             }
         }
     }
@@ -315,7 +310,7 @@ class PinEntryPresenter(
     }
 
     private fun handlePasswordValidated() {
-        view.showToast(R.string.pin_4_strikes_password_accepted, ToastCustom.TYPE_OK)
+        showMessageToast(R.string.pin_4_strikes_password_accepted)
         prefs.removeValue(PersistentPrefs.KEY_PIN_FAILS)
         prefs.removeValue(PersistentPrefs.KEY_PIN_IDENTIFIER)
         crashLogger.logEvent("new password. pin reset")
@@ -326,16 +321,15 @@ class PinEntryPresenter(
     private fun handlePasswordValidatedError(t: Throwable) {
         when (t) {
             is ServerConnectionException,
-            is SocketTimeoutException -> view.showToast(R.string.server_unreachable_exit, ToastCustom.TYPE_ERROR)
+            is SocketTimeoutException ->
+                showFatalErrorToastAndRestart(R.string.server_unreachable_exit, t)
             is PayloadException -> {
                 // This shouldn't happen - Payload retrieved from server couldn't be parsed
-                view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
-                appUtil.restartApp(LauncherActivity::class.java)
+                showFatalErrorToastAndRestart(R.string.unexpected_error, t)
             }
             is HDWalletException -> {
                 // This shouldn't happen. HD fatal error - not safe to continue - don't clear credentials
-                view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
-                appUtil.restartApp(LauncherActivity::class.java)
+                showFatalErrorToastAndRestart(R.string.unexpected_error, t)
             }
             is AccountLockedException -> view.showAccountLockedDialog()
             else -> {
@@ -454,17 +448,33 @@ class PinEntryPresenter(
     }
 
     fun resetApp() {
-        appUtil.clearCredentialsAndRestart(LauncherActivity::class.java)
+        appUtil.clearCredentials()
+        appUtil.restartApp(LauncherActivity::class.java)
     }
 
     fun allowExit(): Boolean {
         return bAllowExit
     }
 
+    @Suppress("SameParameterValue")
+    @UiThread
+    private fun showMessageToast(@StringRes message: Int) {
+        view.showToast(message, ToastCustom.TYPE_OK)
+    }
+
     @UiThread
     private fun showErrorToast(@StringRes message: Int) {
         view.dismissProgressDialog()
         view.showToast(message, ToastCustom.TYPE_ERROR)
+    }
+
+    private class PinEntryLogException(cause: Throwable) : Exception(cause)
+
+    @UiThread
+    private fun showFatalErrorToastAndRestart(@StringRes message: Int, t: Throwable) {
+        view.showToast(message, ToastCustom.TYPE_ERROR)
+        crashLogger.logException(PinEntryLogException(t))
+        appUtil.restartApp(LauncherActivity::class.java)
     }
 
     internal fun clearLoginState() {

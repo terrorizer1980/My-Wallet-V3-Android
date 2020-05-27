@@ -298,32 +298,32 @@ class LiveCustodialWalletManager(
     }.map { (cardsResponse, paymentMethods) ->
         val availablePaymentMethods = mutableListOf<PaymentMethod>()
 
-        paymentMethods.methods.firstOrNull { it.type == PaymentMethodType.BANK_ACCOUNT }
-            ?.let { paymentMethodResponse ->
+        paymentMethods.methods.forEach {
+            if (it.type == PaymentMethodType.BANK_ACCOUNT) {
                 availablePaymentMethods.add(PaymentMethod.BankTransfer(
-                    PaymentLimits(paymentMethodResponse.limits.min,
-                        paymentMethodResponse.limits.max,
+                    PaymentLimits(it.limits.min,
+                        it.limits.max,
                         fiatCurrency)
                 ))
+            } else if (it.type == PaymentMethodType.PAYMENT_CARD) {
+                val cardLimits = PaymentLimits(it.limits.min, it.limits.max, fiatCurrency)
+                cardsResponse.takeIf { cards -> cards.isNotEmpty() }?.filter { it.state.isActive() }
+                    ?.forEach { cardResponse: CardResponse ->
+                        availablePaymentMethods.add(cardResponse.toCardPaymentMethod(cardLimits))
+                    }
             }
+        }
 
-        val cardLimits =
-            paymentMethods.methods.firstOrNull { paymentMethod ->
-                paymentMethod.type == PaymentMethodType.PAYMENT_CARD
+        paymentMethods.methods.firstOrNull { paymentMethod ->
+            paymentMethod.type == PaymentMethodType.PAYMENT_CARD
+        }?.let {
+            availablePaymentMethods.add(PaymentMethod.UndefinedCard(PaymentLimits(it.limits.min,
+                it.limits.max,
+                fiatCurrency)))
+
+            if (cardsResponse.isEmpty() && isTier2Approved) {
+                availablePaymentMethods.add(PaymentMethod.Undefined)
             }
-                ?.let { paymentMethod ->
-                    PaymentLimits(paymentMethod.limits.min, paymentMethod.limits.max, fiatCurrency)
-                } ?: return@map availablePaymentMethods.toList()
-
-        cardsResponse.takeIf { cards -> cards.isNotEmpty() }?.filter { it.state.isActive() }
-            ?.forEach { cardResponse: CardResponse ->
-                availablePaymentMethods.add(cardResponse.toCardPaymentMethod(cardLimits))
-            }
-
-        availablePaymentMethods.add(PaymentMethod.UndefinedCard(cardLimits))
-
-        if (cardsResponse.isEmpty() && isTier2Approved) {
-            availablePaymentMethods.add(PaymentMethod.Undefined)
         }
         availablePaymentMethods.toList()
     }
@@ -409,43 +409,43 @@ class LiveCustodialWalletManager(
                 }
         }
 
-private fun CardResponse.toCardPaymentMethod(cardLimits: PaymentLimits) =
-    PaymentMethod.Card(
-        cardId = id,
-        limits = cardLimits ?: throw java.lang.IllegalStateException(),
-        label = card?.label ?: "",
-        endDigits = card?.number ?: "",
-        partner = partner.toSupportedPartner(),
-        expireDate = card?.let {
-            Calendar.getInstance().apply {
-                set(it.expireYear,
-                    it.expireMonth,
-                    0)
-            }.time
-        } ?: Date(),
-        cardType = card?.type ?: CardType.UNKNOWN,
-        status = state.toCardStatus()
-    )
+    private fun CardResponse.toCardPaymentMethod(cardLimits: PaymentLimits) =
+        PaymentMethod.Card(
+            cardId = id,
+            limits = cardLimits ?: throw java.lang.IllegalStateException(),
+            label = card?.label ?: "",
+            endDigits = card?.number ?: "",
+            partner = partner.toSupportedPartner(),
+            expireDate = card?.let {
+                Calendar.getInstance().apply {
+                    set(it.expireYear,
+                        it.expireMonth,
+                        0)
+                }.time
+            } ?: Date(),
+            cardType = card?.type ?: CardType.UNKNOWN,
+            status = state.toCardStatus()
+        )
 
-private fun String.isActive(): Boolean =
-    toCardStatus() == CardStatus.ACTIVE
+    private fun String.isActive(): Boolean =
+        toCardStatus() == CardStatus.ACTIVE
 
-private fun String.isActiveOrExpired(): Boolean =
-    isActive() || toCardStatus() == CardStatus.EXPIRED
+    private fun String.isActiveOrExpired(): Boolean =
+        isActive() || toCardStatus() == CardStatus.EXPIRED
 
-private fun String.toCardStatus(): CardStatus =
-    when (this) {
-        CardResponse.ACTIVE -> CardStatus.ACTIVE
-        CardResponse.BLOCKED -> CardStatus.BLOCKED
-        CardResponse.PENDING -> CardStatus.PENDING
-        CardResponse.CREATED -> CardStatus.CREATED
-        CardResponse.EXPIRED -> CardStatus.EXPIRED
-        else -> CardStatus.UNKNOWN
+    private fun String.toCardStatus(): CardStatus =
+        when (this) {
+            CardResponse.ACTIVE -> CardStatus.ACTIVE
+            CardResponse.BLOCKED -> CardStatus.BLOCKED
+            CardResponse.PENDING -> CardStatus.PENDING
+            CardResponse.CREATED -> CardStatus.CREATED
+            CardResponse.EXPIRED -> CardStatus.EXPIRED
+            else -> CardStatus.UNKNOWN
+        }
+
+    companion object {
+        private const val PAYMENT_METHODS = "BANK_ACCOUNT,PAYMENT_CARD"
     }
-
-companion object {
-    private const val PAYMENT_METHODS = "BANK_ACCOUNT,PAYMENT_CARD"
-}
 }
 
 private fun String.toSupportedPartner(): Partner =

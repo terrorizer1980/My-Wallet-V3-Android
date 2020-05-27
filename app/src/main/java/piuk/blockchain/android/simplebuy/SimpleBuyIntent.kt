@@ -211,15 +211,6 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
         }
     }
 
-    class CreateOrder(val isPending: Boolean) : SimpleBuyIntent() {
-        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
-            oldState.copy(isLoading = true)
-
-        override fun isValidFor(oldState: SimpleBuyState): Boolean {
-            return oldState.selectedCryptoCurrency != null && oldState.order.amount != null
-        }
-    }
-
     object ConfirmOrder : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             oldState.copy(confirmationActionRequested = true, isLoading = true)
