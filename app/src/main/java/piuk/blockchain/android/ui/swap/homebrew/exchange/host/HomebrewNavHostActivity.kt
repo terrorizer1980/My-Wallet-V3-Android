@@ -219,7 +219,7 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
                         show()
                     }
 
-                    Logging.INSTANCE.logEvent(websocketConnectionFailureEvent())
+                    Logging.logEvent(websocketConnectionFailureEvent())
                 }
             }
 

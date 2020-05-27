@@ -91,7 +91,7 @@ class ReceiveIntentHelper(private val context: Context, private val appUtil: App
                 it.remove()
             }
 
-            Logging.INSTANCE.logShare("QR Code + URI")
+            Logging.logShare("QR Code + URI")
 
             return dataList
         } else {

@@ -40,7 +40,7 @@ class PairingCodePresenter(
             .subscribe(
                 { bitmap ->
                     view.onQrLoaded(bitmap)
-                    Logging.INSTANCE.logEvent(pairingEvent(PairingMethod.REVERSE))
+                    Logging.logEvent(pairingEvent(PairingMethod.REVERSE))
                 },
                 { view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR) })
     }

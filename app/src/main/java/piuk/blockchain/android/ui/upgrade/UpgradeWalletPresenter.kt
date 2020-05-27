@@ -76,11 +76,11 @@ internal class UpgradeWalletPresenter constructor(
             .doOnComplete { accessState.isNewlyCreated = true }
             .subscribe(
                 {
-                    Logging.INSTANCE.logEvent(walletUpgradeEvent((true)))
+                    Logging.logEvent(walletUpgradeEvent((true)))
                     view.onUpgradeCompleted()
                 },
                 { throwable ->
-                    Logging.INSTANCE.logEvent(walletUpgradeEvent((false)))
+                    Logging.logEvent(walletUpgradeEvent((false)))
                     crashLogger.logException(throwable)
                     view.onUpgradeFailed()
                 })

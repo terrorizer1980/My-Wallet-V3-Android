@@ -114,14 +114,14 @@ class CreateWalletPresenter(
                 {
                     prefs.setValue(PersistentPrefs.KEY_EMAIL, email)
                     view.startPinEntryActivity()
-                    Logging.INSTANCE.logSignUp(true)
+                    Logging.logSignUp(true)
                     analytics.logEvent(AnalyticsEvents.WalletCreation)
                 },
                 {
                     Timber.e(it)
                     view.showToast(R.string.hd_error, ToastCustom.TYPE_ERROR)
                     appUtil.clearCredentialsAndRestart(LauncherActivity::class.java)
-                    Logging.INSTANCE.logSignUp(false)
+                    Logging.logSignUp(false)
                 }
             )
     }
@@ -146,12 +146,12 @@ class CreateWalletPresenter(
                     prefs.setValue(PersistentPrefs.KEY_EMAIL, email)
                     prefs.setValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, true)
                     view.startPinEntryActivity()
-                    Logging.INSTANCE.logEvent(recoverWalletEvent(true))
+                    Logging.logEvent(recoverWalletEvent(true))
                 },
                 {
                     Timber.e(it)
                     view.showToast(R.string.restore_failed, ToastCustom.TYPE_ERROR)
-                    Logging.INSTANCE.logEvent(recoverWalletEvent(false))
+                    Logging.logEvent(recoverWalletEvent(false))
                 }
             )
     }

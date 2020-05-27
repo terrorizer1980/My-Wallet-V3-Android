@@ -30,7 +30,7 @@ public abstract class BaseMvpActivity<VIEW extends View, PRESENTER extends BaseP
      */
     protected void logScreenView() {
         if (!BuildConfig.DEBUG) {
-            Logging.Companion.getINSTANCE().logContentView(getClass().getSimpleName());
+            Logging.INSTANCE.logContentView(getClass().getSimpleName());
         }
     }
 

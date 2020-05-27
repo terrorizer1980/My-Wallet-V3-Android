@@ -204,7 +204,7 @@ internal class ExchangeFragment : Fragment() {
         compositeDisposable += inputTypeRelay.map { it.toLoggingFixType() }
             .distinctUntilChanged()
             .subscribeBy {
-                Logging.INSTANCE.logEvent(fixTypeEvent(it))
+                Logging.logEvent(fixTypeEvent(it))
             }
 
         compositeDisposable += exchangeModel
@@ -394,7 +394,7 @@ internal class ExchangeFragment : Fragment() {
             QuoteValidity.OverUserBalance -> AmountErrorType.OverBalance
         }
 
-        errorType?.let { Logging.INSTANCE.logEvent(amountErrorEvent(it)) }
+        errorType?.let { Logging.logEvent(amountErrorEvent(it)) }
     }
 
     private fun ExchangeViewState.formatSpendableString(): CharSequence {

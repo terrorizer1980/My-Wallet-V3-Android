@@ -154,7 +154,7 @@ class AccountPresenter internal constructor(
                     view.showToast(R.string.remote_save_ok, ToastCustom.TYPE_OK)
                     onViewReady()
                     analytics.logEvent(WalletAnalytics.AddNewWallet)
-                    Logging.INSTANCE.logEvent(createAccountEvent(payloadDataManager.accounts.size))
+                    Logging.logEvent(createAccountEvent(payloadDataManager.accounts.size))
                 },
                 { throwable ->
                     when (throwable) {
@@ -279,7 +279,7 @@ class AccountPresenter internal constructor(
                 {
                     analytics.logEvent(AddressAnalytics.ImportBTCAddress)
                     view.showRenameImportedAddressDialog(legacyAddress)
-                    Logging.INSTANCE.logEvent(importEvent(AddressType.WATCH_ONLY))
+                    Logging.logEvent(importEvent(AddressType.WATCH_ONLY))
                 },
                 {
                     view.showToast(R.string.remote_save_ko, ToastCustom.TYPE_ERROR)
@@ -342,7 +342,7 @@ class AccountPresenter internal constructor(
                         onViewReady()
                         view.showRenameImportedAddressDialog(it)
                         analytics.logEvent(AddressAnalytics.ImportBTCAddress)
-                        Logging.INSTANCE.logEvent(importEvent(AddressType.PRIVATE_KEY))
+                        Logging.logEvent(importEvent(AddressType.PRIVATE_KEY))
                     },
                     {
                         view.showToast(R.string.remote_save_ko, ToastCustom.TYPE_ERROR)

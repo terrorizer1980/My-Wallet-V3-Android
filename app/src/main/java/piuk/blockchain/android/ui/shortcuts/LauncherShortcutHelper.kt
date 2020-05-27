@@ -123,7 +123,7 @@ class LauncherShortcutHelper(
     @RequiresApi(api = Build.VERSION_CODES.N_MR1)
     private fun doLogShortcutUsed(shortcutId: String) {
         shortcutManager.reportShortcutUsed(shortcutId)
-        Logging.INSTANCE.logEvent(launcherShortcutEvent(shortcutId))
+        Logging.logEvent(launcherShortcutEvent(shortcutId))
     }
 
     private fun areShortcutsEnabled(): Boolean {

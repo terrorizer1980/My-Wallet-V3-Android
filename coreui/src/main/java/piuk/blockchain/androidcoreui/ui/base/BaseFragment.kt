@@ -45,7 +45,7 @@ abstract class BaseFragment<VIEW : View, PRESENTER : BasePresenter<VIEW>> :
             logged = true
 
             if (!BuildConfig.DEBUG) {
-                Logging.INSTANCE.logContentView(javaClass.simpleName)
+                Logging.logContentView(javaClass.simpleName)
             }
         }
     }

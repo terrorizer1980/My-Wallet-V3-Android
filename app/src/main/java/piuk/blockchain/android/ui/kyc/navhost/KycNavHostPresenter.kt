@@ -107,7 +107,7 @@ class KycNavHostPresenter(
                 val reentryPoint = reentryDecision.findReentryPoint(user)
                 val directions = kycNavigator.userAndReentryPointToDirections(user, reentryPoint)
                 view.navigate(directions)
-                Logging.INSTANCE.logEvent(kycResumedEvent(reentryPoint))
+                Logging.logEvent(kycResumedEvent(reentryPoint))
             }
         } else if (view.campaignType == CampaignType.Sunriver) {
             view.navigateToKycSplash()

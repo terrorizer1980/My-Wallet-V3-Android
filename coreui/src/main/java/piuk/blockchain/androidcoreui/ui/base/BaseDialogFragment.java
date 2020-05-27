@@ -20,7 +20,7 @@ public abstract class BaseDialogFragment<VIEW extends View, PRESENTER extends Ba
         presenter = createPresenter();
         presenter.initView(getMvpView());
 
-        Logging.Companion.getINSTANCE().logContentView(getClass().getSimpleName());
+        Logging.INSTANCE.logContentView(getClass().getSimpleName());
     }
 
     @CallSuper

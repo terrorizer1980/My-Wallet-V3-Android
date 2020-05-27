@@ -253,7 +253,7 @@ class PinEntryPresenter(
 
         setAccountLabelIfNecessary()
 
-        Logging.INSTANCE.logLogin(true)
+        Logging.logLogin(true)
 
         if (!wallet.isUpgraded) {
             view.goToUpgradeWalletActivity()
@@ -263,7 +263,7 @@ class PinEntryPresenter(
     }
 
     private fun handlePayloadUpdateError(t: Throwable) {
-        Logging.INSTANCE.logLogin(false)
+        Logging.logLogin(false)
 
         when (t) {
             is InvalidCredentialsException -> view.goToPasswordRequiredActivity()

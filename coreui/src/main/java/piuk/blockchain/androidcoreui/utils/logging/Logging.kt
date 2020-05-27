@@ -19,7 +19,7 @@ class InjectableLogging(context: Context) : EventLogger {
     }
 }
 
-class Logging private constructor() {
+object Logging {
     private val shouldLog = BuildConfig.USE_CRASHLYTICS
     private lateinit var analytics: FirebaseAnalytics
 
@@ -72,14 +72,6 @@ class Logging private constructor() {
             b.putString(FirebaseAnalytics.Param.METHOD, share)
             analytics.logEvent(FirebaseAnalytics.Event.SHARE, b)
         }
-    }
-
-    private object HOLDER {
-        val INSTANCE = Logging()
-    }
-
-    companion object {
-        val INSTANCE: Logging by lazy { HOLDER.INSTANCE }
     }
 }
 

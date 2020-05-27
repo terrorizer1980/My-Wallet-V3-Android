@@ -85,7 +85,7 @@ abstract class SendStrategy<View : SendView>(
     fun getDefaultDecimalSeparator() = DecimalFormatSymbols.getInstance().decimalSeparator.toString()
 
     protected fun logPaymentSentEvent(success: Boolean, currency: CryptoCurrency, amount: BigInteger) {
-        Logging.INSTANCE.logEvent(paymentSentEvent(success, CryptoValue(currency, amount)))
+        Logging.logEvent(paymentSentEvent(success, CryptoValue(currency, amount)))
     }
 
     protected val fiatCurrency: String by unsafeLazy {
