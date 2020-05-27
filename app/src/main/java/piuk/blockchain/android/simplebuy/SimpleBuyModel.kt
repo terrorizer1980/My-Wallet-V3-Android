@@ -65,16 +65,6 @@ class SimpleBuyModel(
                     onComplete = { process(SimpleBuyIntent.OrderCanceled) },
                     onError = { process(SimpleBuyIntent.ErrorIntent()) }
                 )
-            is SimpleBuyIntent.CreateOrder -> interactor.createOrder(
-                previousState.selectedCryptoCurrency
-                    ?: throw IllegalStateException("Missing Cryptocurrency "),
-                previousState.order.amount ?: throw IllegalStateException("Missing amount"),
-                previousState.selectedPaymentMethod?.id.takeIf { it != PaymentMethod.BANK_PAYMENT_ID },
-                intent.isPending
-            ).subscribeBy(
-                onSuccess = { process(it) },
-                onError = { process(SimpleBuyIntent.ErrorIntent()) }
-            )
             is SimpleBuyIntent.FetchBankAccount ->
                 when {
                     previousState.bankAccount != null -> {
