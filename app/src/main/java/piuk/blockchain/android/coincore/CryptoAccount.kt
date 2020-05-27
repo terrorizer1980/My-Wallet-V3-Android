@@ -43,8 +43,6 @@ interface CryptoAccountGroup : CryptoAccount {
     val accounts: List<CryptoAccount>
 }
 
-// todo delete
-typealias CryptoAccountsList = List<CryptoAccount>
 typealias CryptoSingleAccountList = List<CryptoSingleAccount>
 
 internal fun CryptoAccount.isCustodial(): Boolean =

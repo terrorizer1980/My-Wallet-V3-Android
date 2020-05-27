@@ -5,12 +5,11 @@ import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.wallet.payload.PayloadManager
 import io.reactivex.Completable
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
-import piuk.blockchain.android.coincore.impl.BitcoinLikeTokens
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -18,7 +17,6 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 
 internal class BtcTokens(
     private val payloadDataManager: PayloadDataManager,
-    private val payloadManager: PayloadManager,
     custodialManager: CustodialWalletManager,
     exchangeRates: ExchangeRateDataManager,
     historicRates: ChartsDataManager,
@@ -26,12 +24,12 @@ internal class BtcTokens(
     labels: DefaultLabels,
     crashLogger: CrashLogger,
     rxBus: RxBus
-) : BitcoinLikeTokens(
+) : AssetTokensBase(
     exchangeRates,
     historicRates,
-    custodialManager,
     currencyPrefs,
     labels,
+    custodialManager,
     crashLogger,
     rxBus
 ) {
@@ -40,7 +38,7 @@ internal class BtcTokens(
         get() = CryptoCurrency.BTC
 
     override fun initToken(): Completable =
-        updater()
+        Completable.complete()
 
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         Single.fromCallable {
@@ -51,7 +49,6 @@ internal class BtcTokens(
                     result.add(
                         BtcCryptoWalletAccount(
                             a,
-                            payloadManager,
                             payloadDataManager,
                             i == defaultIndex,
                             exchangeRates
@@ -63,7 +60,6 @@ internal class BtcTokens(
                     result.add(
                         BtcCryptoWalletAccount(
                             a,
-                            payloadManager,
                             payloadDataManager,
                             exchangeRates
                         )
@@ -72,7 +68,4 @@ internal class BtcTokens(
                 result
             }
         }
-
-    override fun doUpdateBalances(): Completable =
-        payloadDataManager.updateAllBalances()
 }
