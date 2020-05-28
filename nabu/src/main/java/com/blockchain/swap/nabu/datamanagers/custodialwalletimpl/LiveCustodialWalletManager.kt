@@ -246,9 +246,9 @@ class LiveCustodialWalletManager(
             .flatMapCompletable { deleteBuyOrder(it.id) }
     }
 
-    override fun updateSupportedCardTypes(fiatCurrency: String): Completable =
+    override fun updateSupportedCardTypes(fiatCurrency: String, isTier2Approved: Boolean): Completable =
         authenticator.authenticate {
-            nabuService.getPaymentMethods(it, fiatCurrency).doOnSuccess {
+            nabuService.getPaymentMethods(it, fiatCurrency, isTier2Approved).doOnSuccess {
                 updateSupportedCards(it)
             }
         }.ignoreElement()
@@ -261,12 +261,12 @@ class LiveCustodialWalletManager(
             if (enabled)
                 allPaymentsMethods(fiatCurrency, isTier2Approved)
             else
-                onlyBank(fiatCurrency)
+                onlyBank(fiatCurrency, isTier2Approved)
         }
 
-    private fun onlyBank(fiatCurrency: String) =
+    private fun onlyBank(fiatCurrency: String, tier2Approved: Boolean) =
         authenticator.authenticate {
-            nabuService.getPaymentMethods(it, fiatCurrency).map { response ->
+            nabuService.getPaymentMethods(it, fiatCurrency, tier2Approved).map { response ->
                 response.methods.firstOrNull { it.type == PaymentMethodType.BANK_ACCOUNT }
                     ?.let { paymentMethodResponse ->
                         listOf(PaymentMethod.BankTransfer(
@@ -285,42 +285,45 @@ class LiveCustodialWalletManager(
         simpleBuyPrefs.updateSupportedCards(cardTypes.joinToString())
     }
 
-    private fun allPaymentsMethods(fiatCurrency: String, isTier2Approved: Boolean) = authenticator.authenticate {
+    private fun allPaymentsMethods(
+        fiatCurrency: String,
+        isTier2Approved: Boolean
+    ) = authenticator.authenticate {
         Singles.zip(
             nabuService.getCards(it).onErrorReturn { emptyList() },
-            nabuService.getPaymentMethods(it, fiatCurrency).doOnSuccess {
+            nabuService.getPaymentMethods(it, fiatCurrency, isTier2Approved).doOnSuccess {
                 updateSupportedCards(it)
             }
         )
     }.map { (cardsResponse, paymentMethods) ->
         val availablePaymentMethods = mutableListOf<PaymentMethod>()
 
-        paymentMethods.methods.firstOrNull { it.type == PaymentMethodType.BANK_ACCOUNT }
-            ?.let { paymentMethodResponse ->
+        paymentMethods.methods.forEach {
+            if (it.type == PaymentMethodType.BANK_ACCOUNT) {
                 availablePaymentMethods.add(PaymentMethod.BankTransfer(
-                    PaymentLimits(paymentMethodResponse.limits.min,
-                        paymentMethodResponse.limits.max,
+                    PaymentLimits(it.limits.min,
+                        it.limits.max,
                         fiatCurrency)
                 ))
+            } else if (it.type == PaymentMethodType.PAYMENT_CARD) {
+                val cardLimits = PaymentLimits(it.limits.min, it.limits.max, fiatCurrency)
+                cardsResponse.takeIf { cards -> cards.isNotEmpty() }?.filter { it.state.isActive() }
+                    ?.forEach { cardResponse: CardResponse ->
+                        availablePaymentMethods.add(cardResponse.toCardPaymentMethod(cardLimits))
+                    }
             }
+        }
 
-        val cardLimits =
-            paymentMethods.methods.firstOrNull { paymentMethod ->
-                paymentMethod.type == PaymentMethodType.PAYMENT_CARD
+        paymentMethods.methods.firstOrNull { paymentMethod ->
+            paymentMethod.type == PaymentMethodType.PAYMENT_CARD
+        }?.let {
+            availablePaymentMethods.add(PaymentMethod.UndefinedCard(PaymentLimits(it.limits.min,
+                it.limits.max,
+                fiatCurrency)))
+
+            if (cardsResponse.isEmpty() && isTier2Approved) {
+                availablePaymentMethods.add(PaymentMethod.Undefined)
             }
-                ?.let { paymentMethod ->
-                    PaymentLimits(paymentMethod.limits.min, paymentMethod.limits.max, fiatCurrency)
-                } ?: return@map availablePaymentMethods.toList()
-
-        cardsResponse.takeIf { cards -> cards.isNotEmpty() }?.filter { it.state.isActive() }
-            ?.forEach { cardResponse: CardResponse ->
-                availablePaymentMethods.add(cardResponse.toCardPaymentMethod(cardLimits))
-            }
-
-        availablePaymentMethods.add(PaymentMethod.UndefinedCard(cardLimits))
-
-        if (cardsResponse.isEmpty() && isTier2Approved) {
-            availablePaymentMethods.add(PaymentMethod.Undefined)
         }
         availablePaymentMethods.toList()
     }
@@ -384,6 +387,26 @@ class LiveCustodialWalletManager(
                 ))
         }.map {
             it.toBuyOrder()
+        }
+
+    override fun getInterestAccountRates(crypto: CryptoCurrency): Single<Double> =
+        authenticator.authenticate { sessionToken ->
+            nabuService.getInterestRates(sessionToken, crypto.networkTicker).map {
+                it.body()?.rate ?: 0.0
+            }
+        }
+
+    override fun getInterestAccountDetails(
+        crypto: CryptoCurrency
+    ): Maybe<CryptoValue> =
+        authenticator.authenticateMaybe { sessionToken ->
+            nabuService.getInterestAccountBalance(sessionToken, crypto.networkTicker)
+                .map { accountBalanceResponse ->
+                    CryptoValue.fromMinor(
+                        currency = crypto,
+                        minor = accountBalanceResponse.balance.toBigInteger()
+                    )
+                }
         }
 
     private fun CardResponse.toCardPaymentMethod(cardLimits: PaymentLimits) =
@@ -467,6 +490,7 @@ private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
         state = state.toLocalState(),
         expires = expiresAt.fromIso8601ToUtc() ?: Date(0),
         updated = updatedAt.fromIso8601ToUtc() ?: Date(0),
+        created = insertedAt.fromIso8601ToUtc() ?: Date(0),
         fee = fee?.let { FiatValue.fromMinor(inputCurrency, it.toLongOrDefault(0)) },
         paymentMethodId = paymentMethodId ?: PaymentMethod.BANK_PAYMENT_ID,
         price = price?.let {

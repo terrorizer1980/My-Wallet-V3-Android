@@ -101,7 +101,6 @@ import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
 import piuk.blockchain.android.ui.thepit.PitPermissionsPresenter
 import piuk.blockchain.android.ui.thepit.PitVerifyEmailPresenter
-import piuk.blockchain.android.ui.activity.detail.TransactionDetailPresenter
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletPresenter
 import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.android.util.OSUtil
@@ -203,7 +202,7 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            AssetDetailsCalculator()
+            AssetDetailsCalculator(get("ff_interest_account"))
         }
 
         factory {
@@ -413,16 +412,6 @@ val applicationModule = applicationContext {
                 payloadDataManager = get(),
                 backupWalletUtil = get(),
                 walletStatus = get()
-            )
-        }
-
-        factory {
-            TransactionDetailPresenter(
-                coincore = get(),
-                inputOutputMapper = get(),
-                prefs = get(),
-                stringUtils = get(),
-                exchangeRateDataManager = get()
             )
         }
 

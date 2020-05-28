@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- common -->
+    <string name="common_hyphenated_strings">%1$s - %2$s</string>
+    <string name="common_spaced_strings">%1$s&#160;%2$s</string>
+
     <plurals name="transfer_label_plural">
         <item quantity="one">1 imported address</item>
         <item quantity="other">%d imported addresses</item>
@@ -124,6 +128,9 @@
     <string name="check_connectivity_exit">Blockchain Wallet cannot obtain an Internet connection.
         Please check the connectivity on your device and try again.
     </string>
+
+    <string name="server_unreachable_exit">Unable to connect to server, please try again later.</string>
+
     <string name="double_encryption_password_error">Double encrypt password error. Please try again.</string>
     <string name="btn_scan_pairing_code">Scan Pairing Code</string>
     <string name="btn_manual_pairing">Manual Pairing</string>
@@ -624,7 +631,7 @@
     <string name="tx_title_receive">Receive %1s</string>
     <string name="tx_title_sell">Sell %1s</string>
     <string name="tx_title_buy">Buy %1s</string>
-    <string name="tx_title_swap">Swap %1s</string>
+    <string name="tx_title_swap">Swap %1s -> %2s</string>
     <string name="tx_title_transfer">Transfer %1s</string>
     <string name="tx_title_fee">Fee %1s</string>
 
@@ -843,6 +850,7 @@
     <string name="dashboard_asset_balance_total">Total Balance</string>
     <string name="dashboard_asset_balance_wallet">Wallet Balance</string>
     <string name="dashboard_asset_balance_custodial">Trading Wallet</string>
+    <string name="dashboard_asset_balance_interest">Earn %1$.1f%% APY</string>
 
     <string name="more">More</string>
 
@@ -1640,6 +1648,7 @@
     <string name="xlm_default_account_label">My Stellar Wallet</string>
     <string name="pax_default_account_label_1">My USD Digital Wallet</string>
     <string name="default_label_all_wallets">All Wallets</string>
+    <string name="default_label_interest_wallet">Interest Wallet</string>
     <string name="exchange_default_account_label">My Exchange %1$s Address</string>
     <string name="approximately_symbol">~ %1$s</string>
     <string name="custodial_wallet_default_label">%1s Trading Wallet</string>
@@ -1692,6 +1701,51 @@
     <string name="activity_custodial_pending_value">Bank Transfer</string>
     <string name="checkout_bank_transfer_label">Bank Transfer</string>
     <string name="activity_loading_error">Failed to load activity, please try again later</string>
+
+    <!-- Activity Details -->
+    <string name="activity_details_created">Date</string>
+    <string name="activity_details_completed">Completed</string>
+    <string name="activity_details_fee">Fee</string>
+    <string name="activity_details_amount">Amount</string>
+    <string name="activity_details_value">Value</string>
+    <string name="activity_details_to">To</string>
+    <string name="activity_details_from">From</string>
+    <string name="activity_details_empty" />
+    <string name="activity_details_action">View on Blockchain Explorer</string>
+    <string name="activity_details_cancel_action">Cancel Buy</string>
+    <string name="activity_detail_description_action">Add a description</string>
+    <string name="activity_detail_description_label">Description</string>
+    <string name="activity_details_label_pending">Pending</string>
+    <string name="activity_details_label_complete">Complete</string>
+    <string name="activity_details_title_transferred">Transfer</string>
+    <string name="activity_details_title_received">Receive</string>
+    <string name="activity_details_title_sent">Send</string>
+    <string name="activity_details_title_buy">Buy</string>
+    <string name="activity_details_title_sell">Sell</string>
+    <string name="activity_details_title_swap">Swap</string>
+    <string name="activity_details_label_confirming">Confirming</string>
+    <string name="activity_details_label_waiting_on_funds">Waiting on Funds</string>
+    <string name="activity_details_label_confirmations">%1$d of %2$d\nConfirmations</string>
+    <string name="activity_details_title_fee">Gas Fee</string>
+    <string name="activity_details_transaction_fee">Gas for</string>
+    <string name="activity_details_label_pending_execution">Pending Execution</string>
+    <string name="activity_details_buy_tx_id">Transaction ID</string>
+    <string name="activity_details_buy_sending_to">Sending to</string>
+    <string name="activity_details_buy_purchase_amount">Purchasing</string>
+    <string name="activity_details_buy_fees">Fees</string>
+    <string name="activity_details_buy_payment_method">Payment Method</string>
+    <string name="activity_details_view_bank_transfer_details">View Bank Transfer Details</string>
+    <string name="activity_details_buy_again">Buy Again</string>
+    <string name="activity_details_description_updated">Description updated</string>
+    <string name="activity_details_description_not_updated">Description failed to update</string>
+    <string name="activity_details_transaction_fee_send">Sending %1$s</string>
+    <string name="activity_details_transaction_fee_unknown">Unknown</string>
+    <string name="activity_details_payment_load_fail">Couldn\'t load card details</string>
+    <string name="activity_details_fee_load_fail">Couldn\'t load fee information</string>
+    <string name="activity_details_value_load_fail">Couldn\'t load value information</string>
+    <string name="activity_details_to_load_fail">Couldn\'t load To address information</string>
+    <string name="activity_details_from_load_fail">Couldn\'t load From address information</string>
+
     <string name="order_pending">Pending</string>
     <string name="order_complete">Complete</string>
     <string name="expired">Expired</string>

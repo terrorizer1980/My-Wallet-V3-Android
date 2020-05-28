@@ -202,7 +202,8 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             paymentMethodId = PaymentMethod.BANK_PAYMENT_ID,
             state = OrderState.AWAITING_FUNDS,
-            expires = MIDDLE_ORDER_DATE
+            expires = MIDDLE_ORDER_DATE,
+            fee = FiatValue.zero("EUR")
         )
 
         val remoteInput2 = BuyOrder(
@@ -289,7 +290,8 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             paymentMethodId = "123-123",
             state = OrderState.FAILED,
-            expires = EARLY_ORDER_DATE
+            expires = EARLY_ORDER_DATE,
+            fee = FiatValue.zero("EUR")
         )
 
         whenever(localState.fetch()).thenReturn(null)

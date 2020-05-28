@@ -29,6 +29,7 @@ import com.blockchain.notifications.analytics.SendAnalytics
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import com.blockchain.notifications.analytics.TransactionsAnalyticsEvents
+import com.blockchain.notifications.analytics.activityShown
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_SUPPORT_PORTAL
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
@@ -708,6 +709,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         val fragment = ActivitiesFragment.newInstance(account)
         replaceContentFragment(fragment)
         toolbar_general.title = ""
+        analytics.logEvent(activityShown(account?.label ?: "All Wallets"))
     }
 
     override fun refreshAnnouncements() {

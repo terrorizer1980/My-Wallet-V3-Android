@@ -58,6 +58,7 @@ data class BuyOrderResponse(
     val outputQuantity: String,
     val paymentMethodId: String?,
     val state: String,
+    val insertedAt: String,
     val price: String?,
     val fee: String?,
     val attributes: CardPaymentAttributes?,
