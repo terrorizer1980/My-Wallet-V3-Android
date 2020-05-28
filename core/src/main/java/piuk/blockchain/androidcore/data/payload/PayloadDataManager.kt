@@ -276,7 +276,8 @@ class PayloadDataManager(
      * @return A [LinkedHashMap]
      */
     fun getBalanceOfBtcAddresses(
-        addresses: List<String>): Observable<LinkedHashMap<String, Balance>> =
+        addresses: List<String>
+    ): Observable<LinkedHashMap<String, Balance>> =
         rxPinning.call<LinkedHashMap<String, Balance>> {
             payloadService.getBalanceOfBtcAddresses(addresses)
         }.applySchedulers()
@@ -289,7 +290,8 @@ class PayloadDataManager(
      * @return A [LinkedHashMap]
      */
     fun getBalanceOfBchAddresses(
-        addresses: List<String>): Observable<LinkedHashMap<String, Balance>> =
+        addresses: List<String>
+    ): Observable<LinkedHashMap<String, Balance>> =
         rxPinning.call<LinkedHashMap<String, Balance>> {
             payloadService.getBalanceOfBchAddresses(addresses)
         }.applySchedulers()
@@ -474,8 +476,10 @@ class PayloadDataManager(
         fnRefresh = { Completable.fromCallable { updateAllBalances() } }
     )
 
-    fun getAddressBalanceRefresh(address: String,
-                                 forceRefresh: Boolean = false): Single<CryptoValue> =
+    fun getAddressBalanceRefresh(
+        address: String,
+        forceRefresh: Boolean = false
+    ): Single<CryptoValue> =
         balanceUpdater.get(
             fnFetch = { getAddressBalance(address) },
             force = forceRefresh
