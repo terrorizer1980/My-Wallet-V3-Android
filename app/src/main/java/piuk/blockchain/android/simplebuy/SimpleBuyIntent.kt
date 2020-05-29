@@ -316,8 +316,6 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
             oldState.copy(isLoading = true)
     }
 
-    object SyncState : SimpleBuyIntent()
-
     object CardPaymentSucceeded : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             oldState.copy(cardPaymentSucceeded = true, isLoading = false)

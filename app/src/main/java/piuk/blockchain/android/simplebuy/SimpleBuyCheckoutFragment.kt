@@ -45,10 +45,6 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (savedInstanceState == null && !isForPendingPayment) {
-            model.process(SimpleBuyIntent.CancelOrderIfAnyAndCreatePendingOne)
-        }
-
         recycler.apply {
             layoutManager = LinearLayoutManager(activity)
             adapter = checkoutAdapter
