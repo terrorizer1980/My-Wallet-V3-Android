@@ -79,6 +79,8 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
 import piuk.blockchain.androidcoreui.utils.ViewUtils
+import piuk.blockchain.androidcoreui.utils.extensions.gone
+import piuk.blockchain.androidcoreui.utils.extensions.visible
 import timber.log.Timber
 import java.util.ArrayList
 
@@ -161,7 +163,8 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         setContentView(R.layout.activity_main)
 
         if (intent.hasExtra(NotificationsUtil.INTENT_FROM_NOTIFICATION) &&
-            intent.getBooleanExtra(NotificationsUtil.INTENT_FROM_NOTIFICATION, false)) {
+            intent.getBooleanExtra(NotificationsUtil.INTENT_FROM_NOTIFICATION, false)
+        ) {
             analytics.logEvent(NotificationAppOpened)
         }
 
@@ -395,7 +398,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
             R.id.nav_backup -> launchBackupFunds()
             R.id.nav_debug_swap -> HomebrewNavHostActivity.start(this, presenter.defaultCurrency)
             R.id.nav_the_exchange -> presenter.onThePitMenuClicked()
-            R.id.nav_simple_buy -> launchSimpleBuy()
+            R.id.nav_simple_buy -> presenter.onSimpleBuyClicked()
             R.id.nav_airdrops -> AirdropCentreActivity.start(this)
             R.id.nav_addresses -> startActivityForResult(Intent(this, AccountActivity::class.java), ACCOUNT_EDIT)
             R.id.login_web_wallet -> PairingCodeActivity.start(this)
@@ -406,7 +409,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         drawer_layout.closeDrawers()
     }
 
-    private fun launchSimpleBuy() {
+    override fun launchSimpleBuy() {
         analytics.logEvent(SimpleBuyAnalytics.SIMPLE_BUY_SIDE_NAV)
         startActivity(
             SimpleBuyActivity.newInstance(
@@ -414,6 +417,14 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
                 launchFromDashboard = true
             )
         )
+    }
+
+    override fun showProgress() {
+        progress.visible()
+    }
+
+    override fun hideProgress() {
+        progress.gone()
     }
 
     override fun launchThePitLinking(linkId: String) {
