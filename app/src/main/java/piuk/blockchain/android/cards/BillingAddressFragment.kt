@@ -90,7 +90,7 @@ class BillingAddressFragment : MviFragment<CardModel, CardIntent, CardState>(),
 
         compositeDisposable += nabuUser
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(onError = {}, onSuccess = { user  ->
+            .subscribeBy(onError = {}, onSuccess = { user ->
                 setupCountryDetails(user.address?.countryCode ?: "")
                 setupUserDetails(user)
             })
@@ -122,7 +122,7 @@ class BillingAddressFragment : MviFragment<CardModel, CardIntent, CardState>(),
             address_line_1.setText(it.line1)
             address_line_2.setText(it.line2)
             city.setText(it.city)
-            if(it.countryCode == "US") {
+            if (it.countryCode == "US") {
                 zip_usa.setText(it.postCode)
                 state.setText(it.state?.substringAfter("US-"))
             } else {
