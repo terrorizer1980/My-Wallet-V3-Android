@@ -17,8 +17,9 @@ data class Created(val date: Date) : ActivityDetailsType()
 data class Amount(val cryptoValue: CryptoValue) : ActivityDetailsType()
 data class Fee(val feeValue: CryptoValue?) : ActivityDetailsType()
 data class Value(val currentFiatValue: FiatValue?) : ActivityDetailsType()
-data class HistoricValue(val fiatAtExecution: FiatValue?,
-                         val direction: TransactionSummary.Direction
+data class HistoricValue(
+    val fiatAtExecution: FiatValue?,
+    val direction: TransactionSummary.Direction
 ) : ActivityDetailsType()
 
 data class From(val fromAddress: String?) : ActivityDetailsType()
