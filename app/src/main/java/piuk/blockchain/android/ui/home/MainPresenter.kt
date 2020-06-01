@@ -110,7 +110,9 @@ class MainPresenter internal constructor(
 
     internal var cryptoCurrency: CryptoCurrency
         get() = currencyState.cryptoCurrency
-        set(v) { currencyState.cryptoCurrency = v }
+        set(v) {
+            currencyState.cryptoCurrency = v
+        }
 
     override fun onViewAttached() {
         if (!accessState.isLoggedIn) {
@@ -373,6 +375,17 @@ class MainPresenter internal constructor(
 
     fun onThePitMenuClicked() {
         showThePitOrPitLinkingView("")
+    }
+
+    fun onSimpleBuyClicked() {
+        compositeDisposable += simpleBuySync.performSync().onErrorComplete().observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                view?.showProgress()
+            }.doOnComplete {
+                view?.hideProgress()
+            }.subscribe {
+                view?.launchSimpleBuy()
+            }
     }
 
     private fun showThePitOrPitLinkingView(linkId: String) {
