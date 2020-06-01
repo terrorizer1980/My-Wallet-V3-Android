@@ -76,12 +76,20 @@
     <color name="ether_bkgd">@color/purple_000</color>
     <color name="btc_bkgd">@color/orange_000</color>
     <color name="xlm_bkgd">@color/grey_000</color>
+    <color name="usdt_bkgd">#2626A17B</color>
+    <color name="ltc_bkgd">#26BFBBBB</color>
+    <color name="xrp_bkgd">#26000000</color>
+    <color name="algo_bkgd">#26000000</color>
 
     <color name="btc">#FF9B22</color>
     <color name="bch">#8DC351</color>
     <color name="eth">#473BCB</color>
     <color name="xlm">#000000</color>
     <color name="pax">#00522C</color>
+    <color name="usdt">#26A17B</color>
+    <color name="ltc">#BFBBBB</color>
+    <color name="xrp">#000000</color>
+    <color name="algo">#000000</color>
 
 </resources>
 
