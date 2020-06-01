@@ -4,10 +4,10 @@ import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
 import piuk.blockchain.android.coincore.bch.BchTokens
-import piuk.blockchain.android.coincore.pax.PaxTokens
 import piuk.blockchain.android.coincore.btc.BtcTokens
 import piuk.blockchain.android.coincore.eth.EthTokens
 import piuk.blockchain.android.coincore.impl.AllWalletsAccount
+import piuk.blockchain.android.coincore.pax.PaxTokens
 import piuk.blockchain.android.coincore.stx.StxTokens
 import piuk.blockchain.android.coincore.xlm.XlmTokens
 import timber.log.Timber
@@ -29,6 +29,7 @@ class Coincore internal constructor(
             CryptoCurrency.XLM -> xlmTokens
             CryptoCurrency.PAX -> paxTokens
             CryptoCurrency.STX -> stxTokens
+            CryptoCurrency.ALG -> TODO("Add in AND-3149")
         }
 
     fun init(): Completable =

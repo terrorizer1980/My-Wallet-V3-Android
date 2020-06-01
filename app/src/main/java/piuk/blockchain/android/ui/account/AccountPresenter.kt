@@ -24,19 +24,19 @@ import org.bitcoinj.crypto.BIP38PrivateKey
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrategy
-import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.android.util.LabelUtil
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
-import piuk.blockchain.android.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.android.util.AppUtil
-import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcoreui.utils.logging.AddressType
 import piuk.blockchain.androidcoreui.utils.logging.CreateAccountEvent
 import piuk.blockchain.androidcoreui.utils.logging.ImportEvent
@@ -76,6 +76,7 @@ class AccountPresenter internal constructor(
             CryptoCurrency.XLM -> throw IllegalStateException("Xlm not a supported cryptocurrency on this page")
             CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+            CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
         }
 
     override fun onViewReady() {
@@ -361,6 +362,7 @@ class AccountPresenter internal constructor(
             CryptoCurrency.XLM -> throw IllegalStateException("Xlm not a supported cryptocurrency on this page")
             CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+            CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
         }
     }
 
@@ -535,6 +537,7 @@ class AccountPresenter internal constructor(
             CryptoCurrency.XLM -> false
             CryptoCurrency.PAX -> false
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+            CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
         }
 
     companion object {

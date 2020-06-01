@@ -22,6 +22,7 @@ fun CryptoCurrency.colorRes(): Int =
         CryptoCurrency.XLM -> R.color.color_stellar_logo
         CryptoCurrency.PAX -> R.color.color_pax_logo
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+        CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
     }
 
 @ColorInt
@@ -36,6 +37,7 @@ fun CryptoCurrency.drawableResFilled(): Int =
         CryptoCurrency.XLM -> R.drawable.vector_xlm_colored
         CryptoCurrency.PAX -> R.drawable.vector_pax_colored
         CryptoCurrency.STX -> R.drawable.ic_logo_stx
+        CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
     }
 
 @DrawableRes
@@ -47,6 +49,7 @@ fun CryptoCurrency.coinIconWhite(): Int =
         CryptoCurrency.XLM -> R.drawable.vector_xlm_white
         CryptoCurrency.PAX -> R.drawable.vector_pax_white
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+        CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
     }
 
 @DrawableRes
@@ -58,6 +61,7 @@ fun CryptoCurrency.maskedAsset(): Int =
         CryptoCurrency.PAX -> R.drawable.ic_usdd_circled_mask
         CryptoCurrency.BCH -> R.drawable.ic_bch_circled_mask
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+        CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
     }
 
 fun ImageView.setImageDrawable(@DrawableRes res: Int) {
@@ -77,6 +81,7 @@ fun CryptoCurrency.errorIcon(): Int =
         CryptoCurrency.XLM -> R.drawable.vector_xlm_error
         CryptoCurrency.PAX -> R.drawable.vector_pax_error
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+        CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
     }
 
 @StringRes
@@ -88,6 +93,7 @@ fun CryptoCurrency.assetName() =
         CryptoCurrency.XLM -> R.string.lumens
         CryptoCurrency.PAX -> R.string.usd_pax_1
         CryptoCurrency.STX -> R.string.stacks_1
+        CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
     }
 
 internal class ResourceDefaultLabels(
@@ -103,6 +109,7 @@ internal class ResourceDefaultLabels(
                 CryptoCurrency.XLM -> R.string.xlm_default_account_label
                 CryptoCurrency.PAX -> R.string.pax_default_account_label_1
                 CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+                CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
             }
         )
 

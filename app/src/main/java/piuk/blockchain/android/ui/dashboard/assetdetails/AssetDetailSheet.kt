@@ -390,6 +390,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
             CryptoCurrency.XLM -> 4
             CryptoCurrency.PAX -> 2
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+            CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
         }
 
     companion object {
