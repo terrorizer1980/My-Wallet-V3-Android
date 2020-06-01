@@ -61,5 +61,5 @@ fun makeBlockExplorerUrl(
     CryptoCurrency.XLM -> "https://stellarchain.io/tx/"
     CryptoCurrency.PAX -> "https://www.blockchain.com/eth/tx/"
     CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-    CryptoCurrency.ALG -> "https://www.blockchain.com/alg/tx/" // TODO what's the URL here?
+    CryptoCurrency.ALG -> TODO("Unknown URL here - https://www.blockchain.com/alg/tx/ ?")
 } + transactionHash
