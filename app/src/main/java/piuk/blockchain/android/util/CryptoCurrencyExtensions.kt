@@ -93,7 +93,7 @@ fun CryptoCurrency.assetName() =
         CryptoCurrency.XLM -> R.string.lumens
         CryptoCurrency.PAX -> R.string.usd_pax_1
         CryptoCurrency.STX -> R.string.stacks_1
-        CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+        CryptoCurrency.ALG -> R.string.algorand
     }
 
 internal class ResourceDefaultLabels(
@@ -109,7 +109,7 @@ internal class ResourceDefaultLabels(
                 CryptoCurrency.XLM -> R.string.xlm_default_account_label
                 CryptoCurrency.PAX -> R.string.pax_default_account_label_1
                 CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-                CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+                CryptoCurrency.ALG -> R.string.alg_default_account_label
             }
         )
 
