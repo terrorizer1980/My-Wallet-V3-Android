@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import com.blockchain.extensions.exhaustive
 import com.blockchain.notifications.analytics.CurrencyChangedFromBuyForm
+import com.blockchain.notifications.analytics.PaymentMethodSelected
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.notifications.analytics.buyConfirmClicked
 import com.blockchain.notifications.analytics.cryptoChanged
@@ -345,11 +346,16 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
 
     override fun onPaymentMethodChanged(paymentMethod: PaymentMethod) {
         model.process(SimpleBuyIntent.SelectedPaymentMethodUpdate(paymentMethod))
+        analytics.logEvent(PaymentMethodSelected(
+            if (paymentMethod is PaymentMethod.BankTransfer) BANK_ANALYTICS
+            else CARD_ANALYTICS
+        ))
     }
 
     override fun addPaymentMethod() {
         val intent = Intent(activity, CardDetailsActivity::class.java)
         startActivityForResult(intent, ADD_CARD_REQUEST_CODE)
+        analytics.logEvent(PaymentMethodSelected(NEW_CARD_ANALYTICS))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -361,6 +367,12 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
                     (data?.extras?.getSerializable(CardDetailsActivity.CARD_KEY) as? PaymentMethod.Card)?.id
                 ))
         }
+    }
+
+    companion object {
+        private const val BANK_ANALYTICS = "BANK"
+        private const val CARD_ANALYTICS = "CARD"
+        private const val NEW_CARD_ANALYTICS = "CARD"
     }
 }
 
