@@ -3,7 +3,7 @@ package piuk.blockchain.android.ui.swap.logging
 import piuk.blockchain.androidcoreui.utils.logging.LoggingEvent
 
 fun fixTypeEvent(fixType: FixType) =
-    LoggingEvent("Fix type switched", mapOf(Pair("Input Type", fixType.name)))
+    LoggingEvent("Fix type switched", mapOf("Input Type" to fixType.name))
 
 enum class FixType(val type: String) {
     BaseFiat("Base fiat"),
@@ -13,10 +13,10 @@ enum class FixType(val type: String) {
 }
 
 fun websocketConnectionFailureEvent() =
-    LoggingEvent("Websocket connection failure", mapOf(Pair("Websocket connection failed", true)))
+    LoggingEvent("Websocket connection failure", mapOf("Websocket connection failed" to true))
 
 fun amountErrorEvent(errorType: AmountErrorType) =
-    LoggingEvent("Min/Max error", mapOf(Pair("Min/Max error type", errorType.error)))
+    LoggingEvent("Min/Max error", mapOf("Min/Max error type" to errorType.error))
 
 enum class AmountErrorType(val error: String) {
     OverBalance("Over user's balance"),

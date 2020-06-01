@@ -1,10 +1,10 @@
 package piuk.blockchain.androidcoreui.utils.logging
 
 fun recoverWalletEvent(successful: Boolean) =
-    LoggingEvent("Recover Wallet", mapOf(Pair("Success", successful)))
+    LoggingEvent("Recover Wallet", mapOf("Success" to successful))
 
 fun pairingEvent(pairingMethod: PairingMethod) =
-    LoggingEvent("Wallet Pairing", mapOf(Pair("Pairing method", pairingMethod.name)))
+    LoggingEvent("Wallet Pairing", mapOf("Pairing method" to pairingMethod.name))
 
 @Suppress("UNUSED_PARAMETER")
 enum class PairingMethod(name: String) {
@@ -14,7 +14,7 @@ enum class PairingMethod(name: String) {
 }
 
 fun importEvent(addressType: AddressType) =
-    LoggingEvent("Address Imported", mapOf(Pair("Address Type", addressType.name)))
+    LoggingEvent("Address Imported", mapOf("Address Type" to addressType.name))
 
 @Suppress("UNUSED_PARAMETER")
 enum class AddressType(name: String) {
@@ -23,18 +23,18 @@ enum class AddressType(name: String) {
 }
 
 fun createAccountEvent(number: Int) =
-    LoggingEvent("Account Created", mapOf(Pair("Number of Accounts", number)))
+    LoggingEvent("Account Created", mapOf("Number of Accounts" to number))
 
 fun appLaunchEvent(playServicesFound: Boolean) =
     LoggingEvent("App Launched",
-        mapOf(Pair("Play Services found", playServicesFound)))
+        mapOf("Play Services found" to playServicesFound))
 
 fun secondPasswordEvent(secondPasswordEnabled: Boolean) =
     LoggingEvent("Second password event",
-        mapOf(Pair("Second password enabled", secondPasswordEnabled)))
+        mapOf("Second password enabled" to secondPasswordEnabled))
 
 fun launcherShortcutEvent(type: String) =
-    LoggingEvent("Launcher Shortcut", mapOf(Pair("Launcher Shortcut used", type)))
+    LoggingEvent("Launcher Shortcut", mapOf("Launcher Shortcut used" to type))
 
 fun walletUpgradeEvent(successful: Boolean) =
-    LoggingEvent("Wallet Upgraded", mapOf(Pair("Successful", successful)))
+    LoggingEvent("Wallet Upgraded", mapOf("Successful" to successful))
