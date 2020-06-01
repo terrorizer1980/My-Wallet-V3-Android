@@ -85,7 +85,10 @@ class SimpleBuyModel(
                     previousState.selectedCryptoCurrency
                         ?: throw IllegalStateException("Missing Cryptocurrency "),
                     previousState.order.amount ?: throw IllegalStateException("Missing amount"),
-                    previousState.selectedPaymentMethod?.id?.takeIf { it != PaymentMethod.BANK_PAYMENT_ID },
+                    previousState.selectedPaymentMethod?.id?.takeIf {
+                        it != PaymentMethod.BANK_PAYMENT_ID &&
+                                it != PaymentMethod.UNDEFINED_CARD_PAYMENT_ID
+                    },
                     true
                 )
             }
@@ -184,14 +187,6 @@ class SimpleBuyModel(
                     process(SimpleBuyIntent.ErrorIntent())
                 }
             )
-            is SimpleBuyIntent.SyncState -> {
-                gson.fromJson(prefs.simpleBuyState(), SimpleBuyState::class.java)?.let { state ->
-                    state.id?.let {
-                        process(SimpleBuyIntent.SyncLatestState(state))
-                    }
-                }
-                null
-            }
             else -> null
         }
 
