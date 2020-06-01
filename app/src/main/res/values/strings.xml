@@ -1708,10 +1708,9 @@
     <string name="activity_details_fee">Fee</string>
     <string name="activity_details_amount">Amount</string>
     <string name="activity_details_value">Value</string>
-    <string name="activity_details_historic_value">Value when %1$s</string>
-    <string name="activity_details_historic_sent">sent</string>
-    <string name="activity_details_historic_received">received</string>
-    <string name="activity_details_historic_transferred">transferred</string>
+    <string name="activity_details_historic_sent">Value when sent</string>
+    <string name="activity_details_historic_received">Value when received</string>
+    <string name="activity_details_historic_transferred">Value when transferred</string>
     <string name="activity_details_to">To</string>
     <string name="activity_details_from">From</string>
     <string name="activity_details_empty" />
