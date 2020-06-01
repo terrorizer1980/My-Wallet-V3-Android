@@ -61,6 +61,7 @@
     <color name="grey_800_with_opacity">#66353F52</color>
 
     <color name="blue_600_with_opacity">#660C6CF2</color>
+    <color name="blue_600_disabled">#639DED</color>
 
     <color name="red_600_with_opacity">#66D93B30</color>
 
