@@ -61,37 +61,35 @@ private class InfoItemViewHolder(var parent: View) : RecyclerView.ViewHolder(par
     }
 
     private fun getHeaderForType(infoType: ActivityDetailsType): String =
-        if (infoType is HistoricValue) {
-            val directionString = parent.context.getString(when (infoType.direction) {
-                TransactionSummary.Direction.SENT,
-                TransactionSummary.Direction.SELL ->
-                    R.string.activity_details_historic_sent
-                TransactionSummary.Direction.RECEIVED,
-                TransactionSummary.Direction.BUY ->
-                    R.string.activity_details_historic_received
-                TransactionSummary.Direction.TRANSFERRED,
-                TransactionSummary.Direction.SWAP
-                -> R.string.activity_details_historic_transferred
+        parent.context.getString(
+            when (infoType) {
+                is Created -> R.string.activity_details_created
+                is Amount -> R.string.activity_details_amount
+                is Fee -> R.string.activity_details_fee
+                is Value -> R.string.activity_details_value
+                is HistoricValue -> {
+                    when (infoType.direction) {
+                        TransactionSummary.Direction.SENT,
+                        TransactionSummary.Direction.SELL ->
+                            R.string.activity_details_historic_sent
+                        TransactionSummary.Direction.RECEIVED,
+                        TransactionSummary.Direction.BUY ->
+                            R.string.activity_details_historic_received
+                        TransactionSummary.Direction.TRANSFERRED,
+                        TransactionSummary.Direction.SWAP
+                        -> R.string.activity_details_historic_transferred
+                    }
+                }
+                is To -> R.string.activity_details_to
+                is From -> R.string.activity_details_from
+                is FeeForTransaction -> R.string.activity_details_transaction_fee
+                is BuyFee -> R.string.activity_details_buy_fees
+                is BuyPurchaseAmount -> R.string.activity_details_buy_purchase_amount
+                is BuyTransactionId -> R.string.activity_details_buy_tx_id
+                is BuyCryptoWallet -> R.string.activity_details_buy_sending_to
+                is BuyPaymentMethod -> R.string.activity_details_buy_payment_method
+                else -> R.string.activity_details_empty
             })
-            parent.context.getString(R.string.activity_details_historic_value, directionString)
-        } else {
-            parent.context.getString(
-                when (infoType) {
-                    is Created -> R.string.activity_details_created
-                    is Amount -> R.string.activity_details_amount
-                    is Fee -> R.string.activity_details_fee
-                    is Value -> R.string.activity_details_value
-                    is To -> R.string.activity_details_to
-                    is From -> R.string.activity_details_from
-                    is FeeForTransaction -> R.string.activity_details_transaction_fee
-                    is BuyFee -> R.string.activity_details_buy_fees
-                    is BuyPurchaseAmount -> R.string.activity_details_buy_purchase_amount
-                    is BuyTransactionId -> R.string.activity_details_buy_tx_id
-                    is BuyCryptoWallet -> R.string.activity_details_buy_sending_to
-                    is BuyPaymentMethod -> R.string.activity_details_buy_payment_method
-                    else -> R.string.activity_details_empty
-                })
-        }
 
     private fun getValueForType(infoType: ActivityDetailsType): String =
         when (infoType) {
