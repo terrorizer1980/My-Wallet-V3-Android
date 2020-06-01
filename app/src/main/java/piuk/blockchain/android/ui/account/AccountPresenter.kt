@@ -537,7 +537,7 @@ class AccountPresenter internal constructor(
             CryptoCurrency.XLM -> false
             CryptoCurrency.PAX -> false
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-            CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+            CryptoCurrency.ALG -> false
         }
 
     companion object {
