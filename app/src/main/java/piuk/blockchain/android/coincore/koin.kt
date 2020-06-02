@@ -99,7 +99,6 @@ val coincoreModule = applicationContext {
         bean {
             AlgTokens(
                 rxBus = get(),
-                payloadManager = get(),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
