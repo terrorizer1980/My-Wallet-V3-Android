@@ -1653,4 +1653,8 @@
   <string name="activity_details_to_load_fail">Не удалось загрузить адресную информацию</string>
   <string name="activity_details_from_load_fail">Не удалось загрузить из адресной информации</string>
   <string name="card_already_saved">Эта карта уже была сохранена.</string>
+  <string name="activity_details_historic_sent">Значение при отправке</string>
+  <string name="activity_details_historic_received">Значение при получении</string>
+  <string name="activity_details_historic_transferred">Значение при передаче</string>
+  <string name="activity_details_historic_value_load_fail">Не удалось загрузить информацию об историческом значении</string>
 </resources>

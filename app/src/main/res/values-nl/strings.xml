@@ -1649,4 +1649,8 @@
   <string name="activity_details_to_load_fail">Kan geen adresgegevens ophalen</string>
   <string name="activity_details_from_load_fail">Kan adresgegevens niet laden</string>
   <string name="card_already_saved">Deze kaart is al opgeslagen.</string>
+  <string name="activity_details_historic_sent">Waarde bij verzending</string>
+  <string name="activity_details_historic_received">Waarde bij ontvangst</string>
+  <string name="activity_details_historic_transferred">Waarde bij overdracht</string>
+  <string name="activity_details_historic_value_load_fail">Kan historische waarde-informatie niet laden</string>
 </resources>

@@ -1650,4 +1650,8 @@
   <string name="activity_details_to_load_fail">Không thể tải Để giải quyết thông tin</string>
   <string name="activity_details_from_load_fail">Không thể tải từ thông tin địa chỉ</string>
   <string name="card_already_saved">Thẻ này đã được lưu.</string>
+  <string name="activity_details_historic_sent">Giá trị khi gửi</string>
+  <string name="activity_details_historic_received">Giá trị khi nhận được</string>
+  <string name="activity_details_historic_transferred">Giá trị khi chuyển nhượng</string>
+  <string name="activity_details_historic_value_load_fail">Không thể tải thông tin giá trị lịch sử</string>
 </resources>

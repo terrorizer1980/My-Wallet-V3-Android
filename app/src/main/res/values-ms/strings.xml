@@ -1650,4 +1650,8 @@
   <string name="activity_details_to_load_fail">Tidak dapat memuatkan Maklumat alamat</string>
   <string name="activity_details_from_load_fail">Tidak dapat memuatkan Maklumat alamat</string>
   <string name="card_already_saved">Kad ini telah disimpan.</string>
+  <string name="activity_details_historic_sent">Nilai semasa dihantar</string>
+  <string name="activity_details_historic_received">Nilai apabila diterima</string>
+  <string name="activity_details_historic_transferred">Nilai semasa dipindahkan</string>
+  <string name="activity_details_historic_value_load_fail">Tidak dapat memuatkan maklumat nilai bersejarah</string>
 </resources>
