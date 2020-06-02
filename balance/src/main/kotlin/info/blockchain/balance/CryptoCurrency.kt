@@ -66,7 +66,7 @@ enum class CryptoCurrency(
             CryptoCurrency.STUB_ASSET
     ),
     ALG(
-        networkTicker = "ALG",
+        networkTicker = "ALGO",
         displayTicker = "ALGO",
         dp = 18,
         userDp = 8,
