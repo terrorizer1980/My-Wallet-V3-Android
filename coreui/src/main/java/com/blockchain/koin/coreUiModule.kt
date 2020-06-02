@@ -11,13 +11,13 @@ import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.remoteconfig.RemoteConfig
 import com.blockchain.remoteconfig.RemoteConfiguration
 import com.blockchain.ui.chooser.AccountChooserPresenter
-import com.crashlytics.android.answers.Answers
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.androidcoreui.BuildConfig
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
-import piuk.blockchain.androidcoreui.utils.logging.AnswersEventLogger
+import piuk.blockchain.androidcoreui.utils.logging.InjectableLogging
 
 val coreUiModule = applicationContext {
 
@@ -41,9 +41,9 @@ val coreUiModule = applicationContext {
         .bind(RemoteConfig::class)
         .bind(ABTestExperiment::class)
 
-    factory { Answers.getInstance() }
+    factory { FirebaseAnalytics.getInstance(get()) }
 
-    factory { AnswersEventLogger(get()) as EventLogger }
+    factory { InjectableLogging(get()) as EventLogger }
 
     bean {
         OverlayDetection(get())

@@ -37,7 +37,6 @@ import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
 import com.blockchain.ui.dialog.MaterialProgressDialog
 import com.blockchain.ui.urllinks.URL_PRIVACY_POLICY
 import com.blockchain.ui.urllinks.URL_TOS_POLICY
-import com.crashlytics.android.answers.ContentViewEvent
 import com.mukesh.countrypicker.fragments.CountryPicker
 import info.blockchain.wallet.api.data.Settings
 import info.blockchain.wallet.util.FormatsUtil
@@ -140,10 +139,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView, RemoveCardBot
         settingsPresenter.onViewReady()
 
         analytics.logEvent(AnalyticsEvents.Settings)
-        Logging.logContentView(
-            ContentViewEvent()
-                .putContentName(javaClass.simpleName)
-        )
+        Logging.logContentView(javaClass.simpleName)
     }
 
     override fun setUpUi() {

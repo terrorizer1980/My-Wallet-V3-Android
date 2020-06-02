@@ -8,7 +8,6 @@ import android.view.View
 import com.blockchain.logging.CrashLogger
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
-import com.crashlytics.android.answers.LoginEvent
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.api.data.UpdateType
 import info.blockchain.wallet.exceptions.AccountLockedException
@@ -254,7 +253,7 @@ class PinEntryPresenter(
 
         setAccountLabelIfNecessary()
 
-        Logging.logLogin(LoginEvent().putSuccess(true))
+        Logging.logLogin(true)
 
         if (!wallet.isUpgraded) {
             view.goToUpgradeWalletActivity()
@@ -264,7 +263,7 @@ class PinEntryPresenter(
     }
 
     private fun handlePayloadUpdateError(t: Throwable) {
-        Logging.logLogin(LoginEvent().putSuccess(false))
+        Logging.logLogin(false)
 
         when (t) {
             is InvalidCredentialsException -> view.goToPasswordRequiredActivity()
