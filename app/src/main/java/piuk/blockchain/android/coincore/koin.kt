@@ -1,6 +1,7 @@
 package piuk.blockchain.android.coincore
 
 import org.koin.dsl.module.applicationContext
+import piuk.blockchain.android.coincore.alg.AlgTokens
 import piuk.blockchain.android.coincore.bch.BchTokens
 import piuk.blockchain.android.coincore.btc.BtcTokens
 import piuk.blockchain.android.coincore.eth.EthTokens
@@ -96,6 +97,19 @@ val coincoreModule = applicationContext {
         }
 
         bean {
+            AlgTokens(
+                rxBus = get(),
+                payloadManager = get(),
+                exchangeRates = get(),
+                historicRates = get(),
+                currencyPrefs = get(),
+                custodialManager = get(),
+                crashLogger = get(),
+                labels = get()
+            )
+        }
+
+        bean {
             Coincore(
                 btcTokens = get(),
                 bchTokens = get(),
@@ -103,6 +117,7 @@ val coincoreModule = applicationContext {
                 xlmTokens = get(),
                 paxTokens = get(),
                 stxTokens = get(),
+                algTokens = get(),
                 defaultLabels = get()
             )
         }

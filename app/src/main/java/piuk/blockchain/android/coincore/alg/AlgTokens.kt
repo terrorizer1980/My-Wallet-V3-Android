@@ -8,13 +8,11 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.payload.PayloadManager
 import io.reactivex.Completable
 import io.reactivex.Single
-import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import timber.log.Timber
 
 internal class AlgTokens(
     private val payloadManager: PayloadManager,
@@ -42,23 +40,6 @@ internal class AlgTokens(
         Completable.complete()
 
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
-        Single.fromCallable {
-            listOf(getAlgAccount())
-        }
-        .doOnError { Timber.e(it) }
-        .onErrorReturn { emptyList() }
+        Single.just(emptyList()) // TODO: when we support non custodial we should update this
 
-    private fun getAlgAccount(): CryptoSingleAccount {
-        val hdWallets = payloadManager.payload?.hdWallets
-            ?: throw IllegalStateException("Wallet not available")
-
-        val stxAccount = hdWallets[0].stxAccount
-            ?: throw IllegalStateException("Wallet not available")
-
-        return AlgCryptoWalletAccount(
-            label = "ALG Account",
-            address = stxAccount.bitcoinSerializedBase58Address,
-            exchangeRates = exchangeRates
-        )
-    }
 }

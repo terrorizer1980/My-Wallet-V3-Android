@@ -6,7 +6,8 @@ import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.impl.CryptoSingleAccountNonCustodialBase
+import piuk.blockchain.android.coincore.AvailableActions
+import piuk.blockchain.android.coincore.impl.CryptoSingleAccountBase
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 
@@ -16,7 +17,7 @@ internal class AlgCryptoWalletAccount(
     private val payloadDataManager: PayloadDataManager,
     override val isDefault: Boolean = false,
     override val exchangeRates: ExchangeRateDataManager
-) : CryptoSingleAccountNonCustodialBase() {
+) : CryptoSingleAccountBase() {
     override val cryptoCurrencies = setOf(CryptoCurrency.ALG)
 
     override val balance: Single<CryptoValue>
@@ -29,6 +30,12 @@ internal class AlgCryptoWalletAccount(
 
     override val activity: Single<ActivitySummaryList>
         get() = Single.just(emptyList())
+
+    override val actions: AvailableActions
+        get() = TODO("Not yet implemented")
+
+    override val isFunded: Boolean
+        get() = TODO("Not yet implemented")
 
     constructor(
         jsonAccount: Account,

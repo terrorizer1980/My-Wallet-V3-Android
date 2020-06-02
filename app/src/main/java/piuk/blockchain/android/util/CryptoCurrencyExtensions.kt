@@ -22,7 +22,7 @@ fun CryptoCurrency.colorRes(): Int =
         CryptoCurrency.XLM -> R.color.color_stellar_logo
         CryptoCurrency.PAX -> R.color.color_pax_logo
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-        CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+        CryptoCurrency.ALG -> R.color.green_800 // TODO update
     }
 
 @ColorInt
@@ -37,7 +37,7 @@ fun CryptoCurrency.drawableResFilled(): Int =
         CryptoCurrency.XLM -> R.drawable.vector_xlm_colored
         CryptoCurrency.PAX -> R.drawable.vector_pax_colored
         CryptoCurrency.STX -> R.drawable.ic_logo_stx
-        CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+        CryptoCurrency.ALG ->  R.drawable.ic_logo_stx // todo update
     }
 
 @DrawableRes
@@ -61,7 +61,7 @@ fun CryptoCurrency.maskedAsset(): Int =
         CryptoCurrency.PAX -> R.drawable.ic_usdd_circled_mask
         CryptoCurrency.BCH -> R.drawable.ic_bch_circled_mask
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-        CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+        CryptoCurrency.ALG -> R.drawable.ic_bch_circled_mask // todo update
     }
 
 fun ImageView.setImageDrawable(@DrawableRes res: Int) {
@@ -81,7 +81,7 @@ fun CryptoCurrency.errorIcon(): Int =
         CryptoCurrency.XLM -> R.drawable.vector_xlm_error
         CryptoCurrency.PAX -> R.drawable.vector_pax_error
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-        CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+        CryptoCurrency.ALG -> R.drawable.vector_pax_error // TODO update
     }
 
 @StringRes
