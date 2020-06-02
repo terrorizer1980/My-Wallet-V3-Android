@@ -64,6 +64,14 @@ enum class CryptoCurrency(
         requiredConfirmations = 12,
         featureFlags =
             CryptoCurrency.STUB_ASSET
+    ),
+    ALG(
+        networkTicker = "ALGO",
+        displayTicker = "ALGO",
+        dp = 18,
+        userDp = 8,
+        requiredConfirmations = 12,
+        featureFlags = CryptoCurrency.PRICE_CHARTING
     );
 
     fun hasFeature(feature: Long): Boolean = (0L != (featureFlags and feature))

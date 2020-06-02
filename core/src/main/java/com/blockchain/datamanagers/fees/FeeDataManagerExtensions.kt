@@ -43,6 +43,7 @@ fun FeeDataManager.getFeeOptions(cryptoCurrency: CryptoCurrency): Single<out Net
             )
         }
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+        CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
     }.singleOrError()
 
 sealed class NetworkFees

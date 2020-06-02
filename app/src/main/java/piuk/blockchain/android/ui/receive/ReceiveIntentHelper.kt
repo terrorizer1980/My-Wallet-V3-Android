@@ -16,8 +16,8 @@ import com.crashlytics.android.answers.ShareEvent
 import info.blockchain.balance.CryptoCurrency
 import org.bitcoinj.uri.BitcoinURI
 import piuk.blockchain.android.R
-import piuk.blockchain.android.util.BitcoinLinkGenerator
 import piuk.blockchain.android.util.AppUtil
+import piuk.blockchain.android.util.BitcoinLinkGenerator
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
 import java.io.File
@@ -63,6 +63,7 @@ class ReceiveIntentHelper(private val context: Context, private val appUtil: App
                 CryptoCurrency.XLM -> emailIntent.setupIntentForEmailXlm(payment = uri.fromStellarUri())
                 CryptoCurrency.PAX -> emailIntent.setupIntentForEmailPax(uri)
                 CryptoCurrency.STX -> TODO("STX is not fully supported yet")
+                CryptoCurrency.ALG -> TODO("ALG is not fully supported yet")
             }.exhaustive
 
             val imageIntent = Intent().apply { setupIntentForImage(type, file) }

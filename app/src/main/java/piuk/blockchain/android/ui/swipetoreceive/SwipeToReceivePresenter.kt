@@ -127,6 +127,7 @@ class SwipeToReceivePresenter(
                 hasAddresses = swipeToReceiveHelper.getPaxReceiveAddress().isNotEmpty()
             )
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+            CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
         }
 
     companion object {
