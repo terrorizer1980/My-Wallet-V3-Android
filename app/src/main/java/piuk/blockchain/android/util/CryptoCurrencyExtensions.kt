@@ -37,7 +37,7 @@ fun CryptoCurrency.drawableResFilled(): Int =
         CryptoCurrency.XLM -> R.drawable.vector_xlm_colored
         CryptoCurrency.PAX -> R.drawable.vector_pax_colored
         CryptoCurrency.STX -> R.drawable.ic_logo_stx
-        CryptoCurrency.ALG ->  R.drawable.ic_logo_stx // todo update
+        CryptoCurrency.ALG -> R.drawable.ic_logo_stx // todo update
     }
 
 @DrawableRes

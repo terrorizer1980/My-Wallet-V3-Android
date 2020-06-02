@@ -41,5 +41,4 @@ internal class AlgTokens(
 
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         Single.just(emptyList()) // TODO: when we support non custodial we should update this
-
 }

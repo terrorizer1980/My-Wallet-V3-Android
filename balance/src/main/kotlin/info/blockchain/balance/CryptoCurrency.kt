@@ -67,7 +67,7 @@ enum class CryptoCurrency(
     ),
     ALG(
         networkTicker = "ALG",
-        displayTicker = "ALG",
+        displayTicker = "ALGO",
         dp = 18,
         userDp = 8,
         requiredConfirmations = 12,
