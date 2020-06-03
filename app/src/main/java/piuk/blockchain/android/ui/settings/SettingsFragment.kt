@@ -29,6 +29,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
+import com.blockchain.koin.scopedInject
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.SettingsAnalyticsEvents
@@ -126,7 +127,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView, RemoveCardBot
         findPreference<SwitchPreferenceCompat>("screenshots_enabled")
     }
 
-    private val settingsPresenter: SettingsPresenter by inject()
+    private val settingsPresenter: SettingsPresenter by scopedInject()
     private val analytics: Analytics by inject()
     private val rxBus: RxBus by inject()
 

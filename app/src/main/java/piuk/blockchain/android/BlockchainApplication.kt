@@ -7,6 +7,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.blockchain.koin.KoinStarter
+import com.blockchain.koin.apiRetrofit
+import com.blockchain.koin.explorerRetrofit
 import com.blockchain.logging.CrashLogger
 import com.blockchain.ui.CurrentContextAccess
 import com.facebook.stetho.Stetho
@@ -47,8 +49,8 @@ import timber.log.Timber
 
 open class BlockchainApplication : Application(), FrameworkInterface {
 
-    private val retrofitApi: Retrofit by inject("api")
-    private val retrofitExplorer: Retrofit by inject("explorer")
+    private val retrofitApi: Retrofit by inject(apiRetrofit)
+    private val retrofitExplorer: Retrofit by inject(explorerRetrofit)
     private val environmentSettings: EnvironmentConfig by inject()
     private val loginState: AccessState by inject()
     private val lifeCycleInterestedComponent: LifecycleInterestedComponent by inject()

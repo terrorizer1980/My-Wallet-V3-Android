@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.blockchain.annotations.ButWhy
+import com.blockchain.koin.scopedInject
 import com.blockchain.lockbox.ui.LockboxLandingActivity
 import com.blockchain.notifications.NotificationsUtil
 import com.blockchain.notifications.analytics.AnalyticsEvent
@@ -42,7 +43,6 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar_general.*
-import org.koin.android.ext.android.inject
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.campaign.CampaignType
@@ -90,7 +90,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
     IntroTourHost,
     ConfirmPaymentDialog.OnConfirmDialogInteractionListener {
 
-    override val presenter: MainPresenter by inject()
+    override val presenter: MainPresenter by scopedInject()
     override val view: MainView = this
 
     var drawerOpen = false

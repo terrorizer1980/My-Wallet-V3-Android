@@ -5,6 +5,7 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.blockchain.koin.scopedInject
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.datamanagers.BillingAddress
@@ -15,7 +16,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_billing_address.*
-import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
@@ -29,8 +29,8 @@ class BillingAddressFragment : MviFragment<CardModel, CardIntent, CardState>(),
     PickerItemListener, AddCardFlowFragment {
 
     private var usSelected = false
-    private val nabuToken: NabuToken by inject()
-    private val nabuDataManager: NabuDataManager by inject()
+    private val nabuToken: NabuToken by scopedInject()
+    private val nabuDataManager: NabuDataManager by scopedInject()
 
     private val compositeDisposable = CompositeDisposable()
     private val nabuUser = nabuToken
@@ -162,7 +162,7 @@ class BillingAddressFragment : MviFragment<CardModel, CardIntent, CardState>(),
         this.usSelected = usSelected
     }
 
-    override val model: CardModel by inject()
+    override val model: CardModel by scopedInject()
     override val navigator: AddCardNavigator
         get() = (activity as? AddCardNavigator)
             ?: throw IllegalStateException("Parent must implement AddCardNavigator")
