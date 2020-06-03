@@ -116,7 +116,7 @@ val coincoreModule = applicationContext {
                 xlmTokens = get(),
                 paxTokens = get(),
                 stxTokens = get(),
-                algTokens = get(),
+                algoTokens = get(),
                 defaultLabels = get()
             )
         }
