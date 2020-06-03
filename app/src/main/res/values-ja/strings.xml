@@ -1650,4 +1650,8 @@
   <string name="activity_details_to_load_fail">宛先アドレス情報を読み込めませんでした</string>
   <string name="activity_details_from_load_fail">Fromアドレス情報を読み込めませんでした</string>
   <string name="card_already_saved">このカードは既に保存されています。</string>
+  <string name="activity_details_historic_sent">送信時の値</string>
+  <string name="activity_details_historic_received">受け取ったときの値</string>
+  <string name="activity_details_historic_transferred">転送時の値</string>
+  <string name="activity_details_historic_value_load_fail">過去の価値情報を読み込めませんでした</string>
 </resources>

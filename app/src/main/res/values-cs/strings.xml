@@ -1651,4 +1651,8 @@
   <string name="activity_details_to_load_fail">Nelze načíst informace o adrese</string>
   <string name="activity_details_from_load_fail">Nelze načíst informace z adresy</string>
   <string name="card_already_saved">Tato karta již byla uložena.</string>
+  <string name="activity_details_historic_sent">Hodnota při odeslání</string>
+  <string name="activity_details_historic_received">Hodnota při přijetí</string>
+  <string name="activity_details_historic_transferred">Hodnota při převodu</string>
+  <string name="activity_details_historic_value_load_fail">Nelze načíst informace o historické hodnotě</string>
 </resources>

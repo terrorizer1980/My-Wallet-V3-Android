@@ -1,7 +1,9 @@
 package piuk.blockchain.android.coincore
 
-import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.coincore.alg.AlgTokens
+import com.blockchain.koin.paxAccount
+import com.blockchain.koin.payloadScopeQualifier
+import org.koin.dsl.module
 import piuk.blockchain.android.coincore.bch.BchTokens
 import piuk.blockchain.android.coincore.btc.BtcTokens
 import piuk.blockchain.android.coincore.eth.EthTokens
@@ -10,11 +12,11 @@ import piuk.blockchain.android.coincore.pax.PaxTokens
 import piuk.blockchain.android.coincore.stx.StxTokens
 import piuk.blockchain.android.coincore.xlm.XlmTokens
 
-val coincoreModule = applicationContext {
+val coincoreModule = module {
 
-    context("Payload") {
+    scope(payloadScopeQualifier) {
 
-        bean {
+        scoped {
             StxTokens(
                 rxBus = get(),
                 payloadManager = get(),
@@ -27,7 +29,7 @@ val coincoreModule = applicationContext {
             )
         }
 
-        bean {
+        scoped {
             BtcTokens(
                 exchangeRates = get(),
                 historicRates = get(),
@@ -40,7 +42,7 @@ val coincoreModule = applicationContext {
             )
         }
 
-        bean {
+        scoped {
             BchTokens(
                 bchDataManager = get(),
                 exchangeRates = get(),
@@ -55,7 +57,7 @@ val coincoreModule = applicationContext {
             )
         }
 
-        bean {
+        scoped {
             XlmTokens(
                 rxBus = get(),
                 xlmDataManager = get(),
@@ -68,7 +70,7 @@ val coincoreModule = applicationContext {
             )
         }
 
-        bean {
+        scoped {
             EthTokens(
                 ethDataManager = get(),
                 exchangeRates = get(),
@@ -82,10 +84,10 @@ val coincoreModule = applicationContext {
             )
         }
 
-        bean {
+        scoped {
             PaxTokens(
                 rxBus = get(),
-                paxAccount = get(),
+                paxAccount = get(paxAccount),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
@@ -96,7 +98,7 @@ val coincoreModule = applicationContext {
             )
         }
 
-        bean {
+        scoped {
             AlgTokens(
                 rxBus = get(),
                 exchangeRates = get(),
@@ -108,7 +110,7 @@ val coincoreModule = applicationContext {
             )
         }
 
-        bean {
+        scoped {
             Coincore(
                 btcTokens = get(),
                 bchTokens = get(),
@@ -121,7 +123,7 @@ val coincoreModule = applicationContext {
             )
         }
 
-        bean {
+        scoped {
             AssetActivityRepo(
                 coincore = get(),
                 rxBus = get()
