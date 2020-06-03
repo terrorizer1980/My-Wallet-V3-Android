@@ -97,7 +97,7 @@ internal class TransactionExecutorViaDataManagers(
             CryptoCurrency.PAX ->
                 sendPaxTransaction(fees as EthereumFees, destination, amount)
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-            CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+            CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
         }
 
     private fun sendPaxTransaction(
@@ -367,7 +367,7 @@ internal class TransactionExecutorViaDataManagers(
             CryptoCurrency.XLM -> throw IllegalArgumentException("Xlm does not have unspent outputs")
             CryptoCurrency.PAX -> throw IllegalArgumentException("PAX does not have unspent outputs")
             CryptoCurrency.STX -> throw IllegalArgumentException("STX not supported by this method")
-            CryptoCurrency.ALG -> throw IllegalArgumentException("ALG not supported by this method")
+            CryptoCurrency.ALGO -> throw IllegalArgumentException("ALG not supported by this method")
         }.subscribeOn(Schedulers.io())
             .singleOrError()
 
@@ -399,7 +399,7 @@ internal class TransactionExecutorViaDataManagers(
         CryptoCurrency.XLM -> throw IllegalArgumentException("XLM not supported by this method")
         CryptoCurrency.PAX -> throw IllegalArgumentException("PAX not supported by this method")
         CryptoCurrency.STX -> throw IllegalArgumentException("STX not supported by this method")
-        CryptoCurrency.ALG -> throw IllegalArgumentException("ALG not supported by this method")
+        CryptoCurrency.ALGO -> throw IllegalArgumentException("ALG not supported by this method")
     }.subscribeOn(Schedulers.io())
         .singleOrError()
 

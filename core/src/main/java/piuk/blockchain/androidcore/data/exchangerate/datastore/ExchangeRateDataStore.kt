@@ -33,7 +33,7 @@ class ExchangeRateDataStore(
             .doOnSuccess { xlmTickerData = it.toMap() }
         ).mergeWith(exchangeRateService.getExchangeRateMap(CryptoCurrency.PAX)
             .doOnSuccess { paxTickerData = it.toMap() })
-        .mergeWith(exchangeRateService.getExchangeRateMap(CryptoCurrency.ALG)
+        .mergeWith(exchangeRateService.getExchangeRateMap(CryptoCurrency.ALGO)
             .doOnSuccess { algTickerData = it.toMap() }).ignoreElements()
 
     fun getCurrencyLabels(): Array<String> = btcTickerData!!.keys.toTypedArray()
@@ -80,7 +80,7 @@ class ExchangeRateDataStore(
             CryptoCurrency.XLM -> xlmTickerData
             CryptoCurrency.PAX -> paxTickerData
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-            CryptoCurrency.ALG -> algTickerData
+            CryptoCurrency.ALGO -> algTickerData
         }
 
     fun getHistoricPrice(

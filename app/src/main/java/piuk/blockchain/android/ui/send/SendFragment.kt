@@ -592,7 +592,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
                 CryptoCurrency.XLM -> R.string.xlm_to_field_helper
                 CryptoCurrency.PAX -> R.string.pax_to_field_helper_1
                 CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-                CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+                CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
             }
         } else {
             when (currencyState.cryptoCurrency) {
@@ -602,7 +602,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
                 CryptoCurrency.XLM -> R.string.xlm_to_field_helper_no_dropdown
                 CryptoCurrency.PAX -> R.string.pax_to_field_helper_no_dropdown_1
                 CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-                CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+                CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
             }
         }
         toContainer.toAddressEditTextView.setHint(hint)

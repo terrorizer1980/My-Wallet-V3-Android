@@ -14,7 +14,7 @@ internal class AlgCryptoWalletAccount(
     override val isDefault: Boolean = false,
     override val exchangeRates: ExchangeRateDataManager
 ) : CryptoSingleAccountBase() {
-    override val cryptoCurrencies = setOf(CryptoCurrency.ALG)
+    override val cryptoCurrencies = setOf(CryptoCurrency.ALGO)
 
     override val balance: Single<CryptoValue>
         get() = Single.just(CryptoValue.ZeroAlg)

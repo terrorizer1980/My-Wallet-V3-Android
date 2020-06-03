@@ -118,7 +118,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
             add(IDX_CARD_BCH, newState.assets[CryptoCurrency.BCH])
             add(IDX_CARD_XLM, newState.assets[CryptoCurrency.XLM])
             add(IDX_CARD_PAX, newState.assets[CryptoCurrency.PAX])
-            add(IDX_CARD_ALG, newState.assets[CryptoCurrency.ALG])
+            add(IDX_CARD_ALG, newState.assets[CryptoCurrency.ALGO])
         }
         theAdapter.notifyDataSetChanged()
     }
@@ -133,7 +133,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
             modList.add(handleUpdatedAssetState(IDX_CARD_BCH, newState.assets[CryptoCurrency.BCH]))
             modList.add(handleUpdatedAssetState(IDX_CARD_XLM, newState.assets[CryptoCurrency.XLM]))
             modList.add(handleUpdatedAssetState(IDX_CARD_PAX, newState.assets[CryptoCurrency.PAX]))
-            modList.add(handleUpdatedAssetState(IDX_CARD_ALG, newState.assets[CryptoCurrency.ALG]))
+            modList.add(handleUpdatedAssetState(IDX_CARD_ALG, newState.assets[CryptoCurrency.ALGO]))
 
             modList.removeAll { it == null }
 

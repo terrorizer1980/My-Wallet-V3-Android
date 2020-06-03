@@ -77,7 +77,7 @@ data class DashboardState(
         CryptoCurrency.ETHER to AssetState(CryptoCurrency.ETHER),
         CryptoCurrency.XLM to AssetState(CryptoCurrency.XLM),
         CryptoCurrency.PAX to AssetState(CryptoCurrency.PAX),
-        CryptoCurrency.ALG to AssetState(CryptoCurrency.ALG)
+        CryptoCurrency.ALGO to AssetState(CryptoCurrency.ALGO)
     ),
     val showAssetSheetFor: CryptoCurrency? = null,
     val showDashboardSheet: DashboardSheet? = null,

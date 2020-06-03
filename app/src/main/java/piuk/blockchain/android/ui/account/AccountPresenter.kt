@@ -76,7 +76,7 @@ class AccountPresenter internal constructor(
             CryptoCurrency.XLM -> throw IllegalStateException("Xlm not a supported cryptocurrency on this page")
             CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-            CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+            CryptoCurrency.ALG -> TODO("STUB: ALGO NOT IMPLEMENTED")
         }
 
     override fun onViewReady() {
@@ -362,7 +362,7 @@ class AccountPresenter internal constructor(
             CryptoCurrency.XLM -> throw IllegalStateException("Xlm not a supported cryptocurrency on this page")
             CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-            CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+            CryptoCurrency.ALG -> TODO("STUB: ALGO NOT IMPLEMENTED")
         }
     }
 

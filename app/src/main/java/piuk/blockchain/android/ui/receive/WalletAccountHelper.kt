@@ -48,7 +48,7 @@ class WalletAccountHelper(
                 CryptoCurrency.XLM -> throw IllegalArgumentException("XLM is not supported here")
                 CryptoCurrency.PAX -> getPaxAccount()
                 CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-                CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+                CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
             }
         } catch (t: Throwable) {
             crashLogger.logException(t)
@@ -69,7 +69,7 @@ class WalletAccountHelper(
             CryptoCurrency.XLM -> getXlmAccount()
             CryptoCurrency.PAX -> Single.just(getPaxAccount())
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-            CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+            CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
         }
 
     private fun allBtcAccountItems() = getHdAccounts() + getLegacyBtcAddresses()
@@ -207,7 +207,7 @@ class WalletAccountHelper(
             CryptoCurrency.XLM -> throw IllegalArgumentException("XLM is not supported here")
             CryptoCurrency.PAX -> getDefaultPaxAccount()
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-            CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+            CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
         }
 
     fun getEthAccount() =
@@ -337,7 +337,7 @@ class WalletAccountHelper(
             CryptoCurrency.XLM -> getDefaultXlmAccountItem().map { listOf(it) }
             CryptoCurrency.PAX -> Single.just(getPaxOverviewList())
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-            CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+            CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
         }
 
     private fun getEthOverviewList(): List<ItemAccount> = getEthAccount()
@@ -436,6 +436,6 @@ class WalletAccountHelper(
             CryptoCurrency.XLM -> 1 // TODO("AND-1511") Ideally we're getting real account count here, even if one
             CryptoCurrency.PAX -> getEthAccount().size
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-            CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+            CryptoCurrency.ALGO -> TODO("STUB: ALG) NOT IMPLEMENTED")
         } > 1
 }

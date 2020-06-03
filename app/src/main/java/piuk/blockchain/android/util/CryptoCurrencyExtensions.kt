@@ -22,7 +22,7 @@ fun CryptoCurrency.colorRes(): Int =
         CryptoCurrency.XLM -> R.color.color_stellar_logo
         CryptoCurrency.PAX -> R.color.color_pax_logo
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-        CryptoCurrency.ALG -> R.color.green_800 // TODO update
+        CryptoCurrency.ALGO -> R.color.color_algo_logo
     }
 
 @ColorInt
@@ -37,7 +37,7 @@ fun CryptoCurrency.drawableResFilled(): Int =
         CryptoCurrency.XLM -> R.drawable.vector_xlm_colored
         CryptoCurrency.PAX -> R.drawable.vector_pax_colored
         CryptoCurrency.STX -> R.drawable.ic_logo_stx
-        CryptoCurrency.ALG -> R.drawable.vector_algo_colored // todo update
+        CryptoCurrency.ALGO -> R.drawable.vector_algo_colored
     }
 
 @DrawableRes
@@ -49,7 +49,7 @@ fun CryptoCurrency.coinIconWhite(): Int =
         CryptoCurrency.XLM -> R.drawable.vector_xlm_white
         CryptoCurrency.PAX -> R.drawable.vector_pax_white
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-        CryptoCurrency.ALG -> TODO("STUB: ALG NOT IMPLEMENTED")
+        CryptoCurrency.ALGO -> R.drawable.vector_algo_white
     }
 
 @DrawableRes
@@ -61,7 +61,7 @@ fun CryptoCurrency.maskedAsset(): Int =
         CryptoCurrency.PAX -> R.drawable.ic_usdd_circled_mask
         CryptoCurrency.BCH -> R.drawable.ic_bch_circled_mask
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-        CryptoCurrency.ALG -> R.drawable.ic_bch_circled_mask // todo update
+        CryptoCurrency.ALGO -> R.drawable.ic_bch_circled_mask // TODO update
     }
 
 fun ImageView.setImageDrawable(@DrawableRes res: Int) {
@@ -81,7 +81,7 @@ fun CryptoCurrency.errorIcon(): Int =
         CryptoCurrency.XLM -> R.drawable.vector_xlm_error
         CryptoCurrency.PAX -> R.drawable.vector_pax_error
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-        CryptoCurrency.ALG -> R.drawable.vector_pax_error // TODO update
+        CryptoCurrency.ALGO -> R.drawable.vector_algo_error // TODO update
     }
 
 @StringRes
@@ -93,7 +93,7 @@ fun CryptoCurrency.assetName() =
         CryptoCurrency.XLM -> R.string.lumens
         CryptoCurrency.PAX -> R.string.usd_pax_1
         CryptoCurrency.STX -> R.string.stacks_1
-        CryptoCurrency.ALG -> R.string.algorand
+        CryptoCurrency.ALGO -> R.string.algorand
     }
 
 internal class ResourceDefaultLabels(
@@ -109,7 +109,7 @@ internal class ResourceDefaultLabels(
                 CryptoCurrency.XLM -> R.string.xlm_default_account_label
                 CryptoCurrency.PAX -> R.string.pax_default_account_label_1
                 CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-                CryptoCurrency.ALG -> R.string.alg_default_account_label
+                CryptoCurrency.ALGO -> R.string.alg_default_account_label
             }
         )
 

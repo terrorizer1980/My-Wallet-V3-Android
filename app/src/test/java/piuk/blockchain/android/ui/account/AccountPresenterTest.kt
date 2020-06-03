@@ -541,7 +541,7 @@ class AccountPresenterTest {
                 CryptoCurrency.XLM -> assertFalse(it in displayable)
                 CryptoCurrency.PAX -> assertFalse(it in displayable)
                 CryptoCurrency.STX -> assertFalse(it in displayable)
-                CryptoCurrency.ALG -> assertFalse(it in displayable)
+                CryptoCurrency.ALGO -> assertFalse(it in displayable)
             }.exhaustive
         }
     }

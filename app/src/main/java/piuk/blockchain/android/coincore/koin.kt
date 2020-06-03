@@ -1,7 +1,7 @@
 package piuk.blockchain.android.coincore
 
 import org.koin.dsl.module.applicationContext
-import piuk.blockchain.android.coincore.alg.AlgTokens
+import piuk.blockchain.android.coincore.alg.AlgoTokens
 import piuk.blockchain.android.coincore.bch.BchTokens
 import piuk.blockchain.android.coincore.btc.BtcTokens
 import piuk.blockchain.android.coincore.eth.EthTokens
@@ -97,7 +97,7 @@ val coincoreModule = applicationContext {
         }
 
         bean {
-            AlgTokens(
+            AlgoTokens(
                 rxBus = get(),
                 exchangeRates = get(),
                 historicRates = get(),
