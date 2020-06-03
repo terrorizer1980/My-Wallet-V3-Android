@@ -1714,7 +1714,7 @@
     <string name="activity_details_historic_transferred">Value when transferred</string>
     <string name="activity_details_to">To</string>
     <string name="activity_details_from">From</string>
-    <string name="activity_details_empty" />
+    <string name="empty" translatable="false" />
     <string name="activity_details_action">View on Blockchain Explorer</string>
     <string name="activity_details_cancel_action">Cancel Buy</string>
     <string name="activity_detail_description_action">Add a description</string>

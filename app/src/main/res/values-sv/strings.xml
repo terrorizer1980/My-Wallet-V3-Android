@@ -1649,4 +1649,8 @@
   <string name="activity_details_to_load_fail">Det gick inte att ladda till adressinformation</string>
   <string name="activity_details_from_load_fail">Det gick inte att ladda från adressinformation</string>
   <string name="card_already_saved">Det här kortet har redan sparats.</string>
+  <string name="activity_details_historic_sent">Värde när det skickas</string>
+  <string name="activity_details_historic_received">Värde när det tas emot</string>
+  <string name="activity_details_historic_transferred">Värde vid överföring</string>
+  <string name="activity_details_historic_value_load_fail">Det gick inte att ladda historisk värdeinformation</string>
 </resources>

@@ -1647,4 +1647,8 @@
   <string name="activity_details_to_load_fail">Adres bilgilerine yüklenemedi</string>
   <string name="activity_details_from_load_fail">Adres bilgilerinden yüklenemedi</string>
   <string name="card_already_saved">Bu kart zaten kaydedildi.</string>
+  <string name="activity_details_historic_sent">Gönderildiğinde değer</string>
+  <string name="activity_details_historic_received">Alındığında değer</string>
+  <string name="activity_details_historic_transferred">Aktarıldığında değer</string>
+  <string name="activity_details_historic_value_load_fail">Geçmiş değer bilgileri yüklenemedi</string>
 </resources>

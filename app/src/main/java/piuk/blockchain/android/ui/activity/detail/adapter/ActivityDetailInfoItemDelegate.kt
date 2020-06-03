@@ -88,7 +88,7 @@ private class InfoItemViewHolder(var parent: View) : RecyclerView.ViewHolder(par
                 is BuyTransactionId -> R.string.activity_details_buy_tx_id
                 is BuyCryptoWallet -> R.string.activity_details_buy_sending_to
                 is BuyPaymentMethod -> R.string.activity_details_buy_payment_method
-                else -> R.string.activity_details_empty
+                else -> R.string.empty
             })
 
     private fun getValueForType(infoType: ActivityDetailsType): String =

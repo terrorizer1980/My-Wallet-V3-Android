@@ -1651,4 +1651,8 @@
   <string name="activity_details_to_load_fail">Impossibile caricare per indirizzare le informazioni</string>
   <string name="activity_details_from_load_fail">Impossibile caricare dalle informazioni sull\'indirizzo</string>
   <string name="card_already_saved">Questa carta è già stata salvata.</string>
+  <string name="activity_details_historic_sent">Valore quando inviato</string>
+  <string name="activity_details_historic_received">Valore quando ricevuto</string>
+  <string name="activity_details_historic_transferred">Valore quando trasferito</string>
+  <string name="activity_details_historic_value_load_fail">Impossibile caricare le informazioni sul valore storico</string>
 </resources>

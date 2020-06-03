@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import com.blockchain.extensions.exhaustive
+import com.blockchain.koin.scopedInject
 import com.blockchain.notifications.analytics.CurrencyChangedFromBuyForm
 import com.blockchain.notifications.analytics.PaymentMethodSelected
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
@@ -46,7 +47,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     PaymentMethodChangeListener,
     ChangeCurrencyHost {
 
-    override val model: SimpleBuyModel by inject()
+    override val model: SimpleBuyModel by scopedInject()
 
     private var lastState: SimpleBuyState? = null
 

@@ -1650,4 +1650,8 @@
   <string name="activity_details_to_load_fail">정보를로드하기 위해로드 할 수 없습니다</string>
   <string name="activity_details_from_load_fail">보낸 사람 주소 정보를로드 할 수 없습니다</string>
   <string name="card_already_saved">이 카드는 이미 저장되었습니다.</string>
+  <string name="activity_details_historic_sent">보낼 때의 가치</string>
+  <string name="activity_details_historic_received">받은 가치</string>
+  <string name="activity_details_historic_transferred">전송시 가치</string>
+  <string name="activity_details_historic_value_load_fail">과거 가치 정보를로드 할 수 없습니다</string>
 </resources>

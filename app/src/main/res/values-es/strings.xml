@@ -1649,4 +1649,8 @@
   <string name="activity_details_to_load_fail">No se pudo cargar a la información de dirección</string>
   <string name="activity_details_from_load_fail">No se pudo cargar la información de la dirección de</string>
   <string name="card_already_saved">Esta tarjeta ya se ha guardado.</string>
+  <string name="activity_details_historic_sent">Valor cuando se envía</string>
+  <string name="activity_details_historic_received">Valor cuando se recibe</string>
+  <string name="activity_details_historic_transferred">Valor cuando se transfiere</string>
+  <string name="activity_details_historic_value_load_fail">No se pudo cargar la información del valor histórico</string>
 </resources>

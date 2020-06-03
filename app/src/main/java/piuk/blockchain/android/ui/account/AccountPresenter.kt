@@ -38,8 +38,8 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.logging.AddressType
-import piuk.blockchain.androidcoreui.utils.logging.CreateAccountEvent
-import piuk.blockchain.androidcoreui.utils.logging.ImportEvent
+import piuk.blockchain.androidcoreui.utils.logging.createAccountEvent
+import piuk.blockchain.androidcoreui.utils.logging.importEvent
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
 import java.math.BigInteger
@@ -155,7 +155,7 @@ class AccountPresenter internal constructor(
                     view.showToast(R.string.remote_save_ok, ToastCustom.TYPE_OK)
                     onViewReady()
                     analytics.logEvent(WalletAnalytics.AddNewWallet)
-                    Logging.logCustom(CreateAccountEvent(payloadDataManager.accounts.size))
+                    Logging.logEvent(createAccountEvent(payloadDataManager.accounts.size))
                 },
                 { throwable ->
                     when (throwable) {
@@ -280,7 +280,7 @@ class AccountPresenter internal constructor(
                 {
                     analytics.logEvent(AddressAnalytics.ImportBTCAddress)
                     view.showRenameImportedAddressDialog(legacyAddress)
-                    Logging.logCustom(ImportEvent(AddressType.WATCH_ONLY))
+                    Logging.logEvent(importEvent(AddressType.WATCH_ONLY))
                 },
                 {
                     view.showToast(R.string.remote_save_ko, ToastCustom.TYPE_ERROR)
@@ -343,7 +343,7 @@ class AccountPresenter internal constructor(
                         onViewReady()
                         view.showRenameImportedAddressDialog(it)
                         analytics.logEvent(AddressAnalytics.ImportBTCAddress)
-                        Logging.logCustom(ImportEvent(AddressType.PRIVATE_KEY))
+                        Logging.logEvent(importEvent(AddressType.PRIVATE_KEY))
                     },
                     {
                         view.showToast(R.string.remote_save_ko, ToastCustom.TYPE_ERROR)

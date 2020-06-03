@@ -1649,4 +1649,8 @@
   <string name="activity_details_to_load_fail">Konnte nicht geladen werden, um Informationen zu adressieren</string>
   <string name="activity_details_from_load_fail">Konnte nicht von Adressinformationen geladen werden</string>
   <string name="card_already_saved">Diese Karte wurde bereits gespeichert.</string>
+  <string name="activity_details_historic_sent">Wert beim Senden</string>
+  <string name="activity_details_historic_received">Wert bei Empfang</string>
+  <string name="activity_details_historic_transferred">Wert bei Übertragung</string>
+  <string name="activity_details_historic_value_load_fail">Historische Wertinformationen konnten nicht geladen werden</string>
 </resources>
