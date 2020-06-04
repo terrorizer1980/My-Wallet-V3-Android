@@ -46,15 +46,15 @@ internal class UsdtTokens(
         usdtAccount.fetchErc20Address().ignoreElements()
 
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
-        Single.just(listOf(getNonCustodialPaxAccount()))
+        Single.just(listOf(getNonCustodialUsdtAccount()))
 
-    private fun getNonCustodialPaxAccount(): CryptoSingleAccount {
-        val paxAddress = usdtAccount.ethDataManager.getEthWallet()?.account?.address
+    private fun getNonCustodialUsdtAccount(): CryptoSingleAccount {
+        val usdtAddress = usdtAccount.ethDataManager.getEthWallet()?.account?.address
             ?: throw Exception("No USDT wallet found")
 
         val label = stringUtils.getString(R.string.usdt_default_account_label)
 
-        return UsdtCryptoWalletAccount(label, paxAddress, usdtAccount, exchangeRates)
+        return UsdtCryptoWalletAccount(label, usdtAddress, usdtAccount, exchangeRates)
     }
 
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
