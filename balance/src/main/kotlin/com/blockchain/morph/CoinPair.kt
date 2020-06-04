@@ -159,7 +159,7 @@ infix fun CryptoCurrency.to(other: CryptoCurrency) =
             CryptoCurrency.ETHER -> CoinPair.USDT_TO_ETH
             CryptoCurrency.BCH -> CoinPair.USDT_TO_BCH
             CryptoCurrency.XLM -> CoinPair.USDT_TO_XLM
-            CryptoCurrency.PAX -> CoinPair.USDT_TO_XLM
+            CryptoCurrency.PAX -> CoinPair.USDT_TO_PAX
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
             CryptoCurrency.ALGO -> CoinPair.USDT_TO_ALG
         }
