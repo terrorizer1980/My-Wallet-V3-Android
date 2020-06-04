@@ -126,7 +126,6 @@ val coincoreModule = module {
             )
         }
 
-
         scoped {
             Coincore(
                 btcTokens = get(),
