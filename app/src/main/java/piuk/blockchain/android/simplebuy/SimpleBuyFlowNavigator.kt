@@ -3,6 +3,7 @@ package piuk.blockchain.android.simplebuy
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.preferences.SimpleBuyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
 import com.blockchain.swap.nabu.service.TierService
 import io.reactivex.Observable
@@ -18,14 +19,12 @@ class SimpleBuyFlowNavigator(
 
     private fun stateCheck(startedFromKycResume: Boolean, startedFromDashboard: Boolean): Single<FlowScreen> =
         simpleBuyModel.state.flatMap {
-            if (
-                startedFromKycResume ||
-                it.currentScreen == FlowScreen.KYC ||
-                it.currentScreen == FlowScreen.KYC_VERIFICATION
-            ) {
+            if (startedFromKycResume || it.currentScreen == FlowScreen.KYC) {
                 tierService.tiers().toObservable().map { tier ->
                     when (tier.combinedState) {
-                        Kyc2TierState.Tier2Approved -> FlowScreen.ENTER_AMOUNT
+                        Kyc2TierState.Tier2Approved ->
+                            if (it.selectedPaymentMethod?.id != PaymentMethod.UNDEFINED_CARD_PAYMENT_ID)
+                                FlowScreen.CHECKOUT else FlowScreen.ADD_CARD
                         Kyc2TierState.Tier2InPending,
                         Kyc2TierState.Tier2InReview,
                         Kyc2TierState.Tier2Failed -> FlowScreen.KYC_VERIFICATION

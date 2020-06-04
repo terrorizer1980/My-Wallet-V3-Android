@@ -20,6 +20,8 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
 
     override val model: SimpleBuyModel by inject()
 
+    private var navigatedToNextScreen = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -67,12 +69,20 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
                     newState.kycVerificationState == KycState.VERIFIED_BUT_NOT_ELIGIBLE
         }
 
-        if (newState.kycVerificationState == KycState.VERIFIED_AND_ELIGIBLE) {
+        // we need this ungly flag here so we dont navigate again to the next screen once the fragment is resumed
+        if (newState.kycVerificationState == KycState.VERIFIED_AND_ELIGIBLE && !navigatedToNextScreen) {
             if (newState.selectedPaymentMethod?.id == PaymentMethod.UNDEFINED_CARD_PAYMENT_ID) {
                 addCard()
             } else {
                 navigator().goToCheckOutScreen()
             }
+            navigatedToNextScreen = true
+        }
+
+        if (newState.selectedPaymentMethod?.isBank() == false &&
+            newState.selectedPaymentMethod.id != PaymentMethod.UNDEFINED_CARD_PAYMENT_ID
+        ) {
+            navigator().goToCheckOutScreen()
         }
 
         kyc_failed_icon.setImageResource(
@@ -115,7 +125,6 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
             val cardPartner = card.partner
 
             model.process(SimpleBuyIntent.UpdateSelectedPaymentMethod(cardId, cardLabel, cardPartner))
-            navigator().goToCheckOutScreen()
         }
     }
 

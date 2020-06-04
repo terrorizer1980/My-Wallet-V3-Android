@@ -14,6 +14,7 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.campaign.blockstackCampaignName
+import piuk.blockchain.android.simplebuy.SimpleBuyState
 import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 
@@ -70,9 +71,7 @@ class AnnouncementQueries(
         // If we have a local simple buy in progress and it has the kyc unfinished state set
         return Single.defer {
             sbStateFactory.currentState()?.let {
-                Single.just(it.kycStartedButNotCompleted).zipWith(tierService.tiers()) { kycStarted, tier ->
-                    kycStarted && !tier.combinedState.docsSubmittedForGoldTier()
-                }
+                Single.just(it.kycStartedButNotCompleted && !it.kycDataSubmitted())
             } ?: Single.just(false)
         }
     }
@@ -98,8 +97,5 @@ class AnnouncementQueries(
         }
 }
 
-private fun Kyc2TierState.docsSubmittedForGoldTier(): Boolean =
-    this == Kyc2TierState.Tier2InPending ||
-            this == Kyc2TierState.Tier2Approved ||
-            this == Kyc2TierState.Tier2InReview ||
-            this == Kyc2TierState.Tier2Failed
+private fun SimpleBuyState?.kycDataSubmitted(): Boolean =
+    this?.kycVerificationState?.docsSubmitted() ?: false
