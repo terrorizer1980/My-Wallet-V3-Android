@@ -338,7 +338,6 @@ class EthDataManager(
     fun getErc20TokenData(currency: CryptoCurrency): Erc20TokenData {
         when (currency) {
             CryptoCurrency.PAX -> return getEthWallet()!!.getErc20TokenData(Erc20TokenData.PAX_CONTRACT_NAME)
-            CryptoCurrency.USDT -> return getEthWallet()!!.getErc20TokenData(Erc20TokenData.USDT_CONTRACT_NAME)
             else -> throw IllegalArgumentException("Not an ERC20 token")
         }
     }
