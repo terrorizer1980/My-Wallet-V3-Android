@@ -65,11 +65,11 @@ enum class CryptoCurrency(
         featureFlags =
             CryptoCurrency.STUB_ASSET
     ),
-    ALG(
+    ALGO(
         networkTicker = "ALGO",
         displayTicker = "ALGO",
-        dp = 18,
-        userDp = 8,
+        dp = 6,
+        userDp = 6,
         requiredConfirmations = 12,
         featureFlags = CryptoCurrency.PRICE_CHARTING
     );

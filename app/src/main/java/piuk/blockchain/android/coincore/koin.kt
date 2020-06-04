@@ -1,9 +1,9 @@
 package piuk.blockchain.android.coincore
 
-import piuk.blockchain.android.coincore.alg.AlgTokens
 import com.blockchain.koin.paxAccount
 import com.blockchain.koin.payloadScopeQualifier
 import org.koin.dsl.module
+import piuk.blockchain.android.coincore.alg.AlgoTokens
 import piuk.blockchain.android.coincore.bch.BchTokens
 import piuk.blockchain.android.coincore.btc.BtcTokens
 import piuk.blockchain.android.coincore.eth.EthTokens
@@ -99,7 +99,7 @@ val coincoreModule = module {
         }
 
         scoped {
-            AlgTokens(
+            AlgoTokens(
                 rxBus = get(),
                 exchangeRates = get(),
                 historicRates = get(),
@@ -118,7 +118,7 @@ val coincoreModule = module {
                 xlmTokens = get(),
                 paxTokens = get(),
                 stxTokens = get(),
-                algTokens = get(),
+                algoTokens = get(),
                 defaultLabels = get()
             )
         }

@@ -13,7 +13,7 @@ import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 
-internal class AlgTokens(
+internal class AlgoTokens(
     custodialManager: CustodialWalletManager,
     exchangeRates: ExchangeRateDataManager,
     historicRates: ChartsDataManager,
@@ -32,7 +32,7 @@ internal class AlgTokens(
 ) {
 
     override val asset: CryptoCurrency
-        get() = CryptoCurrency.ALG
+        get() = CryptoCurrency.ALGO
 
     override fun initToken(): Completable =
         Completable.complete()
