@@ -461,8 +461,10 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    private fun canTriggerAnUpdateOfType(updateAvailabilityType: Int,
-                                         appUpdateInfoTask: Task<AppUpdateInfo>): Boolean {
+    private fun canTriggerAnUpdateOfType(
+        updateAvailabilityType: Int,
+        appUpdateInfoTask: Task<AppUpdateInfo>
+    ): Boolean {
         return (appUpdateInfoTask.result.updateAvailability() ==
             UpdateAvailability.UPDATE_AVAILABLE ||
             appUpdateInfoTask.result.updateAvailability() ==
@@ -471,8 +473,10 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
     }
 
     @Throws(IntentSender.SendIntentException::class)
-    private fun updateFlexibleNatively(appUpdateManager: AppUpdateManager,
-                                       appUpdateInfo: AppUpdateInfo) {
+    private fun updateFlexibleNatively(
+        appUpdateManager: AppUpdateManager,
+        appUpdateInfo: AppUpdateInfo
+    ) {
 
         val updatedListener = object : InstallStateUpdatedListener {
             override fun onStateUpdate(installState: InstallState) {
@@ -500,8 +504,10 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
     }
 
     @Throws(IntentSender.SendIntentException::class)
-    private fun updateForcedNatively(appUpdateManager: AppUpdateManager,
-                                     appUpdateInfo: AppUpdateInfo) {
+    private fun updateForcedNatively(
+        appUpdateManager: AppUpdateManager,
+        appUpdateInfo: AppUpdateInfo
+    ) {
         appUpdateManager.startUpdateFlowForResult(
             appUpdateInfo,
             AppUpdateType.IMMEDIATE,
@@ -632,8 +638,10 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
         private const val KEY_IS_AFTER_WALLET_CREATION = "is_after_wallet_creation"
         private val HANDLER = Handler()
 
-        fun newInstance(showSwipeHint: Boolean,
-                        isAfterCreateWallet: Boolean): PinEntryFragment {
+        fun newInstance(
+            showSwipeHint: Boolean,
+            isAfterCreateWallet: Boolean
+        ): PinEntryFragment {
             val args = Bundle()
             args.putBoolean(KEY_SHOW_SWIPE_HINT, showSwipeHint)
             args.putBoolean(KEY_IS_AFTER_WALLET_CREATION, isAfterCreateWallet)
