@@ -2,6 +2,7 @@ package piuk.blockchain.android.coincore
 
 import com.blockchain.koin.paxAccount
 import com.blockchain.koin.payloadScopeQualifier
+import com.blockchain.koin.usdtAccount
 import org.koin.dsl.module
 import piuk.blockchain.android.coincore.alg.AlgoTokens
 import piuk.blockchain.android.coincore.bch.BchTokens
@@ -10,6 +11,7 @@ import piuk.blockchain.android.coincore.eth.EthTokens
 import piuk.blockchain.android.coincore.impl.AssetActivityRepo
 import piuk.blockchain.android.coincore.pax.PaxTokens
 import piuk.blockchain.android.coincore.stx.StxTokens
+import piuk.blockchain.android.coincore.usdt.UsdtTokens
 import piuk.blockchain.android.coincore.xlm.XlmTokens
 
 val coincoreModule = module {
@@ -111,6 +113,21 @@ val coincoreModule = module {
         }
 
         scoped {
+            UsdtTokens(
+                rxBus = get(),
+                usdtAccount = get(usdtAccount),
+                exchangeRates = get(),
+                historicRates = get(),
+                currencyPrefs = get(),
+                custodialManager = get(),
+                stringUtils = get(),
+                crashLogger = get(),
+                labels = get()
+            )
+        }
+
+
+        scoped {
             Coincore(
                 btcTokens = get(),
                 bchTokens = get(),
@@ -119,6 +136,7 @@ val coincoreModule = module {
                 paxTokens = get(),
                 stxTokens = get(),
                 algoTokens = get(),
+                usdtTokens = get(),
                 defaultLabels = get()
             )
         }
