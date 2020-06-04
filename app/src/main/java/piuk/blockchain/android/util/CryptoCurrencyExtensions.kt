@@ -23,6 +23,7 @@ fun CryptoCurrency.colorRes(): Int =
         CryptoCurrency.PAX -> R.color.color_pax_logo
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         CryptoCurrency.ALGO -> R.color.color_algo_logo
+        CryptoCurrency.USDT -> TODO("STUB: USDT NOT IMPLEMENTED")
     }
 
 @ColorInt
@@ -38,6 +39,7 @@ fun CryptoCurrency.drawableResFilled(): Int =
         CryptoCurrency.PAX -> R.drawable.vector_pax_colored
         CryptoCurrency.STX -> R.drawable.ic_logo_stx
         CryptoCurrency.ALGO -> R.drawable.vector_algo_colored
+        CryptoCurrency.USDT -> TODO("STUB: USDT NOT IMPLEMENTED")
     }
 
 @DrawableRes
@@ -50,6 +52,7 @@ fun CryptoCurrency.coinIconWhite(): Int =
         CryptoCurrency.PAX -> R.drawable.vector_pax_white
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         CryptoCurrency.ALGO -> R.drawable.vector_algo_white
+        CryptoCurrency.USDT -> TODO("STUB: USDT NOT IMPLEMENTED")
     }
 
 @DrawableRes
@@ -62,6 +65,7 @@ fun CryptoCurrency.maskedAsset(): Int =
         CryptoCurrency.BCH -> R.drawable.ic_bch_circled_mask
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         CryptoCurrency.ALGO -> R.drawable.ic_bch_circled_mask // TODO update
+        CryptoCurrency.USDT -> TODO("STUB: USDT NOT IMPLEMENTED")
     }
 
 fun ImageView.setImageDrawable(@DrawableRes res: Int) {
@@ -82,6 +86,7 @@ fun CryptoCurrency.errorIcon(): Int =
         CryptoCurrency.PAX -> R.drawable.vector_pax_error
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         CryptoCurrency.ALGO -> R.drawable.vector_algo_error // TODO update
+        CryptoCurrency.USDT -> TODO("STUB: USDT NOT IMPLEMENTED")
     }
 
 @StringRes
@@ -94,6 +99,7 @@ fun CryptoCurrency.assetName() =
         CryptoCurrency.PAX -> R.string.usd_pax_1
         CryptoCurrency.STX -> R.string.stacks_1
         CryptoCurrency.ALGO -> R.string.algorand
+        CryptoCurrency.USDT -> R.string.usdt
     }
 
 internal class ResourceDefaultLabels(
@@ -109,7 +115,8 @@ internal class ResourceDefaultLabels(
                 CryptoCurrency.XLM -> R.string.xlm_default_account_label
                 CryptoCurrency.PAX -> R.string.pax_default_account_label_1
                 CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-                CryptoCurrency.ALGO -> R.string.alg_default_account_label
+                CryptoCurrency.ALGO -> R.string.algo_default_account_label
+                CryptoCurrency.USDT -> R.string.usdt_default_account_label
             }
         )
 

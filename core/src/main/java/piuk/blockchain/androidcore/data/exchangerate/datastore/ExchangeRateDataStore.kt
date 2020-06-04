@@ -21,6 +21,7 @@ class ExchangeRateDataStore(
     private var xlmTickerData: Map<String, PriceDatum>? = null
     private var paxTickerData: Map<String, PriceDatum>? = null
     private var algTickerData: Map<String, PriceDatum>? = null
+    private var usdtTickerData: Map<String, PriceDatum>? = null
 
     fun updateExchangeRates(): Completable = Single.merge(
             exchangeRateService.getExchangeRateMap(CryptoCurrency.BTC)
@@ -34,7 +35,9 @@ class ExchangeRateDataStore(
         ).mergeWith(exchangeRateService.getExchangeRateMap(CryptoCurrency.PAX)
             .doOnSuccess { paxTickerData = it.toMap() })
         .mergeWith(exchangeRateService.getExchangeRateMap(CryptoCurrency.ALGO)
-            .doOnSuccess { algTickerData = it.toMap() }).ignoreElements()
+            .doOnSuccess { algTickerData = it.toMap() })
+        .mergeWith(exchangeRateService.getExchangeRateMap(CryptoCurrency.USDT)
+            .doOnSuccess { usdtTickerData = it.toMap() }).ignoreElements()
 
     fun getCurrencyLabels(): Array<String> = btcTickerData!!.keys.toTypedArray()
 
@@ -81,6 +84,7 @@ class ExchangeRateDataStore(
             CryptoCurrency.PAX -> paxTickerData
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
             CryptoCurrency.ALGO -> algTickerData
+            CryptoCurrency.USDT -> usdtTickerData
         }
 
     fun getHistoricPrice(
