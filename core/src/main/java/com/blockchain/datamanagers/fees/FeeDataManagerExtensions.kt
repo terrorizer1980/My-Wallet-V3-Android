@@ -44,6 +44,7 @@ fun FeeDataManager.getFeeOptions(cryptoCurrency: CryptoCurrency): Single<out Net
         }
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
+        CryptoCurrency.USDT -> TODO("STUB: USDT NOT IMPLEMENTED")
     }.singleOrError()
 
 sealed class NetworkFees

@@ -138,6 +138,7 @@ class SendPresenter<View : SendView>(
             CryptoCurrency.PAX -> paxStrategy
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
             CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
+            CryptoCurrency.USDT -> TODO("STUB: USDT NOT IMPLEMENTED")
         }
 
         selectedCrypto = currency

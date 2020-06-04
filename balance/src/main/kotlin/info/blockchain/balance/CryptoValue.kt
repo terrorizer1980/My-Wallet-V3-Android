@@ -44,6 +44,7 @@ data class CryptoValue(
         val ZeroXlm = CryptoValue(CryptoCurrency.XLM, BigInteger.ZERO)
         val ZeroPax = CryptoValue(CryptoCurrency.PAX, BigInteger.ZERO)
         val ZeroAlg = CryptoValue(CryptoCurrency.ALGO, BigInteger.ZERO)
+        val ZeroUsdt = CryptoValue(CryptoCurrency.USDT, BigInteger.ZERO)
 
         fun zero(cryptoCurrency: CryptoCurrency) = when (cryptoCurrency) {
             CryptoCurrency.BTC -> ZeroBtc
@@ -53,6 +54,7 @@ data class CryptoValue(
             CryptoCurrency.PAX -> ZeroPax
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
             CryptoCurrency.ALGO -> ZeroAlg
+            CryptoCurrency.USDT -> ZeroUsdt
         }
 
         fun bitcoinFromSatoshis(satoshi: Long) = CryptoValue(CryptoCurrency.BTC, satoshi.toBigInteger())

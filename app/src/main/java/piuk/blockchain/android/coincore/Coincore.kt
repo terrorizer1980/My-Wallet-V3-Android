@@ -32,6 +32,7 @@ class Coincore internal constructor(
             CryptoCurrency.PAX -> paxTokens
             CryptoCurrency.STX -> stxTokens
             CryptoCurrency.ALGO -> algoTokens
+            CryptoCurrency.USDT -> TODO("Add in AND-3177")
         }
 
     fun init(): Completable =
