@@ -7,8 +7,8 @@ object Versions {
     const val targetSdk = 28
     const val compileSdk = 28
 
-    const val versionCode = 538
-    const val versionName = "6.34.1"
+    const val versionCode = 539
+    const val versionName = "6.34.2"
 
     const val buildTools = "28.0.3"
 
