@@ -19,7 +19,7 @@ buildProperties {
 def getGitCommitHash = { ->
     def stdout = new ByteArrayOutputStream()
     exec {
-        commandLine 'git', 'rev-parse', 'HEAD'
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
         standardOutput = stdout
     }
     return stdout.toString().trim()
@@ -124,7 +124,7 @@ android {
             buildConfigString "PIT_LAUNCHING_URL", buildProperties.secrets['prodPitLaunch']
             buildConfigString "COINS_WEBSOCKET_URL", buildProperties.secrets['prodCoinsWebsocket']
             buildConfigField "String", "ENVIRONMENT", '"env_prod"'
-            buildConfigField "String", "COMMIT_HASH", ""
+            buildConfigField "String", "COMMIT_HASH", "\"\""
         }
         envDev {
             dimension "environment"
