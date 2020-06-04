@@ -222,8 +222,8 @@ class EthDataManager(
      * @param defaultPaxLabel The default label for PAX
      * @return An [Completable]
      */
-    fun initEthereumWallet(defaultLabel: String, defaultPaxLabel: String): Completable =
-        fetchOrCreateEthereumWallet(defaultLabel, defaultPaxLabel)
+    fun initEthereumWallet(defaultLabel: String, defaultPaxLabel: String, defaultUsdtLabel: String): Completable =
+        fetchOrCreateEthereumWallet(defaultLabel, defaultPaxLabel, defaultUsdtLabel)
             .flatMapCompletable { (wallet, needsSave) ->
                 ethDataStore.ethWallet = wallet
                 if (needsSave) {
@@ -296,8 +296,8 @@ class EthDataManager(
     }
 
     @Throws(Exception::class)
-    private fun fetchOrCreateEthereumWallet(defaultLabel: String, defaultPaxLabel: String):
-            Single<Pair<EthereumWallet, Boolean>> =
+    private fun fetchOrCreateEthereumWallet(defaultLabel: String, defaultPaxLabel: String, defaultUsdtLabel: String):
+        Single<Pair<EthereumWallet, Boolean>> =
         metadataManager.fetchMetadata(EthereumWallet.METADATA_TYPE_EXTERNAL).defaultIfEmpty("")
             .map { metadata ->
                 val walletJson = if (metadata != "") metadata else null
@@ -308,7 +308,7 @@ class EthDataManager(
                 if (ethWallet?.account == null || !ethWallet.account.isCorrect) {
                     try {
                         val masterKey = payloadManager.payload?.hdWallets?.get(0)?.masterKey
-                        ethWallet = EthereumWallet(masterKey, defaultLabel, defaultPaxLabel)
+                        ethWallet = EthereumWallet(masterKey, defaultLabel, defaultPaxLabel, defaultUsdtLabel)
                         needsSave = true
                     } catch (e: HDWalletException) {
                         // Wallet private key unavailable. First decrypt with second password.
@@ -316,7 +316,7 @@ class EthDataManager(
                     }
                 }
                 // AND-2011: Add erc20 token data if not present
-                if (ethWallet.updateErc20Tokens(defaultPaxLabel)) {
+                if (ethWallet.updateErc20Tokens(defaultPaxLabel, defaultUsdtLabel)) {
                     needsSave = true
                 }
 
@@ -337,8 +337,10 @@ class EthDataManager(
 
     fun getErc20TokenData(currency: CryptoCurrency): Erc20TokenData {
         when (currency) {
-            CryptoCurrency.PAX -> return getEthWallet()!!.getErc20TokenData(Erc20TokenData.PAX_CONTRACT_NAME)
-            CryptoCurrency.USDT -> return getEthWallet()!!.getErc20TokenData(Erc20TokenData.USDT_CONTRACT_NAME)
+            CryptoCurrency.PAX -> return getEthWallet()!!.getErc20TokenData(
+                Erc20TokenData.PAX_CONTRACT_NAME)
+            CryptoCurrency.USDT -> return getEthWallet()!!.getErc20TokenData(
+                Erc20TokenData.USDT_CONTRACT_NAME)
             else -> throw IllegalArgumentException("Not an ERC20 token")
         }
     }

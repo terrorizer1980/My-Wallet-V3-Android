@@ -52,7 +52,7 @@ internal class UsdtTokens(
         val paxAddress = usdtAccount.ethDataManager.getEthWallet()?.account?.address
             ?: throw Exception("No USDT wallet found")
 
-        val label = stringUtils.getString(R.string.pax_default_account_label_1)
+        val label = stringUtils.getString(R.string.usdt_default_account_label)
 
         return UsdtCryptoWalletAccount(label, paxAddress, usdtAccount, exchangeRates)
     }
