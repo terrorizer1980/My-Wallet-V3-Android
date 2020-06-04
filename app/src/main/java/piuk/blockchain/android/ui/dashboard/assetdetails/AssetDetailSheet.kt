@@ -390,7 +390,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
             CryptoCurrency.BCH,
             CryptoCurrency.PAX,
             CryptoCurrency.ALGO,
-            CryptoCurrency.USDT-> 2
+            CryptoCurrency.USDT -> 2
             CryptoCurrency.XLM -> 4
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         }
