@@ -23,6 +23,7 @@ import com.blockchain.koin.paxStrategy
 import com.blockchain.koin.payloadScopeQualifier
 import com.blockchain.koin.pitFeatureFlag
 import com.blockchain.koin.simpleBuyFeatureFlag
+import com.blockchain.koin.usdtAccount
 import com.blockchain.koin.xlm
 import com.blockchain.koin.xlmStrategy
 import com.blockchain.network.websocket.Options
@@ -141,6 +142,7 @@ import piuk.blockchain.android.ui.home.CacheCredentialsWiper
 import piuk.blockchain.android.ui.home.CredentialsWiper
 import piuk.blockchain.android.ui.swipetoreceive.AddressGenerator
 import piuk.blockchain.android.util.ResourceDefaultLabels
+import piuk.blockchain.androidcore.data.erc20.UsdtAccount
 import piuk.blockchain.androidcoreui.utils.DateUtil
 
 val applicationModule = module {
@@ -182,6 +184,14 @@ val applicationModule = module {
 
         factory(paxAccount) {
             PaxAccount(
+                ethDataManager = get(),
+                dataStore = get(),
+                environmentSettings = get()
+            )
+        }.bind(Erc20Account::class)
+
+        factory(usdtAccount) {
+            UsdtAccount(
                 ethDataManager = get(),
                 dataStore = get(),
                 environmentSettings = get()
