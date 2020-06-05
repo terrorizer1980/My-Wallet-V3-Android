@@ -152,7 +152,8 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
             }
         }
 
-        binding?.textViewVersionCode?.text = BuildConfig.VERSION_NAME
+        binding?.textViewVersionCode?.text =
+            "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
 
         return binding?.root
     }
