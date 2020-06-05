@@ -39,7 +39,7 @@ fun CryptoCurrency.drawableResFilled(): Int =
         CryptoCurrency.PAX -> R.drawable.vector_pax_colored
         CryptoCurrency.STX -> R.drawable.ic_logo_stx
         CryptoCurrency.ALGO -> R.drawable.vector_algo_colored
-        CryptoCurrency.USDT -> TODO("STUB: USDT NOT IMPLEMENTED")
+        CryptoCurrency.USDT -> R.drawable.vector_usdt_colored
     }
 
 @DrawableRes
@@ -52,7 +52,7 @@ fun CryptoCurrency.coinIconWhite(): Int =
         CryptoCurrency.PAX -> R.drawable.vector_pax_white
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         CryptoCurrency.ALGO -> R.drawable.vector_algo_white
-        CryptoCurrency.USDT -> TODO("STUB: USDT NOT IMPLEMENTED")
+        CryptoCurrency.USDT -> R.drawable.vector_usdt_white
     }
 
 @DrawableRes
