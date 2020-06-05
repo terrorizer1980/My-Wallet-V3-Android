@@ -7,8 +7,8 @@ object Versions {
     const val targetSdk = 28
     const val compileSdk = 28
 
-    const val versionCode = 540
-    const val versionName = "6.34.2"
+    const val versionCode = 541
+    const val versionName = "6.34.3"
 
     const val buildTools = "28.0.3"
 
@@ -74,7 +74,7 @@ object Versions {
     const val commonsIo = "2.6"
     const val urlBuilder = "2.0.9"
     const val yearclass = "2.0.0"
-    const val protobuf = "3.9.0"
+    const val protobuf = "3.0.1"
     const val findbugs = "3.0.2"
     const val guava = "28.0-android"
     const val dexter = "5.0.0"
@@ -214,7 +214,7 @@ object Libraries {
     const val commonsIo = "commons-io:commons-io:${Versions.commonsIo}"
     const val urlBuilder = "io.mikael:urlbuilder:${Versions.urlBuilder}"
     const val yearclass = "com.facebook.device.yearclass:yearclass:${Versions.yearclass}"
-    const val protobuf = "com.google.protobuf:protobuf-java:${Versions.protobuf}"
+    const val protobuf = "com.google.protobuf:protobuf-lite:${Versions.protobuf}"
     const val findbugs = "com.google.code.findbugs:jsr305:${Versions.findbugs}"
     const val guava = "com.google.guava:guava:${Versions.guava}"
     const val dexter = "com.karumi:dexter:${Versions.dexter}"
