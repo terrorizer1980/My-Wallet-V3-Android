@@ -6,9 +6,10 @@ import io.reactivex.Completable
 import piuk.blockchain.android.coincore.alg.AlgoTokens
 import piuk.blockchain.android.coincore.bch.BchTokens
 import piuk.blockchain.android.coincore.btc.BtcTokens
+import piuk.blockchain.android.coincore.erc20.pax.PaxTokens
+import piuk.blockchain.android.coincore.erc20.usdt.UsdtTokens
 import piuk.blockchain.android.coincore.eth.EthTokens
 import piuk.blockchain.android.coincore.impl.AllWalletsAccount
-import piuk.blockchain.android.coincore.pax.PaxTokens
 import piuk.blockchain.android.coincore.stx.StxTokens
 import piuk.blockchain.android.coincore.xlm.XlmTokens
 import timber.log.Timber
@@ -21,6 +22,7 @@ class Coincore internal constructor(
     private val paxTokens: PaxTokens,
     private val stxTokens: StxTokens,
     private val algoTokens: AlgoTokens,
+    private val usdtTokens: UsdtTokens,
     private val defaultLabels: DefaultLabels
 ) {
     operator fun get(cryptoCurrency: CryptoCurrency): AssetTokens =
@@ -32,7 +34,7 @@ class Coincore internal constructor(
             CryptoCurrency.PAX -> paxTokens
             CryptoCurrency.STX -> stxTokens
             CryptoCurrency.ALGO -> algoTokens
-            CryptoCurrency.USDT -> TODO("Add in AND-3177")
+            CryptoCurrency.USDT -> usdtTokens
         }
 
     fun init(): Completable =
@@ -44,7 +46,8 @@ class Coincore internal constructor(
                 Completable.defer { paxTokens.init() },
                 Completable.defer { xlmTokens.init() },
                 Completable.defer { stxTokens.init() },
-                Completable.defer { algoTokens.init() }
+                Completable.defer { algoTokens.init() },
+                Completable.defer { usdtTokens.init() }
             )
         ).doOnError {
             Timber.e("Coincore initialisation failed! $it")

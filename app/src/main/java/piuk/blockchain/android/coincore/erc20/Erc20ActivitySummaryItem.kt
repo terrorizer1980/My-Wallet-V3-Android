@@ -1,4 +1,4 @@
-package piuk.blockchain.android.coincore.pax
+package piuk.blockchain.android.coincore.erc20
 
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -14,7 +14,8 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.math.BigInteger
 
-internal class PaxActivitySummaryItem(
+internal class Erc20ActivitySummaryItem(
+    private val asset: CryptoCurrency,
     private val feedTransfer: FeedErc20Transfer,
     private val accountHash: String,
     private val ethDataManager: EthDataManager,
@@ -23,7 +24,7 @@ internal class PaxActivitySummaryItem(
     override val account: CryptoSingleAccount
 ) : NonCustodialActivitySummaryItem() {
 
-    override val cryptoCurrency = CryptoCurrency.PAX
+    override val cryptoCurrency = asset
 
     private val transfer: Erc20Transfer = feedTransfer.transfer
 
@@ -39,11 +40,11 @@ internal class PaxActivitySummaryItem(
     override val timeStampMs: Long = transfer.timestamp * 1000
 
     override val cryptoValue: CryptoValue by unsafeLazy {
-        CryptoValue.fromMinor(CryptoCurrency.PAX, transfer.value)
+        CryptoValue.fromMinor(asset, transfer.value)
     }
 
     override val description: String?
-        get() = ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[txId]
+        get() = ethDataManager.getErc20TokenData(asset).txNotes[txId]
 
     override val fee: Observable<CryptoValue>
         get() = feedTransfer.feeObservable
@@ -52,10 +53,10 @@ internal class PaxActivitySummaryItem(
     override val txId: String = transfer.transactionHash
 
     override val inputsMap: Map<String, CryptoValue> =
-        mapOf(transfer.from to CryptoValue.fromMinor(CryptoCurrency.PAX, transfer.value))
+        mapOf(transfer.from to CryptoValue.fromMinor(asset, transfer.value))
 
     override val outputsMap: Map<String, CryptoValue> =
-        mapOf(transfer.to to CryptoValue.fromMinor(CryptoCurrency.PAX, transfer.value))
+        mapOf(transfer.to to CryptoValue.fromMinor(asset, transfer.value))
 
     override val confirmations: Int = (lastBlockNumber - transfer.blockNumber).toInt()
 

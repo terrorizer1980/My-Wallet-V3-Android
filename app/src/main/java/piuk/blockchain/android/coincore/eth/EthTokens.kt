@@ -43,7 +43,8 @@ internal class EthTokens(
     override fun initToken(): Completable =
         ethDataManager.initEthereumWallet(
             stringUtils.getString(R.string.eth_default_account_label),
-            stringUtils.getString(R.string.pax_default_account_label_1)
+            stringUtils.getString(R.string.pax_default_account_label_1),
+            stringUtils.getString(R.string.usdt_default_account_label)
         )
 
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
