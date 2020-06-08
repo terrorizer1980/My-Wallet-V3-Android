@@ -35,7 +35,8 @@ fun FeeDataManager.getFeeOptions(cryptoCurrency: CryptoCurrency): Single<out Net
                 CryptoValue.lumensFromStroop(it.priorityFee.toBigInteger())
             )
         }
-        CryptoCurrency.PAX -> ethFeeOptions.map {
+        CryptoCurrency.PAX,
+        CryptoCurrency.USDT -> ethFeeOptions.map {
             EthereumFees(
                 it.regularFee,
                 it.priorityFee,
@@ -44,13 +45,6 @@ fun FeeDataManager.getFeeOptions(cryptoCurrency: CryptoCurrency): Single<out Net
         }
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
-        CryptoCurrency.USDT -> ethFeeOptions.map {
-            EthereumFees(
-                it.regularFee,
-                it.priorityFee,
-                it.gasLimitContract
-            )
-        }
     }.singleOrError()
 
 sealed class NetworkFees
