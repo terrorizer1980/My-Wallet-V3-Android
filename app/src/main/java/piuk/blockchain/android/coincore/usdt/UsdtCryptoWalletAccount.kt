@@ -49,7 +49,7 @@ internal class UsdtCryptoWalletAccount(
                 feedTransactions,
                 usdtAccount.getAccountHash(),
                 ethDataManager.getLatestBlockNumber()
-            ).map { (transactions, accountHash, latestBlockNumber) ->
+            ) { transactions, accountHash, latestBlockNumber ->
                 transactions.map { transaction ->
                     UsdtActivitySummaryItem(
                         feedTransfer = transaction,
@@ -60,7 +60,6 @@ internal class UsdtCryptoWalletAccount(
                         account = this
                     ) as ActivitySummaryItem
                 }
-            }
-            .doOnSuccess { setHasTransactions(it.isNotEmpty()) }
+            }.doOnSuccess { setHasTransactions(it.isNotEmpty()) }
         }
 }

@@ -59,7 +59,7 @@ class UsdtAccount(
      */
     override fun getErc20Model(): Erc20DataModel? = dataStore.erc20DataModel
 
-    override fun fetchAddressCompletable(): Completable = Completable.fromObservable(fetchErc20Address())
+    override fun fetchAddressCompletable(): Completable = fetchErc20Address().ignoreElements()
 
     override fun getBalance(): Single<BigInteger> =
         ethDataManager.getErc20Address(cryptoCurrency)
