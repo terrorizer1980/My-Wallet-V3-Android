@@ -15,7 +15,7 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 
 internal abstract class Erc20TokensBase(
-    private val assetType: CryptoCurrency,
+    override val asset: CryptoCurrency,
     private val erc20Account: Erc20Account,
     custodialManager: CustodialWalletManager,
     exchangeRates: ExchangeRateDataManager,
@@ -37,7 +37,4 @@ internal abstract class Erc20TokensBase(
 
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         Single.just(emptyList())
-
-    override val asset: CryptoCurrency
-        get() = assetType
 }
