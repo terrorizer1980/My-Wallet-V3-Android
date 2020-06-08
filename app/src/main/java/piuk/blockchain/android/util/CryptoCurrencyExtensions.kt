@@ -23,7 +23,7 @@ fun CryptoCurrency.colorRes(): Int =
         CryptoCurrency.PAX -> R.color.color_pax_logo
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         CryptoCurrency.ALGO -> R.color.color_algo_logo
-        CryptoCurrency.USDT -> TODO("STUB: USDT NOT IMPLEMENTED")
+        CryptoCurrency.USDT -> R.color.color_usdt_logo
     }
 
 @ColorInt
