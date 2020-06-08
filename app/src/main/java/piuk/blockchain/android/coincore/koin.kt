@@ -7,11 +7,11 @@ import org.koin.dsl.module
 import piuk.blockchain.android.coincore.alg.AlgoTokens
 import piuk.blockchain.android.coincore.bch.BchTokens
 import piuk.blockchain.android.coincore.btc.BtcTokens
+import piuk.blockchain.android.coincore.erc20.pax.PaxTokens
+import piuk.blockchain.android.coincore.erc20.usdt.UsdtTokens
 import piuk.blockchain.android.coincore.eth.EthTokens
 import piuk.blockchain.android.coincore.impl.AssetActivityRepo
-import piuk.blockchain.android.coincore.pax.PaxTokens
 import piuk.blockchain.android.coincore.stx.StxTokens
-import piuk.blockchain.android.coincore.usdt.UsdtTokens
 import piuk.blockchain.android.coincore.xlm.XlmTokens
 
 val coincoreModule = module {
@@ -89,7 +89,7 @@ val coincoreModule = module {
         scoped {
             PaxTokens(
                 rxBus = get(),
-                paxAccount = get(paxAccount),
+                erc20Account = get(paxAccount),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
@@ -115,7 +115,7 @@ val coincoreModule = module {
         scoped {
             UsdtTokens(
                 rxBus = get(),
-                usdtAccount = get(usdtAccount),
+                erc20Account = get(usdtAccount),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
