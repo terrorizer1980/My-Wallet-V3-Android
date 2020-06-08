@@ -64,7 +64,7 @@ fun CryptoCurrency.maskedAsset(): Int =
         CryptoCurrency.PAX -> R.drawable.ic_usdd_circled_mask
         CryptoCurrency.BCH -> R.drawable.ic_bch_circled_mask
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-        CryptoCurrency.ALGO -> R.drawable.ic_bch_circled_mask // TODO update
+        CryptoCurrency.ALGO -> R.drawable.ic_algo_circled_mask
         CryptoCurrency.USDT -> TODO("STUB: USDT NOT IMPLEMENTED")
     }
 
