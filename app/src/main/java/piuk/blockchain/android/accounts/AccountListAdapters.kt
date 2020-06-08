@@ -78,7 +78,6 @@ internal class UsdtAccountListAdapter(
         Single.just(listOf(defaultAccountReference()))
 }
 
-
 internal class EthAccountListAdapter(private val ethDataManager: EthDataManager) : AccountList {
 
     override fun defaultAccount(): Single<AccountReference> =
