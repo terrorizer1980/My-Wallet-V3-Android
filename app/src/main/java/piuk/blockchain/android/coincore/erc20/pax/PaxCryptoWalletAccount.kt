@@ -10,11 +10,10 @@ internal class PaxCryptoWalletAccount(
     address: String,
     account: Erc20Account,
     exchangeRates: ExchangeRateDataManager
-): Erc20CryptoSingleNonCustodialAccountBase(
+) : Erc20CryptoSingleNonCustodialAccountBase(
     CryptoCurrency.PAX,
     label,
     address,
     account,
     exchangeRates
 )
-

@@ -174,7 +174,7 @@ abstract class Erc20CryptoSingleNonCustodialAccountBase(
     private val address: String,
     private val erc20Account: Erc20Account,
     override val exchangeRates: ExchangeRateDataManager
-): CryptoSingleAccountNonCustodialBase() {
+) : CryptoSingleAccountNonCustodialBase() {
     override val isDefault: Boolean = true // Only one account, so always default
 
     override val cryptoCurrencies = setOf(cryptoCurrency)

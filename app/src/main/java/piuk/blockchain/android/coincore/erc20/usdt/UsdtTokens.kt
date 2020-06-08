@@ -26,7 +26,7 @@ internal class UsdtTokens(
     labels: DefaultLabels,
     crashLogger: CrashLogger,
     rxBus: RxBus
-): Erc20TokensBase(
+) : Erc20TokensBase(
     CryptoCurrency.USDT,
     erc20Account,
     custodialManager,

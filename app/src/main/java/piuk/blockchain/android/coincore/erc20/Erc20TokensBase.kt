@@ -24,7 +24,7 @@ internal abstract class Erc20TokensBase(
     labels: DefaultLabels,
     crashLogger: CrashLogger,
     rxBus: RxBus
-): AssetTokensBase(
+) : AssetTokensBase(
     exchangeRates,
     historicRates,
     currencyPrefs,
@@ -40,5 +40,4 @@ internal abstract class Erc20TokensBase(
 
     override val asset: CryptoCurrency
         get() = assetType
-
 }
