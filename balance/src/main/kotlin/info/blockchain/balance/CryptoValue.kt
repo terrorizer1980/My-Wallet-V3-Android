@@ -80,6 +80,8 @@ data class CryptoValue(
         fun usdPaxFromMajor(usdPax: BigDecimal) = fromMajor(CryptoCurrency.PAX, usdPax)
         fun usdPaxFromMinor(value: BigInteger) = CryptoValue(CryptoCurrency.PAX, value)
 
+        fun usdtFromMinor(value: BigInteger) = CryptoValue(CryptoCurrency.USDT, value)
+
         fun fromMajor(
             currency: CryptoCurrency,
             major: BigDecimal

@@ -151,6 +151,7 @@ internal class TransactionExecutorViaDataManagers(
             is AccountReference.Xlm -> defaultAccountDataManager.getMaxSpendableAfterFees(feeType)
             is AccountReference.Pax -> getMaxSpendablePax()
             is AccountReference.Stx -> TODO("STUB: STX NOT IMPLEMENTED")
+            is AccountReference.Usdt -> getMaxSpendableUsdt()
         }
 
     override fun getFeeForTransaction(
@@ -166,6 +167,7 @@ internal class TransactionExecutorViaDataManagers(
                 (fees as BitcoinLikeFees).feeForType(feeType)
             )
             is AccountReference.Pax,
+            is AccountReference.Usdt,
             is AccountReference.Ethereum -> {
                 when (feeType) {
                     FeeType.Regular -> (fees as EthereumFees).absoluteRegularFeeInWei.just()
@@ -245,6 +247,12 @@ internal class TransactionExecutorViaDataManagers(
             .map { CryptoValue.usdPaxFromMinor(it) }
             .doOnError { Timber.e(it) }
             .onErrorReturn { CryptoValue.ZeroPax }
+
+    private fun getMaxSpendableUsdt(): Single<CryptoValue> =
+        erc20Account.getBalance()
+            .map { CryptoValue.usdtFromMinor(it) }
+            .doOnError { Timber.e(it) }
+            .onErrorReturn { CryptoValue.ZeroUsdt }
 
     private fun sendBtcTransaction(
         amount: CryptoValue,
