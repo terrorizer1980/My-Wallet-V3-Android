@@ -22,8 +22,9 @@ class SimpleBuyFlowNavigator(
             if (startedFromKycResume || it.currentScreen == FlowScreen.KYC) {
                 tierService.tiers().toObservable().map { tier ->
                     when {
-                        tier.isApprovedFor(KycTierLevel.GOLD) -> if (it.selectedPaymentMethod?.id != PaymentMethod.UNDEFINED_CARD_PAYMENT_ID)
-                            FlowScreen.CHECKOUT else FlowScreen.ADD_CARD
+                        tier.isApprovedFor(KycTierLevel.GOLD) ->
+                            if (it.selectedPaymentMethod?.id != PaymentMethod.UNDEFINED_CARD_PAYMENT_ID)
+                                FlowScreen.CHECKOUT else FlowScreen.ADD_CARD
                         tier.isPendingOrUnderReviewFor(KycTierLevel.GOLD) ||
                                 tier.isRejectedFor(KycTierLevel.GOLD) -> FlowScreen.KYC_VERIFICATION
                         else -> FlowScreen.KYC
