@@ -10,6 +10,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.accounts.AsyncAllAccountList
+import com.blockchain.koin.scopedInject
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.SwapAnalyticsEvents
@@ -25,7 +26,6 @@ import info.blockchain.balance.CryptoCurrency
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.swap.homebrew.exchange.AccountChooserBottomDialog
@@ -69,10 +69,10 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
         (intent.getSerializableExtra(EXTRA_PRESELECTED_FROM_CURRENCY) as? CryptoCurrency) ?: CryptoCurrency.BTC
     }
 
-    override val exchangeViewModel: ExchangeModel by viewModel()
+    override val exchangeViewModel: ExchangeModel by scopedInject()
 
     private val startKyc: StartKyc by inject()
-    private val allAccountList: AsyncAllAccountList by inject()
+    private val allAccountList: AsyncAllAccountList by scopedInject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

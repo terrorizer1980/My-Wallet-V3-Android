@@ -49,11 +49,11 @@ object Versions {
     // Networking, RxJava
     const val retrofit = "2.7.0"
     const val okHttp = "4.0.1"
-    const val mockWebServer = "v0.1.0"
+    const val mockWebServer = "v0.1.8"
     const val moshi = "1.8.0"
     const val gson = "2.8.5"
     const val jacksonCore = "2.10.0"
-    const val koin = "0.9.3"
+    const val koin = "2.1.5"
     const val rxJava = "2.2.11"
     const val rxKotlin = "2.4.0"
     const val rxAndroid = "2.1.1"
@@ -95,7 +95,7 @@ object Versions {
     const val sparkline = "1.2.0"
 
     // Third Party SDKs
-    const val veriff = "2.8.0"
+    const val veriff = "2.13.0"
     const val probity = "1.0.0"
     const val cardForm = "4.2.0"
 
@@ -189,7 +189,7 @@ object Libraries {
     const val gson = "com.google.code.gson:gson:${Versions.gson}"
     const val koin = "org.koin:koin-core:${Versions.koin}"
     const val koinAndroid = "org.koin:koin-android:${Versions.koin}"
-    const val koinAndroidArchitecture = "org.koin:koin-android-architecture:${Versions.koin}"
+
     const val koinTest = "org.koin:koin-test:${Versions.koin}"
     const val rxJava = "io.reactivex.rxjava2:rxjava:${Versions.rxJava}"
     const val rxKotlin = "io.reactivex.rxjava2:rxkotlin:${Versions.rxKotlin}"

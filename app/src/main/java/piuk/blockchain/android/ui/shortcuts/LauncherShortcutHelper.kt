@@ -10,8 +10,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import org.koin.standalone.KoinComponent
-import org.koin.standalone.get
+import org.koin.core.KoinComponent
+import org.koin.core.get
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.receive.ReceiveQrActivity
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
