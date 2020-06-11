@@ -38,9 +38,9 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.logging.AddressType
+import piuk.blockchain.androidcoreui.utils.logging.Logging
 import piuk.blockchain.androidcoreui.utils.logging.createAccountEvent
 import piuk.blockchain.androidcoreui.utils.logging.importEvent
-import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
 import java.math.BigInteger
 import kotlin.properties.Delegates
@@ -76,7 +76,7 @@ class AccountPresenter internal constructor(
             CryptoCurrency.XLM -> throw IllegalStateException("Xlm not a supported cryptocurrency on this page")
             CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-            CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
+            CryptoCurrency.ALGO -> TODO("STUB: accountSize ALGO NOT IMPLEMENTED")
         }
 
     override fun onViewReady() {
