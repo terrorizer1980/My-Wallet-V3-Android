@@ -8,7 +8,7 @@ import android.widget.Toast
 import piuk.blockchain.android.BuildConfig
 
 fun View.copyHashOnLongClick(context: Context) {
-    if(BuildConfig.COMMIT_HASH.isNotEmpty()) {
+    if (BuildConfig.COMMIT_HASH.isNotEmpty()) {
         setOnClickListener {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             clipboard.primaryClip =
