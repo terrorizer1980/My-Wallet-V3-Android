@@ -9,11 +9,12 @@ import piuk.blockchain.android.BuildConfig
 
 fun View.copyHashOnLongClick(context: Context) {
     if (BuildConfig.COMMIT_HASH.isNotEmpty()) {
-        setOnClickListener {
+        setOnLongClickListener {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             clipboard.primaryClip =
                 ClipData.newPlainText("commit_hash", BuildConfig.COMMIT_HASH)
             Toast.makeText(context, "Commit hash copied", Toast.LENGTH_SHORT).show()
+            true
         }
     }
 }
