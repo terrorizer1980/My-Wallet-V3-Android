@@ -48,7 +48,7 @@ class WalletAccountHelper(
                 CryptoCurrency.XLM -> throw IllegalArgumentException("XLM is not supported here")
                 CryptoCurrency.PAX -> getPaxAccount()
                 CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-                CryptoCurrency.ALGO -> TODO("STUB: getAccountItems ALGO NOT IMPLEMENTED")
+                CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
             }
         } catch (t: Throwable) {
             crashLogger.logException(t)
@@ -69,7 +69,7 @@ class WalletAccountHelper(
             CryptoCurrency.XLM -> getXlmAccount()
             CryptoCurrency.PAX -> Single.just(getPaxAccount())
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-            CryptoCurrency.ALGO -> TODO("STUB: accountItems ALGO NOT IMPLEMENTED")
+            CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
         }
 
     private fun allBtcAccountItems() = getHdAccounts() + getLegacyBtcAddresses()
@@ -207,7 +207,7 @@ class WalletAccountHelper(
             CryptoCurrency.XLM -> throw IllegalArgumentException("XLM is not supported here")
             CryptoCurrency.PAX -> getDefaultPaxAccount()
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-            CryptoCurrency.ALGO -> TODO("STUB: getDefaultOrFirstFundedAccount ALGO NOT IMPLEMENTED")
+            CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
         }
 
     fun getEthAccount() =
