@@ -23,8 +23,8 @@ import com.blockchain.swap.nabu.datamanagers.UniqueAnalyticsNabuUserReporter
 import com.blockchain.swap.nabu.datamanagers.UniqueAnalyticsWalletReporter
 import com.blockchain.swap.nabu.datamanagers.WalletReporter
 import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.LiveCustodialWalletManager
-import com.blockchain.swap.nabu.datamanagers.featureflags.Eligibility
-import com.blockchain.swap.nabu.datamanagers.featureflags.KycEligibility
+import com.blockchain.swap.nabu.datamanagers.featureflags.FeatureEligibility
+import com.blockchain.swap.nabu.datamanagers.featureflags.KycFeatureEligibility
 import com.blockchain.swap.nabu.metadata.MetadataRepositoryNabuTokenAdapter
 import com.blockchain.swap.nabu.models.nabu.CampaignStateMoshiAdapter
 import com.blockchain.swap.nabu.models.nabu.CampaignTransactionStateMoshiAdapter
@@ -86,7 +86,7 @@ val nabuModule = module {
                     "EUR" to get(eur), "GBP" to get(gbp)
                 ),
                 featureFlag = get(cardPaymentsFeatureFlag),
-                kycEligibility = get()
+                kycFeatureEligibility = get()
             )
         }.bind(CustodialWalletManager::class)
 
@@ -130,7 +130,7 @@ val nabuModule = module {
 
         factory { KycTiersQueries(get(), get()) }
 
-        scoped { KycEligibility(userRepository = get()) }.bind(Eligibility::class)
+        scoped { KycFeatureEligibility(userRepository = get()) }.bind(FeatureEligibility::class)
 
         scoped { NabuUserRepository(nabuDataUserProvider = get()) }
     }

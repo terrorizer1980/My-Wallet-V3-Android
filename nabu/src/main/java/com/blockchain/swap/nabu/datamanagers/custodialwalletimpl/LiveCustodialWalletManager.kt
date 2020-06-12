@@ -21,7 +21,8 @@ import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
-import com.blockchain.swap.nabu.datamanagers.featureflags.Eligibility
+import com.blockchain.swap.nabu.datamanagers.featureflags.Feature
+import com.blockchain.swap.nabu.datamanagers.featureflags.FeatureEligibility
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.swap.nabu.extensions.toLocalTime
 import com.blockchain.swap.nabu.models.cards.CardResponse
@@ -59,7 +60,7 @@ class LiveCustodialWalletManager(
     private val simpleBuyPrefs: SimpleBuyPrefs,
     private val featureFlag: FeatureFlag,
     private val paymentAccountMapperMappers: Map<String, PaymentAccountMapper>,
-    private val kycEligibility: Eligibility
+    private val kycFeatureEligibility: FeatureEligibility
 ) : CustodialWalletManager {
 
     override fun getQuote(
@@ -226,18 +227,19 @@ class LiveCustodialWalletManager(
         }
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
-        kycEligibility.isEligible().toMaybe().flatMap { eligible ->
-            if (eligible) {
-                authenticator.authenticateMaybe {
-                    nabuService.getBalanceForAsset(it, crypto)
-                        .map { balance ->
-                            CryptoValue.fromMinor(crypto, balance.available.toBigDecimal())
-                        }
+        kycFeatureEligibility.isEligibleFor(Feature.SIMPLEBUY_BALANCE).toMaybe()
+            .flatMap { eligible ->
+                if (eligible) {
+                    authenticator.authenticateMaybe {
+                        nabuService.getBalanceForAsset(it, crypto)
+                            .map { balance ->
+                                CryptoValue.fromMinor(crypto, balance.available.toBigDecimal())
+                            }
+                    }
+                } else {
+                    Maybe.empty()
                 }
-            } else {
-                Maybe.empty()
             }
-        }
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable =
         authenticator.authenticateCompletable {
@@ -257,7 +259,8 @@ class LiveCustodialWalletManager(
             .flatMapCompletable { deleteBuyOrder(it.id) }
     }
 
-    override fun updateSupportedCardTypes(fiatCurrency: String, isTier2Approved: Boolean): Completable =
+    override fun updateSupportedCardTypes(fiatCurrency: String,
+                                          isTier2Approved: Boolean): Completable =
         authenticator.authenticate {
             nabuService.getPaymentMethods(it, fiatCurrency, isTier2Approved).doOnSuccess {
                 updateSupportedCards(it)
@@ -401,7 +404,7 @@ class LiveCustodialWalletManager(
         }
 
     override fun getInterestAccountRates(crypto: CryptoCurrency): Single<Double> =
-        kycEligibility.isEligible().flatMap { eligible ->
+        kycFeatureEligibility.isEligibleFor(Feature.INTEREST_RATES).flatMap { eligible ->
             if (eligible) {
                 authenticator.authenticate { sessionToken ->
                     nabuService.getInterestRates(sessionToken, crypto.networkTicker).map {
@@ -416,21 +419,22 @@ class LiveCustodialWalletManager(
     override fun getInterestAccountDetails(
         crypto: CryptoCurrency
     ): Maybe<CryptoValue> =
-        kycEligibility.isEligible().toMaybe().flatMap { eligible ->
-            if (eligible) {
-                authenticator.authenticateMaybe { sessionToken ->
-                    nabuService.getInterestAccountBalance(sessionToken, crypto.networkTicker)
-                        .map { accountBalanceResponse ->
-                            CryptoValue.fromMinor(
-                                currency = crypto,
-                                minor = accountBalanceResponse.balance.toBigInteger()
-                            )
-                        }
+        kycFeatureEligibility.isEligibleFor(Feature.INTEREST_DETAILS).toMaybe()
+            .flatMap { eligible ->
+                if (eligible) {
+                    authenticator.authenticateMaybe { sessionToken ->
+                        nabuService.getInterestAccountBalance(sessionToken, crypto.networkTicker)
+                            .map { accountBalanceResponse ->
+                                CryptoValue.fromMinor(
+                                    currency = crypto,
+                                    minor = accountBalanceResponse.balance.toBigInteger()
+                                )
+                            }
+                    }
+                } else {
+                    Maybe.empty()
                 }
-            } else {
-                Maybe.empty()
             }
-        }
 
     private fun CardResponse.toCardPaymentMethod(cardLimits: PaymentLimits) =
         PaymentMethod.Card(
