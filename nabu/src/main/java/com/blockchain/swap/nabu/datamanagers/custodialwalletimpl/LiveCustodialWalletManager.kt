@@ -21,7 +21,7 @@ import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
-import com.blockchain.swap.nabu.datamanagers.featureflags.ElegibilityInterface
+import com.blockchain.swap.nabu.datamanagers.featureflags.EligibilityInterface
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.swap.nabu.extensions.toLocalTime
 import com.blockchain.swap.nabu.models.cards.CardResponse
@@ -48,7 +48,6 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.flatMapIterable
 import okhttp3.internal.toLongOrDefault
-import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Calendar
 import java.util.Date
@@ -60,7 +59,7 @@ class LiveCustodialWalletManager(
     private val simpleBuyPrefs: SimpleBuyPrefs,
     private val featureFlag: FeatureFlag,
     private val paymentAccountMapperMappers: Map<String, PaymentAccountMapper>,
-    private val kycElegibility: ElegibilityInterface
+    private val kycEligibility: EligibilityInterface
 ) : CustodialWalletManager {
 
     override fun getQuote(
@@ -227,12 +226,19 @@ class LiveCustodialWalletManager(
         }
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
-        authenticator.authenticateMaybe {
-            nabuService.getBalanceForAsset(it, crypto)
-                .map { balance ->
-                    CryptoValue.fromMinor(crypto, balance.available.toBigDecimal())
+        kycEligibility.isEligibleForCall().toMaybe().flatMap { eligible ->
+            if(eligible) {
+                authenticator.authenticateMaybe {
+                    nabuService.getBalanceForAsset(it, crypto)
+                        .map { balance ->
+                            CryptoValue.fromMinor(crypto, balance.available.toBigDecimal())
+                        }
                 }
+            } else {
+                Maybe.empty()
+            }
         }
+
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable =
         authenticator.authenticateCompletable {
@@ -396,17 +402,14 @@ class LiveCustodialWalletManager(
         }
 
     override fun getInterestAccountRates(crypto: CryptoCurrency): Single<Double> =
-        kycElegibility.isElegibleForCall().flatMap { elegible ->
-            Timber.e("---- getInterestAccountRates elegible? $elegible")
-            if (elegible) {
+        kycEligibility.isEligibleForCall().flatMap { eligible ->
+            if (eligible) {
                 authenticator.authenticate { sessionToken ->
                     nabuService.getInterestRates(sessionToken, crypto.networkTicker).map {
-                        Timber.e("---- getInterestAccountRates interest for ${crypto.networkTicker}")
                         it.body()?.rate ?: 0.0
                     }
                 }
             } else {
-                Timber.e("---- getInterestAccountRates returning mock for ${crypto.networkTicker}")
                 Single.just(0.0)
             }
         }
@@ -414,14 +417,11 @@ class LiveCustodialWalletManager(
     override fun getInterestAccountDetails(
         crypto: CryptoCurrency
     ): Maybe<CryptoValue> =
-        kycElegibility.isElegibleForCall().toMaybe().flatMap { elegible ->
-            Timber.e("---- getInterestAccountDetails elegible? $elegible")
-            if (elegible) {
+        kycEligibility.isEligibleForCall().toMaybe().flatMap { eligible ->
+            if (eligible) {
                 authenticator.authenticateMaybe { sessionToken ->
                     nabuService.getInterestAccountBalance(sessionToken, crypto.networkTicker)
                         .map { accountBalanceResponse ->
-                            Timber.e("---- getInterestAccountDetails accountBalanceResponse $accountBalanceResponse")
-
                             CryptoValue.fromMinor(
                                 currency = crypto,
                                 minor = accountBalanceResponse.balance.toBigInteger()
@@ -429,7 +429,6 @@ class LiveCustodialWalletManager(
                         }
                 }
             } else {
-                Timber.e("---- getInterestAccountDetails returning mock for ${crypto.networkTicker}")
                 Maybe.empty()
             }
         }

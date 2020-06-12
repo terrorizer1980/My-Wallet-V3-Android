@@ -22,8 +22,8 @@ import com.blockchain.swap.nabu.datamanagers.UniqueAnalyticsNabuUserReporter
 import com.blockchain.swap.nabu.datamanagers.UniqueAnalyticsWalletReporter
 import com.blockchain.swap.nabu.datamanagers.WalletReporter
 import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.LiveCustodialWalletManager
-import com.blockchain.swap.nabu.datamanagers.featureflags.ElegibilityInterface
-import com.blockchain.swap.nabu.datamanagers.featureflags.KycElegibility
+import com.blockchain.swap.nabu.datamanagers.featureflags.EligibilityInterface
+import com.blockchain.swap.nabu.datamanagers.featureflags.KycEligibility
 import com.blockchain.swap.nabu.metadata.MetadataRepositoryNabuTokenAdapter
 import com.blockchain.swap.nabu.models.nabu.CampaignStateMoshiAdapter
 import com.blockchain.swap.nabu.models.nabu.CampaignTransactionStateMoshiAdapter
@@ -85,7 +85,7 @@ val nabuModule = module {
                     "EUR" to get(eur), "GBP" to get(gbp)
                 ),
                 featureFlag = get(cardPaymentsFeatureFlag),
-                kycElegibility = get()
+                kycEligibility = get()
             )
         }.bind(CustodialWalletManager::class)
 
@@ -129,7 +129,7 @@ val nabuModule = module {
 
         factory { KycTiersQueries(get(), get()) }
 
-        factory { KycElegibility(nabuDataUserProvider = get()) }.bind(ElegibilityInterface::class)
+        factory { KycEligibility(nabuDataUserProvider = get()) }.bind(EligibilityInterface::class)
     }
 
     moshiInterceptor(nabu) { builder ->

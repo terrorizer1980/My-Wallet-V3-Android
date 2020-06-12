@@ -5,9 +5,9 @@ import com.blockchain.swap.nabu.models.nabu.KycState
 import io.reactivex.Single
 import timber.log.Timber
 
-class KycElegibility(private val nabuDataUserProvider: NabuDataUserProvider) :
-    ElegibilityInterface {
-    override fun isElegibleForCall(): Single<Boolean> {
+class KycEligibility(private val nabuDataUserProvider: NabuDataUserProvider) :
+    EligibilityInterface {
+    override fun isEligibleForCall(): Single<Boolean> {
         return nabuDataUserProvider.getUser().map {
             Timber.e("---- isElegibleForCall $it - tier ${it.currentTier} - state ${it.kycState}")
             it.currentTier == 2 &&
