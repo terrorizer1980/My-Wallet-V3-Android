@@ -227,7 +227,7 @@ class LiveCustodialWalletManager(
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
         kycEligibility.isEligibleForCall().toMaybe().flatMap { eligible ->
-            if(eligible) {
+            if (eligible) {
                 authenticator.authenticateMaybe {
                     nabuService.getBalanceForAsset(it, crypto)
                         .map { balance ->
@@ -238,7 +238,6 @@ class LiveCustodialWalletManager(
                 Maybe.empty()
             }
         }
-
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable =
         authenticator.authenticateCompletable {
