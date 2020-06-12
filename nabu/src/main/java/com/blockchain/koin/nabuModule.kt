@@ -10,7 +10,6 @@ import com.blockchain.swap.nabu.api.trade.TransactionStateAdapter
 import com.blockchain.swap.nabu.datamanagers.AnalyticsNabuUserReporterImpl
 import com.blockchain.swap.nabu.datamanagers.AnalyticsWalletReporter
 import com.blockchain.swap.nabu.datamanagers.CreateNabuTokenAdapter
-import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.LiveCustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.NabuAuthenticator
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
@@ -22,6 +21,9 @@ import com.blockchain.swap.nabu.datamanagers.NabuUserSyncUpdateUserWalletInfoWit
 import com.blockchain.swap.nabu.datamanagers.UniqueAnalyticsNabuUserReporter
 import com.blockchain.swap.nabu.datamanagers.UniqueAnalyticsWalletReporter
 import com.blockchain.swap.nabu.datamanagers.WalletReporter
+import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.LiveCustodialWalletManager
+import com.blockchain.swap.nabu.datamanagers.featureflags.ElegibilityInterface
+import com.blockchain.swap.nabu.datamanagers.featureflags.KycElegibility
 import com.blockchain.swap.nabu.metadata.MetadataRepositoryNabuTokenAdapter
 import com.blockchain.swap.nabu.models.nabu.CampaignStateMoshiAdapter
 import com.blockchain.swap.nabu.models.nabu.CampaignTransactionStateMoshiAdapter
@@ -82,7 +84,8 @@ val nabuModule = module {
                 paymentAccountMapperMappers = mapOf(
                     "EUR" to get(eur), "GBP" to get(gbp)
                 ),
-                featureFlag = get(cardPaymentsFeatureFlag)
+                featureFlag = get(cardPaymentsFeatureFlag),
+                kycElegibility = get()
             )
         }.bind(CustodialWalletManager::class)
 
@@ -119,11 +122,14 @@ val nabuModule = module {
             CreateNabuTokenAdapter(get())
         }.bind(CreateNabuToken::class)
 
-        factory { NabuDataUserProviderNabuDataManagerAdapter(get(), get()) }.bind(NabuDataUserProvider::class)
+        factory { NabuDataUserProviderNabuDataManagerAdapter(get(), get()) }.bind(
+            NabuDataUserProvider::class)
 
         factory { NabuUserSyncUpdateUserWalletInfoWithJWT(get(), get()) }.bind(NabuUserSync::class)
 
         factory { KycTiersQueries(get(), get()) }
+
+        factory { KycElegibility(nabuDataUserProvider = get()) }.bind(ElegibilityInterface::class)
     }
 
     moshiInterceptor(nabu) { builder ->

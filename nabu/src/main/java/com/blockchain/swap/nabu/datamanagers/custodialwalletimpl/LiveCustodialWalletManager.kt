@@ -21,6 +21,7 @@ import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
+import com.blockchain.swap.nabu.datamanagers.featureflags.ElegibilityInterface
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.swap.nabu.extensions.toLocalTime
 import com.blockchain.swap.nabu.models.cards.CardResponse
@@ -47,6 +48,7 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.flatMapIterable
 import okhttp3.internal.toLongOrDefault
+import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Calendar
 import java.util.Date
@@ -57,7 +59,8 @@ class LiveCustodialWalletManager(
     private val authenticator: Authenticator,
     private val simpleBuyPrefs: SimpleBuyPrefs,
     private val featureFlag: FeatureFlag,
-    private val paymentAccountMapperMappers: Map<String, PaymentAccountMapper>
+    private val paymentAccountMapperMappers: Map<String, PaymentAccountMapper>,
+    private val kycElegibility: ElegibilityInterface
 ) : CustodialWalletManager {
 
     override fun getQuote(
@@ -393,24 +396,45 @@ class LiveCustodialWalletManager(
         }
 
     override fun getInterestAccountRates(crypto: CryptoCurrency): Single<Double> =
-        authenticator.authenticate { sessionToken ->
-            nabuService.getInterestRates(sessionToken, crypto.networkTicker).map {
-                it.body()?.rate ?: 0.0
+        kycElegibility.isElegibleForCall().flatMap { elegible ->
+            Timber.e("---- getInterestAccountRates elegible? $elegible")
+            if(elegible) {
+                authenticator.authenticate { sessionToken ->
+                    nabuService.getInterestRates(sessionToken, crypto.networkTicker).map {
+                        Timber.e("---- getInterestAccountRates interest for ${crypto.networkTicker}")
+                        it.body()?.rate ?: 0.0
+                    }
+                }
+            } else {
+                Timber.e("---- getInterestAccountRates returning mock for ${crypto.networkTicker}")
+                Single.just(0.0)
             }
         }
+
 
     override fun getInterestAccountDetails(
         crypto: CryptoCurrency
     ): Maybe<CryptoValue> =
-        authenticator.authenticateMaybe { sessionToken ->
-            nabuService.getInterestAccountBalance(sessionToken, crypto.networkTicker)
-                .map { accountBalanceResponse ->
-                    CryptoValue.fromMinor(
-                        currency = crypto,
-                        minor = accountBalanceResponse.balance.toBigInteger()
-                    )
+        kycElegibility.isElegibleForCall().toMaybe().flatMap { elegible ->
+            Timber.e("---- getInterestAccountDetails elegible? $elegible")
+            if(elegible) {
+                authenticator.authenticateMaybe { sessionToken ->
+                    nabuService.getInterestAccountBalance(sessionToken, crypto.networkTicker)
+                        .map { accountBalanceResponse ->
+                            Timber.e("---- getInterestAccountDetails accountBalanceResponse $accountBalanceResponse")
+
+                            CryptoValue.fromMinor(
+                                currency = crypto,
+                                minor = accountBalanceResponse.balance.toBigInteger()
+                            )
+                        }
                 }
+            } else {
+                Timber.e("---- getInterestAccountDetails returning mock for ${crypto.networkTicker}")
+                Maybe.empty()
+            }
         }
+
 
     private fun CardResponse.toCardPaymentMethod(cardLimits: PaymentLimits) =
         PaymentMethod.Card(

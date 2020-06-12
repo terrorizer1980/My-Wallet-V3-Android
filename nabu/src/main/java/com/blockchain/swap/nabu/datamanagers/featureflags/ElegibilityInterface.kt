@@ -1,5 +1,7 @@
 package com.blockchain.swap.nabu.datamanagers.featureflags
 
+import io.reactivex.Single
+
 interface ElegibilityInterface {
-    fun isElegibleForCall() : Boolean
+    fun isElegibleForCall() : Single<Boolean>
 }
