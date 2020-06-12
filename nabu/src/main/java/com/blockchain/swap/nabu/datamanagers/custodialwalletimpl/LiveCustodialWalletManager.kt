@@ -259,8 +259,10 @@ class LiveCustodialWalletManager(
             .flatMapCompletable { deleteBuyOrder(it.id) }
     }
 
-    override fun updateSupportedCardTypes(fiatCurrency: String,
-                                          isTier2Approved: Boolean): Completable =
+    override fun updateSupportedCardTypes(
+        fiatCurrency: String,
+        isTier2Approved: Boolean
+    ): Completable =
         authenticator.authenticate {
             nabuService.getPaymentMethods(it, fiatCurrency, isTier2Approved).doOnSuccess {
                 updateSupportedCards(it)
