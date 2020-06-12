@@ -17,6 +17,7 @@ import com.blockchain.swap.nabu.datamanagers.NabuDataManagerImpl
 import com.blockchain.swap.nabu.datamanagers.NabuDataUserProvider
 import com.blockchain.swap.nabu.datamanagers.NabuDataUserProviderNabuDataManagerAdapter
 import com.blockchain.swap.nabu.datamanagers.NabuUserReporter
+import com.blockchain.swap.nabu.datamanagers.NabuUserRepository
 import com.blockchain.swap.nabu.datamanagers.NabuUserSyncUpdateUserWalletInfoWithJWT
 import com.blockchain.swap.nabu.datamanagers.UniqueAnalyticsNabuUserReporter
 import com.blockchain.swap.nabu.datamanagers.UniqueAnalyticsWalletReporter
@@ -129,7 +130,9 @@ val nabuModule = module {
 
         factory { KycTiersQueries(get(), get()) }
 
-        factory { KycEligibility(nabuDataUserProvider = get()) }.bind(EligibilityInterface::class)
+        scoped { KycEligibility(userRepository = get()) }.bind(EligibilityInterface::class)
+
+        scoped { NabuUserRepository(nabuDataUserProvider = get()) }
     }
 
     moshiInterceptor(nabu) { builder ->
