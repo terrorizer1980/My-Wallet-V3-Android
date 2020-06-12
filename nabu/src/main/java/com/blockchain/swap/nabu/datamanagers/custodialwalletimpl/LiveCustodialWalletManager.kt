@@ -398,7 +398,7 @@ class LiveCustodialWalletManager(
     override fun getInterestAccountRates(crypto: CryptoCurrency): Single<Double> =
         kycElegibility.isElegibleForCall().flatMap { elegible ->
             Timber.e("---- getInterestAccountRates elegible? $elegible")
-            if(elegible) {
+            if (elegible) {
                 authenticator.authenticate { sessionToken ->
                     nabuService.getInterestRates(sessionToken, crypto.networkTicker).map {
                         Timber.e("---- getInterestAccountRates interest for ${crypto.networkTicker}")
@@ -411,13 +411,12 @@ class LiveCustodialWalletManager(
             }
         }
 
-
     override fun getInterestAccountDetails(
         crypto: CryptoCurrency
     ): Maybe<CryptoValue> =
         kycElegibility.isElegibleForCall().toMaybe().flatMap { elegible ->
             Timber.e("---- getInterestAccountDetails elegible? $elegible")
-            if(elegible) {
+            if (elegible) {
                 authenticator.authenticateMaybe { sessionToken ->
                     nabuService.getInterestAccountBalance(sessionToken, crypto.networkTicker)
                         .map { accountBalanceResponse ->
@@ -434,7 +433,6 @@ class LiveCustodialWalletManager(
                 Maybe.empty()
             }
         }
-
 
     private fun CardResponse.toCardPaymentMethod(cardLimits: PaymentLimits) =
         PaymentMethod.Card(
