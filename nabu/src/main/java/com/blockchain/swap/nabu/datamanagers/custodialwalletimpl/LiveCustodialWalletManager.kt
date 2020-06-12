@@ -21,7 +21,7 @@ import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
-import com.blockchain.swap.nabu.datamanagers.featureflags.EligibilityInterface
+import com.blockchain.swap.nabu.datamanagers.featureflags.Eligibility
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.swap.nabu.extensions.toLocalTime
 import com.blockchain.swap.nabu.models.cards.CardResponse
@@ -59,7 +59,7 @@ class LiveCustodialWalletManager(
     private val simpleBuyPrefs: SimpleBuyPrefs,
     private val featureFlag: FeatureFlag,
     private val paymentAccountMapperMappers: Map<String, PaymentAccountMapper>,
-    private val kycEligibility: EligibilityInterface
+    private val kycEligibility: Eligibility
 ) : CustodialWalletManager {
 
     override fun getQuote(
@@ -226,7 +226,7 @@ class LiveCustodialWalletManager(
         }
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
-        kycEligibility.isEligibleForCall().toMaybe().flatMap { eligible ->
+        kycEligibility.isEligible().toMaybe().flatMap { eligible ->
             if (eligible) {
                 authenticator.authenticateMaybe {
                     nabuService.getBalanceForAsset(it, crypto)
@@ -401,7 +401,7 @@ class LiveCustodialWalletManager(
         }
 
     override fun getInterestAccountRates(crypto: CryptoCurrency): Single<Double> =
-        kycEligibility.isEligibleForCall().flatMap { eligible ->
+        kycEligibility.isEligible().flatMap { eligible ->
             if (eligible) {
                 authenticator.authenticate { sessionToken ->
                     nabuService.getInterestRates(sessionToken, crypto.networkTicker).map {
@@ -416,7 +416,7 @@ class LiveCustodialWalletManager(
     override fun getInterestAccountDetails(
         crypto: CryptoCurrency
     ): Maybe<CryptoValue> =
-        kycEligibility.isEligibleForCall().toMaybe().flatMap { eligible ->
+        kycEligibility.isEligible().toMaybe().flatMap { eligible ->
             if (eligible) {
                 authenticator.authenticateMaybe { sessionToken ->
                     nabuService.getInterestAccountBalance(sessionToken, crypto.networkTicker)
