@@ -37,3 +37,16 @@ if [ $version_increase != "M" ] || [ $version_increase != "P" ] || [ $version_in
     printf "$version_increase is an invalid command. Please select one of (M - Major / P - Patch / m - minor)"
     exit 1
 fi
+
+if [ $version_increase != "M" ]; then
+  printf "# TODO increase major version"
+fi
+
+
+if [ $version_increase != "P" ]; then
+  printf "# TODO increase patch version"
+fi
+
+if [ $version_increase != "m" ]; then
+  printf "# TODO increase minor version"
+fi
