@@ -91,6 +91,13 @@ echo ""
 read -p "Are you sure you want to continue? y/n" updateConfirmation
 
 if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
+  prod_tag="v$strippedUpdatedVersionName($updatedVersionCode)"
+
+  if [ $(git tag -l "$prod_tag") ]; then
+    printf '\n\e[1;31m%-6s\e[m\n' "The version you entered already exists! Please check versions manually"
+    exit 1
+  fi
+
   git checkout develop
   git pull
 
@@ -98,23 +105,23 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
   strippedUpdatedVersionName="${strippedUpdatedVersionName#\"}"
   releaseBranch="release/$strippedUpdatedVersionName"
 
-  git checkout -b $releaseBranch
+  git checkout -b "$releaseBranch"
 
   sed -i -e "s/$currentVersionCode/$updatedVersionCode/g" $dependenciesFilePath
   sed -i -e "s/$currentVersionName/$newVersionName/g" $dependenciesFilePath
 
   git add .
   git commit -m "version bump: $strippedUpdatedVersionName($updatedVersionCode)"
-  git push --set-upstream origin $releaseBranch
+  git push --set-upstream origin "$releaseBranch"
 
-  git tag -a "v$strippedUpdatedVersionName($updatedVersionCode)" -m "v$strippedUpdatedVersionName($updatedVersionCode)"
+  git tag -a "$prod_tag" -m "$prod_tag"
   git push origin --tags
 
   echo "All done!"
 fi
 
 if [ $updateConfirmation != "y" ] && [ $updateConfirmation != "Y" ]; then
-  echo "Release update cancelled - Please re-run the script if you wish to make changes"
+  printf '\n\e[1;31m%-6s\e[m\n' "Release update cancelled - Please re-run the script if you wish to make changes"
   exit 1
 fi
 
