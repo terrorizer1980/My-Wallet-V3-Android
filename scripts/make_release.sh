@@ -38,15 +38,15 @@ if [ $version_increase != "M" ] && [ $version_increase != "P" ] && [ $version_in
     exit 1
 fi
 
-if [ $version_increase != "M" ]; then
+if [ $version_increase == "M" ]; then
   printf "# TODO increase major version"
 fi
 
 
-if [ $version_increase != "P" ]; then
+if [ $version_increase == "P" ]; then
   printf "# TODO increase patch version"
 fi
 
-if [ $version_increase != "m" ]; then
+if [ $version_increase == "m" ]; then
   printf "# TODO increase minor version"
 fi
