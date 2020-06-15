@@ -104,11 +104,13 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
   sed -i -e "s/$currentVersionName/$newVersionName/g" $dependenciesFilePath
 
   git add .
-  git commit -m "version bump: $newVersionName($updatedVersionCode)"
+  git commit -m "version bump: $strippedUpdatedVersionName($updatedVersionCode)"
   git push --set-upstream origin $releaseBranch
 
   git tag -a "v$strippedUpdatedVersionName($updatedVersionCode)" -m "v$strippedUpdatedVersionName($updatedVersionCode)"
   git push origin --tags
+
+  echo "All done!"
 fi
 
 if [ $updateConfirmation != "y" ] && [ $updateConfirmation != "Y" ]; then
