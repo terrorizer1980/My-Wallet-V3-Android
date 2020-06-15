@@ -33,7 +33,7 @@ printf "\nLatest release is: $latestTag"
 read -p "\nWhat would you like to increase? (M/P/m)" version_increase
 
 
-if [ $version_increase != "M" ] || [ $version_increase != "P" ] || [ $version_increase != "m" ]; then
+if [ $version_increase != "M" ] && [ $version_increase != "P" ] && [ $version_increase != "m" ]; then
     printf "$version_increase is an invalid command. Please select one of (M - Major / P - Patch / m - minor)"
     exit 1
 fi
