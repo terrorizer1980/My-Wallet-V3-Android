@@ -24,3 +24,16 @@ if ! [ -x "$(command -v agvtool)" ]; then
     printf '\e[1;31m%-6s\e[m\n' "You are missing the Xcode Command Line Tools. To install them, please run: xcode-select --install."
     exit 1
 fi
+
+git fetch --tags
+latestTag=$(git describe --tags $(git rev-list --tags --max-count=1))
+
+printf "latest release is: $latestTag"
+
+read -p "What would you like to increase? (M/P/m)" version_increase
+
+
+if [ $version_increase != "M" ] || [ $version_increase != "P" ] || [ $version_increase != "m" ]; then
+    printf "$version_increase is an invalid command. Please select one of (M - Major / P - Patch / m - minor)"
+    exit 1
+fi
