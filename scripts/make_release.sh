@@ -105,9 +105,9 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
 
   git add .
   git commit -m "version bump: $newVersionName($updatedVersionCode)"
-
-  git tag -a "v$newVersionName($updatedVersionCode)"
   git push --set-upstream origin $releaseBranch
+
+  git tag -a "v$newVersionName($updatedVersionCode)" -m "v$newVersionName($updatedVersionCode)"
   git push origin --tags
 fi
 
