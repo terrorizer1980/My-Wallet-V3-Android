@@ -37,6 +37,7 @@ if [ $version_increase != "M" ] && [ $version_increase != "P" ] && [ $version_in
     exit 1
 fi
 
+echo ""
 dependenciesFilePath="./buildSrc/src/main/java/Dependencies.kt"
 currentVersionCode=$(awk '/const val versionCode = / {print $5}' $dependenciesFilePath)
 echo "Current versionCode is: $currentVersionCode"
@@ -58,26 +59,27 @@ splitNamesm=$( echo "$strippedVersion" | cut -d "." -f 3)
 # echo "splitNamesP $splitNamesP"
 # echo "splitNamesm $splitNamesm"
 
+echo ""
 newVersionName=""
 if [ $version_increase == "M" ]; then
   echo "> Increasing major version"
   increasedMajor=$((splitNamesM + 1))
   newVersionName="\"$increasedMajor.0.0\""
-  echo "updatedMajorVersion $newVersionName"
+  # echo "updatedMajorVersion $newVersionName"
 fi
 
 if [ $version_increase == "P" ]; then
   echo "> Increasing patch version"
   increasedPatch=$((splitNamesP + 1))
   newVersionName="\"$splitNamesM.$increasedPatch.0\""
-  echo "updatedPatchVersion $newVersionName"
+  # echo "updatedPatchVersion $newVersionName"
 fi
 
 if [ $version_increase == "m" ]; then
   echo "> Increasing minor version"
   increasedMinor=$((splitNamesm + 1))
   newVersionName="\"$splitNamesM.$splitNamesP.$increasedMinor\""
-  echo "updatedMinorVersion $newVersionName"
+  # echo "updatedMinorVersion $newVersionName"
 fi
 
 echo "############"
@@ -92,7 +94,9 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
   git checkout develop
   git pull
 
-  releaseBranch="release_$newVersionName"
+  strippedUpdatedVersionName="${newVersionName%\"}"
+  strippedUpdatedVersionName="${strippedUpdatedVersionName#\"}"
+  releaseBranch="release/$strippedUpdatedVersionName"
   git checkout -b $releaseBranch
 
   sed -i -e "s/$currentVersionCode/$updatedVersionCode/g" $dependenciesFilePath
