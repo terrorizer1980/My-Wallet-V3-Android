@@ -28,9 +28,9 @@ fi
 git fetch --tags
 latestTag=$(git describe --tags $(git rev-list --tags --max-count=1))
 
-printf "latest release is: $latestTag"
+printf "\nLatest release is: $latestTag"
 
-read -p "What would you like to increase? (M/P/m)" version_increase
+read -p "\nWhat would you like to increase? (M/P/m)" version_increase
 
 
 if [ $version_increase != "M" ] || [ $version_increase != "P" ] || [ $version_increase != "m" ]; then
