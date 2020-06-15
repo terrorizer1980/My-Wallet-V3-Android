@@ -97,17 +97,18 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
   strippedUpdatedVersionName="${newVersionName%\"}"
   strippedUpdatedVersionName="${strippedUpdatedVersionName#\"}"
   releaseBranch="release/$strippedUpdatedVersionName"
-  git checkout -b $releaseBranch
+  echo "$releaseBranch"
+  #git checkout -b $releaseBranch
 
-  sed -i -e "s/$currentVersionCode/$updatedVersionCode/g" $dependenciesFilePath
-  sed -i -e "s/$currentVersionName/$newVersionName/g" $dependenciesFilePath
+  #sed -i -e "s/$currentVersionCode/$updatedVersionCode/g" $dependenciesFilePath
+  #sed -i -e "s/$currentVersionName/$newVersionName/g" $dependenciesFilePath
 
-  git add .
-  git commit -m "version bump: $newVersionName($updatedVersionCode)"
+  #git add .
+  #git commit -m "version bump: $newVersionName($updatedVersionCode)"
 
-  git tag -a "v$newVersionName($updatedVersionCode)"
-  git push --set-upstream origin $releaseBranch
-  git push origin --tags
+  #git tag -a "v$newVersionName($updatedVersionCode)"
+  #git push --set-upstream origin $releaseBranch
+  #git push origin --tags
 fi
 
 if [ $updateConfirmation != "y" ] && [ $updateConfirmation != "Y" ]; then
