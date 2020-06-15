@@ -58,29 +58,49 @@ echo "splitNamesM $splitNamesM"
 echo "splitNamesP $splitNamesP"
 echo "splitNamesm $splitNamesm"
 
-newVersion=""
+newVersionName=""
 if [ $version_increase == "M" ]; then
   echo "> Increasing major version"
   increasedMajor=$((splitNamesM + 1))
-  newVersion="\"$increasedMajor.0.0\""
-  echo "updatedMajorVersion $newVersion"
+  newVersionName="\"$increasedMajor.0.0\""
+  echo "updatedMajorVersion $newVersionName"
 fi
 
 if [ $version_increase == "P" ]; then
   echo "> Increasing patch version"
   increasedPatch=$((splitNamesP + 1))
-  newVersion="\"$splitNamesM.$increasedPatch.0\""
-  echo "updatedPatchVersion $newVersion"
+  newVersionName="\"$splitNamesM.$increasedPatch.0\""
+  echo "updatedPatchVersion $newVersionName"
 fi
 
 if [ $version_increase == "m" ]; then
   echo "> Increasing minor version"
   increasedMinor=$((splitNamesm + 1))
-  newVersion="\"$splitNamesM.$splitNamesP.$increasedMinor\""
-  echo "updatedMinorVersion $newVersion"
+  newVersionName="\"$splitNamesM.$splitNamesP.$increasedMinor\""
+  echo "updatedMinorVersion $newVersionName"
 fi
 
-sed -i -e "s/$currentVersionCode/$updatedVersionCode/g" $dependenciesFilePath
-sed -i -e "s/$currentVersionName/$newVersion/g" $dependenciesFilePath
+echo "############"
+echo "Updating version code from: $currentVersionCode to: $updatedVersionCode"
+echo "Updating version name from: $currentVersionName to: $newVersionName"
+echo "############"
+
+read -p "Are you sure you want to continue? y/n" updateConfirmation
+
+if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
+  sed -i -e "s/$currentVersionCode/$updatedVersionCode/g" $dependenciesFilePath
+  sed -i -e "s/$currentVersionName/$newVersionName/g" $dependenciesFilePath
+
+  releaseBranch="release_$newVersionName"
+  git checkout develop
+  git checkout -b $releaseBranch
+  #git push --set-upstream origin "$releaseBranch"
+fi
+
+if [ $updateConfirmation != "y" ] && [ $updateConfirmation != "Y" ]; then
+  echo "Release update cancelled - Please re-run the script if you wish to make changes"
+fi
+
+
 
 
