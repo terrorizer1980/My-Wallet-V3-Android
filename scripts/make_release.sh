@@ -20,13 +20,6 @@ cd ..
 #    exit 1
 #fi
 
-dependenciesFilePath="./buildSrc/src/main/java/Dependencies.kt"
-currentVersionCode=$(awk '/const val versionCode = / {print $5}' $dependenciesFilePath)
-echo "Current versionCode is: $currentVersionCode"
-
-currentVersionName=$(awk '/const val versionName = / {print $5}' $dependenciesFilePath)
-echo "Current versionName is: $currentVersionName"
-
 if ! [ -x "$(command -v agvtool)" ]; then
     printf '\e[1;31m%-6s\e[m\n' "You are missing the Xcode Command Line Tools. To install them, please run: xcode-select --install."
     exit 1
@@ -44,19 +37,26 @@ if [ $version_increase != "M" ] && [ $version_increase != "P" ] && [ $version_in
     exit 1
 fi
 
+dependenciesFilePath="./buildSrc/src/main/java/Dependencies.kt"
+currentVersionCode=$(awk '/const val versionCode = / {print $5}' $dependenciesFilePath)
+echo "Current versionCode is: $currentVersionCode"
+
+currentVersionName=$(awk '/const val versionName = / {print $5}' $dependenciesFilePath)
+echo "Current versionName is: $currentVersionName"
+
 updatedVersionCode=$((currentVersionCode + 1))
-echo "updatedVersionCode is: $updatedVersionCode"
+# echo "updatedVersionCode is: $updatedVersionCode"
 
 strippedVersion="${currentVersionName%\"}"
 strippedVersion="${strippedVersion#\"}"
-echo "strippedVersion $strippedVersion"
+# echo "strippedVersion $strippedVersion"
 
 splitNamesM=$( echo "$strippedVersion" | cut -d "." -f 1)
 splitNamesP=$( echo "$strippedVersion" | cut -d "." -f 2)
 splitNamesm=$( echo "$strippedVersion" | cut -d "." -f 3)
-echo "splitNamesM $splitNamesM"
-echo "splitNamesP $splitNamesP"
-echo "splitNamesm $splitNamesm"
+# echo "splitNamesM $splitNamesM"
+# echo "splitNamesP $splitNamesP"
+# echo "splitNamesm $splitNamesm"
 
 newVersionName=""
 if [ $version_increase == "M" ]; then
@@ -84,21 +84,31 @@ echo "############"
 echo "Updating version code from: $currentVersionCode to: $updatedVersionCode"
 echo "Updating version name from: $currentVersionName to: $newVersionName"
 echo "############"
+echo ""
 
 read -p "Are you sure you want to continue? y/n" updateConfirmation
 
 if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
+  git checkout develop
+  git pull
+
+  releaseBranch="release_$newVersionName"
+  git checkout -b $releaseBranch
+
   sed -i -e "s/$currentVersionCode/$updatedVersionCode/g" $dependenciesFilePath
   sed -i -e "s/$currentVersionName/$newVersionName/g" $dependenciesFilePath
 
-  releaseBranch="release_$newVersionName"
-  git checkout develop
-  git checkout -b $releaseBranch
-  #git push --set-upstream origin "$releaseBranch"
+  git add .
+  git commit -m "version bump: $newVersionName($updatedVersionCode)"
+
+  git tag -a "v$newVersionName($updatedVersionCode)"
+  git push --set-upstream origin $releaseBranch
+  git push origin --tags
 fi
 
 if [ $updateConfirmation != "y" ] && [ $updateConfirmation != "Y" ]; then
   echo "Release update cancelled - Please re-run the script if you wish to make changes"
+  exit 1
 fi
 
 
