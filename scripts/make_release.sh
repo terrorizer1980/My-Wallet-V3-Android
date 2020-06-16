@@ -102,8 +102,8 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
 
   git checkout -b "$releaseBranch" > /dev/null 2>&1
 
-  sed -i "s#$currentVersionCode#$updatedVersionCode#g" -e "/buildSrc/src/main/java/Dependencies.kt"
-  sed -i "s#$currentVersionName#$newVersionName#g" $dependenciesFilePath
+  sed -i -e "s#$currentVersionCode#$updatedVersionCode#g" -e "/buildSrc/src/main/java/Dependencies.kt"
+  sed -i -e "s#$currentVersionName#$newVersionName#g" $dependenciesFilePath
 
   git add . > /dev/null 2>&1
   git commit -m "version bump: $strippedUpdatedVersionName($updatedVersionCode)" > /dev/null 2>&1
