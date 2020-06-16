@@ -91,6 +91,9 @@ echo ""
 read -p "Are you sure you want to continue? y/n" updateConfirmation
 
 if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
+  strippedUpdatedVersionName="${newVersionName%\"}"
+  strippedUpdatedVersionName="${strippedUpdatedVersionName#\"}"
+
   prod_tag="v$strippedUpdatedVersionName($updatedVersionCode)"
 
   if [ $(git tag -l "$prod_tag") ]; then
@@ -101,8 +104,6 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
   git checkout develop
   git pull
 
-  strippedUpdatedVersionName="${newVersionName%\"}"
-  strippedUpdatedVersionName="${strippedUpdatedVersionName#\"}"
   releaseBranch="release/$strippedUpdatedVersionName"
 
   git checkout -b "$releaseBranch"
