@@ -39,7 +39,6 @@ fi
 
 echo ""
 dependenciesFilePath="./buildSrc/src/main/java/Dependencies.kt"
-dependenciesFilePath1="/buildSrc/src/main/java/Dependencies.kt"
 currentVersionCode=$(awk '/const val versionCode = / {print $5}' $dependenciesFilePath)
 echo "Current versionCode is: $currentVersionCode"
 
@@ -103,8 +102,8 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
 
   git checkout -b "$releaseBranch" > /dev/null 2>&1
 
-  sed -i "s/$currentVersionCode/$updatedVersionCode/g" $dependenciesFilePath1
-  sed -i "s/$currentVersionName/$newVersionName/g" $dependenciesFilePath1
+  sed -i "s/$currentVersionCode/$updatedVersionCode/g" "buildSrc/src/main/java/Dependencies.kt"
+  sed -i "s/$currentVersionName/$newVersionName/g" $dependenciesFilePath
 
   git add . > /dev/null 2>&1
   git commit -m "version bump: $strippedUpdatedVersionName($updatedVersionCode)" > /dev/null 2>&1
