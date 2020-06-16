@@ -15,10 +15,10 @@
 
 cd ..
 
-#if [ -n "$(git status --untracked-files=no --porcelain)" ]; then
-#    printf '\e[1;31m%-6s\e[m\n' "Making a new build requires that you have a clean git working directory. Please commit your changes or stash them to continue."
-#    exit 1
-#fi
+if [ -n "$(git status --untracked-files=no --porcelain)" ]; then
+    printf '\e[1;31m%-6s\e[m\n' "Making a new build requires that you have a clean git working directory. Please commit your changes or stash them to continue."
+    exit 1
+fi
 
 if ! [ -x "$(command -v agvtool)" ]; then
     printf '\e[1;31m%-6s\e[m\n' "You are missing the Xcode Command Line Tools. To install them, please run: xcode-select --install."
@@ -88,7 +88,6 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
   strippedUpdatedVersionName="${strippedUpdatedVersionName#\"}"
 
   prod_tag="v$strippedUpdatedVersionName($updatedVersionCode)"
-  echo $prod_tag""
 
   if [ $(git tag -l "$prod_tag") ]; then
     printf '\n\e[1;31m%-6s\e[m\n' "The updated version already exists! Please check versions manually"
@@ -96,14 +95,14 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
   fi
 
   git checkout develop > /dev/null 2>&1
-  git pull
+  git pull > /dev/null 2>&1
 
-  releaseBranch="release/$strippedUpdatedVersionName"
+  releaseBranch="release_$strippedUpdatedVersionName"
 
   git checkout -b "$releaseBranch"
 
-  sed -i -e "s#$currentVersionCode#$updatedVersionCode#g" $dependenciesFilePath
-  sed -i -e "s#$currentVersionName#$newVersionName#g" $dependenciesFilePath
+  sed -n "s#$currentVersionCode#$updatedVersionCode#g" buildSrc/src/main/java/Dependencies.kt
+  sed -n "s#$currentVersionName#$newVersionName#g" buildSrc/src/main/java/Dependencies.kt
 
   git add $dependenciesFilePath
   git commit -m "version bump: $strippedUpdatedVersionName($updatedVersionCode)"
