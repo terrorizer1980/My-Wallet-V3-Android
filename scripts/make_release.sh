@@ -100,7 +100,7 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
 
   releaseBranch="release/$strippedUpdatedVersionName"
 
-  git checkout -b "$releaseBranch" > /dev/null 2>&1
+  git checkout -b "$releaseBranch"
 
   sed -i "s#$currentVersionCode#$updatedVersionCode#g" \./buildSrc/src/main/java/Dependencies\.kt
   sed -i -e "s#$currentVersionName#$newVersionName#g" $dependenciesFilePath
@@ -108,9 +108,9 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
   git add . > /dev/null 2>&1
   git commit -m "version bump: $strippedUpdatedVersionName($updatedVersionCode)" > /dev/null 2>&1
 
-  git tag -a "$prod_tag" -m "$prod_tag" > /dev/null 2>&1
-  #git push --set-upstream origin "$releaseBranch" > /dev/null 2>&1
-  #git push origin --tags > /dev/null 2>&1
+  git tag -a "$prod_tag" -m "$prod_tag"
+  #git push --set-upstream origin "$releaseBranch"
+  #git push origin --tags
 
   echo "All done!"
 fi
