@@ -102,7 +102,7 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
 
   git checkout -b "$releaseBranch" > /dev/null 2>&1
 
-  sed -i "s#$currentVersionCode#$updatedVersionCode#g" "./buildSrc/src/main/java/Dependencies.kt"
+  sed -i "s#$currentVersionCode#$updatedVersionCode#g" -e "/buildSrc/src/main/java/Dependencies.kt"
   sed -i "s#$currentVersionName#$newVersionName#g" $dependenciesFilePath
 
   git add . > /dev/null 2>&1
