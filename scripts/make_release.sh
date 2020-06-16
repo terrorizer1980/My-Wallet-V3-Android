@@ -10,8 +10,8 @@
 #
 #  What It Does
 #  ------------
-#  TODO
-#
+#  Automatically bumps the version code and version name based on user input and creates and tags
+#  the release/X.X.X branch from develop
 
 cd ..
 
@@ -46,18 +46,13 @@ currentVersionName=$(awk '/const val versionName = / {print $5}' $dependenciesFi
 echo "Current versionName is: $currentVersionName"
 
 updatedVersionCode=$((currentVersionCode + 1))
-# echo "updatedVersionCode is: $updatedVersionCode"
 
 strippedVersion="${currentVersionName%\"}"
 strippedVersion="${strippedVersion#\"}"
-# echo "strippedVersion $strippedVersion"
 
 splitNamesM=$( echo "$strippedVersion" | cut -d "." -f 1)
 splitNamesP=$( echo "$strippedVersion" | cut -d "." -f 2)
 splitNamesm=$( echo "$strippedVersion" | cut -d "." -f 3)
-# echo "splitNamesM $splitNamesM"
-# echo "splitNamesP $splitNamesP"
-# echo "splitNamesm $splitNamesm"
 
 echo ""
 newVersionName=""
@@ -65,23 +60,21 @@ if [ $version_increase == "M" ]; then
   echo "> Increasing major version"
   increasedMajor=$((splitNamesM + 1))
   newVersionName="\"$increasedMajor.0.0\""
-  # echo "updatedMajorVersion $newVersionName"
 fi
 
 if [ $version_increase == "P" ]; then
   echo "> Increasing patch version"
   increasedPatch=$((splitNamesP + 1))
   newVersionName="\"$splitNamesM.$increasedPatch.0\""
-  # echo "updatedPatchVersion $newVersionName"
 fi
 
 if [ $version_increase == "m" ]; then
   echo "> Increasing minor version"
   increasedMinor=$((splitNamesm + 1))
   newVersionName="\"$splitNamesM.$splitNamesP.$increasedMinor\""
-  # echo "updatedMinorVersion $newVersionName"
 fi
 
+echo ""
 echo "############"
 echo "Updating version code from: $currentVersionCode to: $updatedVersionCode"
 echo "Updating version name from: $currentVersionName to: $newVersionName"
