@@ -97,26 +97,26 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
   prod_tag="v$strippedUpdatedVersionName($updatedVersionCode)"
 
   if [ $(git tag -l "$prod_tag") ]; then
-    printf '\n\e[1;31m%-6s\e[m\n' "The version you entered already exists! Please check versions manually"
+    printf '\n\e[1;31m%-6s\e[m\n' "The updated version already exists! Please check versions manually"
     exit 1
   fi
 
-  git checkout develop
+  git checkout develop > /dev/null 2>&1
   git pull
 
   releaseBranch="release/$strippedUpdatedVersionName"
 
-  git checkout -b "$releaseBranch"
+  git checkout -b "$releaseBranch" > /dev/null 2>&1
 
   sed -i -e "s/$currentVersionCode/$updatedVersionCode/g" $dependenciesFilePath
   sed -i -e "s/$currentVersionName/$newVersionName/g" $dependenciesFilePath
 
-  git add .
-  git commit -m "version bump: $strippedUpdatedVersionName($updatedVersionCode)"
-  git push --set-upstream origin "$releaseBranch"
+  git add . > /dev/null 2>&1
+  git commit -m "version bump: $strippedUpdatedVersionName($updatedVersionCode)" > /dev/null 2>&1
 
-  git tag -a "$prod_tag" -m "$prod_tag"
-  git push origin --tags
+  git tag -a "$prod_tag" -m "$prod_tag" > /dev/null 2>&1
+  git push --set-upstream origin "$releaseBranch" > /dev/null 2>&1
+  git push origin --tags > /dev/null 2>&1
 
   echo "All done!"
 fi
