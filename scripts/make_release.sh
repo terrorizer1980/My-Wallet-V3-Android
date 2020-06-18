@@ -112,9 +112,20 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
 
   git tag -a "$prod_tag" -m "$prod_tag"
 
-  read -p "Where would you like to push to? Default is origin" selectedRemote
+  echo ""
+  echo "Your available remotes are:"
+  echo ""
+  git remote -v
 
-  git push -u origin "$releaseBranch"
+  read -p "Where would you like to push to?" selectedRemote
+
+  git ls-remote "$selectedRemote" > /dev/null 2>&1
+  if [ "$?" -ne 0 ]; then
+    printf '\n\e[1;31m%-6s\e[m\n' "Unable to read from '$selectedRemote' - Please check the name is correct and re-run the script"
+    exit 1;
+  fi
+
+  git push -u "$selectedRemote" "$releaseBranch"
   git push --tags
 
   echo "All done!"
@@ -124,7 +135,3 @@ if [ $updateConfirmation != "y" ] && [ $updateConfirmation != "Y" ]; then
   printf '\n\e[1;31m%-6s\e[m\n' "Release update cancelled - Please re-run the script if you wish to make changes"
   exit 1
 fi
-
-
-
-
