@@ -7,11 +7,13 @@ import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
 import io.reactivex.Single
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import timber.log.Timber
 
 internal class AlgoTokens(
     custodialManager: CustodialWalletManager,
@@ -38,5 +40,12 @@ internal class AlgoTokens(
         Completable.complete()
 
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
-        Single.just(emptyList()) // TODO: when we support non custodial we should update this
+        Single.fromCallable {
+            emptyList<CryptoSingleAccount>()
+        }
+        .doOnError { Timber.e(it) }
+        .onErrorReturn { emptyList() }
+
+    private fun getAlgoAccount(): CryptoSingleAccount =
+        AlgoCryptoWalletAccount(label = "ALGO Account", exchangeRates = exchangeRates)
 }
