@@ -97,7 +97,7 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
   git checkout develop > /dev/null 2>&1
   git pull > /dev/null 2>&1
 
-  releaseBranch="release_$strippedUpdatedVersionName"
+  releaseBranch="release/$strippedUpdatedVersionName"
 
   git checkout -b "$releaseBranch"
 
