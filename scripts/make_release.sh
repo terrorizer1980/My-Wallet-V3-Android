@@ -14,8 +14,10 @@
 #  the release/X.X.X branch from develop
 
 currentDir=$(dirname "$0")
+changedDir=0
 if [[ $currentDir != *"/scripts"* ]]; then
-  cd ..
+  changedDir=1
+  pushd ..
 fi
 
 if [ -n "$(git status --untracked-files=no --porcelain)" ]; then
@@ -129,6 +131,10 @@ if [ $updateConfirmation == "y" ] || [ $updateConfirmation == "Y" ]; then
   git push --tags
 
   echo "All done!"
+fi
+
+if [ $changedDir == 1 ]; then
+    popd
 fi
 
 if [ $updateConfirmation != "y" ] && [ $updateConfirmation != "Y" ]; then
