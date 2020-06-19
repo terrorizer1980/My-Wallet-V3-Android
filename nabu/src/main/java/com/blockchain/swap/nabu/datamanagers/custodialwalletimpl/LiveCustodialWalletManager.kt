@@ -23,6 +23,7 @@ import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.datamanagers.featureflags.Feature
 import com.blockchain.swap.nabu.datamanagers.featureflags.FeatureEligibility
+import com.blockchain.swap.nabu.datamanagers.repositories.AssetBalancesRepository
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.swap.nabu.extensions.toLocalTime
 import com.blockchain.swap.nabu.models.cards.CardResponse
@@ -36,6 +37,7 @@ import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.CardPartnerAttributes
 import com.blockchain.swap.nabu.models.simplebuy.ConfirmOrderRequestBody
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyAllBalancesResponse
 import com.blockchain.swap.nabu.models.simplebuy.TransferRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.service.NabuService
@@ -60,8 +62,13 @@ class LiveCustodialWalletManager(
     private val simpleBuyPrefs: SimpleBuyPrefs,
     private val featureFlag: FeatureFlag,
     private val paymentAccountMapperMappers: Map<String, PaymentAccountMapper>,
-    private val kycFeatureEligibility: FeatureEligibility
+    private val kycFeatureEligibility: FeatureEligibility,
+    private val assetBalancesRepository: AssetBalancesRepository
 ) : CustodialWalletManager {
+
+    init {
+        assetBalancesRepository.fnRefresh = ::getBalanceForAllAssets
+    }
 
     override fun getQuote(
         action: String,
@@ -229,19 +236,19 @@ class LiveCustodialWalletManager(
         }
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
-        kycFeatureEligibility.isEligibleFor(Feature.SIMPLEBUY_BALANCE).toMaybe()
-            .flatMap { eligible ->
+        kycFeatureEligibility.isEligibleFor(Feature.SIMPLEBUY_BALANCE)
+            .flatMapMaybe { eligible ->
                 if (eligible) {
-                    authenticator.authenticateMaybe {
-                        nabuService.getBalanceForAsset(it, crypto)
-                            .map { balance ->
-                                CryptoValue.fromMinor(crypto, balance.available.toBigDecimal())
-                            }
-                    }
+                    assetBalancesRepository.getBalanceForAsset(crypto)
                 } else {
                     Maybe.empty()
                 }
             }
+
+    private fun getBalanceForAllAssets(): Single<SimpleBuyAllBalancesResponse> =
+        authenticator.authenticate {
+            nabuService.getBalanceForAllAssets(it)
+        }
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable =
         authenticator.authenticateCompletable {
