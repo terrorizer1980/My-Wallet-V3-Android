@@ -255,7 +255,7 @@ class CryptoAccountCompoundGroup(
 
     // All the activities for all the accounts
     override val activity: Single<ActivitySummaryList>
-        get() = if(accounts.isEmpty()) {
+        get() = if (accounts.isEmpty()) {
             Single.just(emptyList())
         } else {
             Single.zip(
@@ -293,14 +293,14 @@ class CryptoAccountCompoundGroup(
         fiat: String,
         exchangeRates: ExchangeRateDataManager
     ): Single<FiatValue> =
-        if(accounts.isEmpty()) {
+        if (accounts.isEmpty()) {
             Single.just(FiatValue.zero(fiat))
         } else {
             balance.map { it.toFiat(exchangeRates, fiat) }
         }
 
     override fun includes(cryptoAccount: CryptoSingleAccount): Boolean =
-        if(accounts.isEmpty()) {false} else {
+        if (accounts.isEmpty()) { false } else {
             accounts.contains(cryptoAccount)
         }
 }
