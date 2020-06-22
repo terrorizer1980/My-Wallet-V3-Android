@@ -54,7 +54,7 @@ class RestrictedCustodialTradingAccount(
     label: String,
     exchangeRates: ExchangeRateDataManager,
     custodialWalletManager: CustodialWalletManager
-) : CustodialTradingAccount(cryptoCurrency, label, exchangeRates, custodialWalletManager){
+) : CustodialTradingAccount(cryptoCurrency, label, exchangeRates, custodialWalletManager) {
     override val actions: AvailableActions
         get() = availableActions
 
