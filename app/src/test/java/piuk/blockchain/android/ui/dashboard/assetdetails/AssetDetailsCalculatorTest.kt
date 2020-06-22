@@ -83,7 +83,10 @@ class AssetDetailsCalculatorTest {
         whenever(interestGroup.balance).thenReturn(Single.just(interestCrypto))
         whenever(token.interestRate()).thenReturn(Single.just(interestRate))
 
+        whenever(custodialGroup.accounts).thenReturn(listOf(mock()))
         whenever(custodialGroup.isFunded).thenReturn(true)
+
+        whenever(interestGroup.accounts).thenReturn(listOf(mock()))
         whenever(interestGroup.isFunded).thenReturn(true)
 
         calculator.token.accept(token)
@@ -177,6 +180,7 @@ class AssetDetailsCalculatorTest {
         whenever(interestGroup.balance).thenReturn(Single.just(interestCrypto))
         whenever(token.interestRate()).thenReturn(Single.just(interestRate))
 
+        whenever(custodialGroup.accounts).thenReturn(listOf(mock()))
         whenever(custodialGroup.isFunded).thenReturn(true)
         whenever(interestGroup.isFunded).thenReturn(false)
 
