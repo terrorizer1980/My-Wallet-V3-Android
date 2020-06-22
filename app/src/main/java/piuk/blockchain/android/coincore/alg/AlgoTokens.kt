@@ -10,6 +10,7 @@ import io.reactivex.Single
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.impl.AssetTokensBase
+import piuk.blockchain.android.coincore.impl.RestrictedCustodialTradingAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
@@ -46,6 +47,13 @@ internal class AlgoTokens(
         .doOnError { Timber.e(it) }
         .onErrorReturn { emptyList() }
 
-    private fun getAlgoAccount(): CryptoSingleAccount =
-        AlgoCryptoWalletAccount(label = "ALGO Account", exchangeRates = exchangeRates)
+    override fun loadCustodialAccount(): Single<CryptoSingleAccountList> =
+        Single.just(
+            listOf(RestrictedCustodialTradingAccount(
+                asset,
+                labels.getDefaultCustodialWalletLabel(asset),
+                exchangeRates,
+                custodialManager
+            ))
+        )
 }

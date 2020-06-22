@@ -49,7 +49,21 @@ abstract class CryptoSingleAccountBase : CryptoSingleAccount {
     }
 }
 
-class CustodialTradingAccount(
+class RestrictedCustodialTradingAccount(
+    cryptoCurrency: CryptoCurrency,
+    label: String,
+    exchangeRates: ExchangeRateDataManager,
+    custodialWalletManager: CustodialWalletManager
+) : CustodialTradingAccount(cryptoCurrency, label, exchangeRates, custodialWalletManager){
+    override val actions: AvailableActions
+        get() = availableActions
+
+    private val availableActions = setOf(
+        AssetAction.ViewActivity
+    )
+}
+
+open class CustodialTradingAccount(
     cryptoCurrency: CryptoCurrency,
     override val label: String,
     override val exchangeRates: ExchangeRateDataManager,

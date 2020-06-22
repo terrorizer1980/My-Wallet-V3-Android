@@ -11,6 +11,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.impl.AssetTokensBase
+import piuk.blockchain.android.coincore.impl.CustodialTradingAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
@@ -69,6 +70,16 @@ internal class BchTokens(
                 result
             }
         }
+
+    override fun loadCustodialAccount(): Single<CryptoSingleAccountList> =
+        Single.just(
+            listOf(CustodialTradingAccount(
+                asset,
+                labels.getDefaultCustodialWalletLabel(asset),
+                exchangeRates,
+                custodialManager
+            ))
+        )
 
     override fun onLogoutSignal(event: AuthEvent) {
         if (event != AuthEvent.LOGIN) {
