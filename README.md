@@ -12,7 +12,7 @@ Install Android Studio: https://developer.android.com/sdk/index.html
 
 Import as Android Studio project.
 
-**Required: Run the quickstart script from a bash terminal at the base of the project; `./scripts/quick-start.sh` this will install the necessary
+**Required: Run the quickstart script from a bash terminal at the base of the project; `./scripts/quick_start.sh` this will install the necessary
 dependencies for the project to compile successfully.**
 
 Optional: Run the bootstrap script from terminal via `scripts/bootstrap.sh`. This will install the Google Java code style as well

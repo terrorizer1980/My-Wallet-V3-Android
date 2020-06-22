@@ -27,7 +27,7 @@ echo "{
       ],
       \"api_key\": [
         {
-          \"current_key\": \"AIzaSyAfVbY3sSjD8qydhfVJqEnR8xwfa3Nlup8\"
+          \"current_key\": \"INSERT KEY HERE\"
         }
       ],
       \"services\": {
