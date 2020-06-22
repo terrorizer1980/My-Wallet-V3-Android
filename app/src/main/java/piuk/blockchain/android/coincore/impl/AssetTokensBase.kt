@@ -89,7 +89,15 @@ internal abstract class AssetTokensBase(
 
     override fun interestRate(): Single<Double> = custodialManager.getInterestAccountRates(asset)
 
-    abstract fun loadCustodialAccount(): Single<CryptoSingleAccountList>
+    open fun loadCustodialAccount(): Single<CryptoSingleAccountList> =
+        Single.just(
+            listOf(CustodialTradingAccount(
+                asset,
+                labels.getDefaultCustodialWalletLabel(asset),
+                exchangeRates,
+                custodialManager
+            ))
+        )
 
     protected open fun onLogoutSignal(event: AuthEvent) {}
 

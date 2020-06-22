@@ -10,7 +10,6 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.impl.AssetTokensBase
-import piuk.blockchain.android.coincore.impl.CustodialTradingAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
@@ -45,14 +44,4 @@ internal class XlmTokens(
             .map {
                 listOf(XlmCryptoWalletAccount(it, xlmDataManager, exchangeRates))
             }
-
-    override fun loadCustodialAccount(): Single<CryptoSingleAccountList> =
-        Single.fromCallable {
-            listOf(CustodialTradingAccount(
-                asset,
-                labels.getDefaultCustodialWalletLabel(asset),
-                exchangeRates,
-                custodialManager
-            ))
-        }
 }

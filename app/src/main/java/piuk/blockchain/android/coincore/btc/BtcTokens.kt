@@ -10,7 +10,6 @@ import io.reactivex.Single
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.impl.AssetTokensBase
-import piuk.blockchain.android.coincore.impl.CustodialTradingAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -69,14 +68,4 @@ internal class BtcTokens(
                 result
             }
         }
-
-    override fun loadCustodialAccount(): Single<CryptoSingleAccountList> =
-        Single.just(
-            listOf(CustodialTradingAccount(
-                asset,
-                labels.getDefaultCustodialWalletLabel(asset),
-                exchangeRates,
-                custodialManager
-            ))
-        )
 }

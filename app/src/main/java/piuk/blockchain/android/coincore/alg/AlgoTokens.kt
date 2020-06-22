@@ -7,10 +7,11 @@ import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
 import io.reactivex.Single
+import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.impl.AssetTokensBase
-import piuk.blockchain.android.coincore.impl.RestrictedCustodialTradingAccount
+import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
@@ -23,7 +24,8 @@ internal class AlgoTokens(
     currencyPrefs: CurrencyPrefs,
     labels: DefaultLabels,
     crashLogger: CrashLogger,
-    rxBus: RxBus
+    rxBus: RxBus,
+    private val stringUtils: StringUtils
 ) : AssetTokensBase(
     exchangeRates,
     historicRates,
@@ -48,11 +50,12 @@ internal class AlgoTokens(
         .onErrorReturn { emptyList() }
 
     private fun getAlgoAccount(): CryptoSingleAccount =
-        AlgoCryptoWalletAccount(label = "ALGO Account", exchangeRates = exchangeRates)
+        AlgoCryptoWalletAccount(label = stringUtils.getString(R.string.alg_default_account_label),
+            exchangeRates = exchangeRates)
 
     override fun loadCustodialAccount(): Single<CryptoSingleAccountList> =
         Single.just(
-            listOf(RestrictedCustodialTradingAccount(
+            listOf(AlgoCustodialTradingAccount(
                 asset,
                 labels.getDefaultCustodialWalletLabel(asset),
                 exchangeRates,

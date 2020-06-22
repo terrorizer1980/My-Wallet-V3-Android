@@ -49,20 +49,6 @@ abstract class CryptoSingleAccountBase : CryptoSingleAccount {
     }
 }
 
-class RestrictedCustodialTradingAccount(
-    cryptoCurrency: CryptoCurrency,
-    label: String,
-    exchangeRates: ExchangeRateDataManager,
-    custodialWalletManager: CustodialWalletManager
-) : CustodialTradingAccount(cryptoCurrency, label, exchangeRates, custodialWalletManager) {
-    override val actions: AvailableActions
-        get() = availableActions
-
-    private val availableActions = setOf(
-        AssetAction.ViewActivity
-    )
-}
-
 open class CustodialTradingAccount(
     cryptoCurrency: CryptoCurrency,
     override val label: String,
@@ -289,19 +275,10 @@ class CryptoAccountCompoundGroup(
 
     // if _any_ of the accounts have transactions
     override val hasTransactions: Boolean
-        get() = if (accounts.isEmpty()) {
-            false
-        } else {
-            accounts.map { it.hasTransactions }.any { it }
-        }
+        get() = accounts.map { it.hasTransactions }.any { it }
 
     // Are any of the accounts funded
-    override val isFunded: Boolean =
-        if (accounts.isEmpty()) {
-            false
-        } else {
-            accounts.map { it.isFunded }.any { it }
-        }
+    override val isFunded: Boolean = accounts.map { it.isFunded }.any { it }
 
     override fun fiatBalance(
         fiat: String,
@@ -314,7 +291,5 @@ class CryptoAccountCompoundGroup(
         }
 
     override fun includes(cryptoAccount: CryptoSingleAccount): Boolean =
-        if (accounts.isEmpty()) { false } else {
-            accounts.contains(cryptoAccount)
-        }
+        accounts.contains(cryptoAccount)
 }

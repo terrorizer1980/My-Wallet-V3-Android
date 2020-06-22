@@ -12,7 +12,6 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.impl.AssetTokensBase
-import piuk.blockchain.android.coincore.impl.CustodialTradingAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
@@ -60,14 +59,4 @@ internal class PaxTokens(
 
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
         Single.just(emptyList())
-
-    override fun loadCustodialAccount(): Single<CryptoSingleAccountList> =
-        Single.just(
-            listOf(CustodialTradingAccount(
-                asset,
-                labels.getDefaultCustodialWalletLabel(asset),
-                exchangeRates,
-                custodialManager
-            ))
-        )
 }
