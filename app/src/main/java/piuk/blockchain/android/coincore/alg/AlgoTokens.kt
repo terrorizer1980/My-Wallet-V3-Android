@@ -42,10 +42,13 @@ internal class AlgoTokens(
 
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         Single.fromCallable {
-            emptyList<CryptoSingleAccount>()
+            listOf(getAlgoAccount())
         }
         .doOnError { Timber.e(it) }
         .onErrorReturn { emptyList() }
+
+    private fun getAlgoAccount(): CryptoSingleAccount =
+        AlgoCryptoWalletAccount(label = "ALGO Account", exchangeRates = exchangeRates)
 
     override fun loadCustodialAccount(): Single<CryptoSingleAccountList> =
         Single.just(

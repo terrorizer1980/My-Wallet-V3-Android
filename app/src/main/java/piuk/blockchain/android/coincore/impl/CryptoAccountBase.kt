@@ -182,7 +182,7 @@ internal class CryptoInterestAccount(
 abstract class CryptoSingleAccountNonCustodialBase : CryptoSingleAccountBase() {
 
     override val isFunded: Boolean
-        get() = false
+        get() = true
 
     final override val actions: AvailableActions
         get() = availableActions
