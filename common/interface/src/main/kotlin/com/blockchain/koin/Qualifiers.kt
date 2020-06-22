@@ -3,7 +3,6 @@ package com.blockchain.koin
 import org.koin.core.qualifier.StringQualifier
 import org.koin.core.qualifier.named
 
-val paxAccount = StringQualifier("pax")
 val usdtAccount = StringQualifier("usdt")
 val pitFeatureFlag = StringQualifier("ff_pit_linking")
 val simpleBuyFeatureFlag = StringQualifier("ff_simple_buy")

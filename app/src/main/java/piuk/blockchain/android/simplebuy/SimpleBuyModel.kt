@@ -89,6 +89,8 @@ class SimpleBuyModel(
                         it != PaymentMethod.BANK_PAYMENT_ID &&
                                 it != PaymentMethod.UNDEFINED_CARD_PAYMENT_ID
                     },
+                    previousState.selectedPaymentMethod?.paymentMethodType
+                        ?: throw IllegalStateException("Missing Payment Method"),
                     true
                 )
             }

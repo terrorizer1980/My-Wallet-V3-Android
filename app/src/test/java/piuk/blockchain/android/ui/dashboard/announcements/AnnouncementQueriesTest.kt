@@ -8,6 +8,7 @@ import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.datamanagers.PaymentMethod
+import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.PaymentMethodType
 import com.blockchain.swap.nabu.service.TierService
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -185,7 +186,10 @@ class AnnouncementQueriesTest {
     @Test
     fun `isSimpleBuyTransactionPending - has prefs state and is AWAITING FUNDS and payment BANK should return true`() {
         val state: SimpleBuyState = mock {
-            on { selectedPaymentMethod } `it returns` SelectedPaymentMethod(PaymentMethod.BANK_PAYMENT_ID)
+            on { selectedPaymentMethod } `it returns` SelectedPaymentMethod(
+                id = PaymentMethod.BANK_PAYMENT_ID,
+                paymentMethodType = PaymentMethodType.BANK_ACCOUNT
+            )
         }
         val order: SimpleBuyOrder = mock()
 
@@ -230,6 +234,8 @@ class AnnouncementQueriesTest {
     fun `isSimpleBuyKycInProgress - local simple buy state exists and has finished kyc, return true`() {
         val state: SimpleBuyState = mock()
         whenever(state.kycStartedButNotCompleted).thenReturn(true)
+        whenever(state.kycVerificationState).thenReturn(null)
+
         whenever(tierService.tiers()).thenReturn(Single.just(tiers(KycTierState.Verified, KycTierState.None)))
         whenever(sbSync.currentState()).thenReturn(state)
 
@@ -246,6 +252,7 @@ class AnnouncementQueriesTest {
         whenever(state.kycStartedButNotCompleted).thenReturn(true)
         whenever(tierService.tiers()).thenReturn(Single.just(tiers(KycTierState.Pending, KycTierState.None)))
         whenever(sbSync.currentState()).thenReturn(state)
+        whenever(tierService.tiers()).thenReturn(Single.just(tiers(KycTierState.Pending, KycTierState.None)))
 
         subject.isSimpleBuyKycInProgress()
             .test()
@@ -262,6 +269,7 @@ class AnnouncementQueriesTest {
     fun `isSimpleBuyKycInProgress - SB state reports unfinished, but kyc docs are submitted - belt & braces case`() {
         val state: SimpleBuyState = mock()
         whenever(state.kycStartedButNotCompleted).thenReturn(true)
+
         whenever(tierService.tiers()).thenReturn(Single.just(tiers(KycTierState.Pending, KycTierState.UnderReview)))
         whenever(sbSync.currentState()).thenReturn(state)
 
