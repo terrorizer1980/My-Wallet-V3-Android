@@ -36,9 +36,7 @@ class AssetBalancesRepository {
         return if (isCacheExpired()) {
             fnRefresh()
                 .doOnSuccess {
-                    it?.let {
-                        updateCache(it)
-                    }
+                    updateCache(it)
                 }.ignoreElement()
         } else {
             Completable.complete()
