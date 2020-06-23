@@ -30,8 +30,8 @@ internal abstract class AssetTokensBase(
     protected val exchangeRates: ExchangeRateDataManager,
     private val historicRates: ChartsDataManager,
     protected val currencyPrefs: CurrencyPrefs,
-    val labels: DefaultLabels,
-    val custodialManager: CustodialWalletManager,
+    protected val labels: DefaultLabels,
+    protected val custodialManager: CustodialWalletManager,
     protected val crashLogger: CrashLogger,
     rxBus: RxBus
 ) : AssetTokens {
