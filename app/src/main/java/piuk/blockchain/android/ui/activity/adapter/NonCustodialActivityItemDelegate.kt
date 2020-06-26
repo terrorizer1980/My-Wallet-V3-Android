@@ -132,11 +132,11 @@ private fun ImageView.setAssetTint(cryptoCurrency: CryptoCurrency) {
         }
         CryptoCurrency.ALGO -> {
             background.setTint(ContextCompat.getColor(context, R.color.algo_bkgd))
-            drawable.setTint(ContextCompat.getColor(context, R.color.algo))
+            setColorFilter(ContextCompat.getColor(context, R.color.algo))
         }
         CryptoCurrency.USDT -> {
             background.setTint(ContextCompat.getColor(context, R.color.usdt_bkgd))
-            drawable.setTint(ContextCompat.getColor(context, R.color.usdt))
+            setColorFilter(ContextCompat.getColor(context, R.color.usdt))
         }
         else -> {
             // STX left, do nothing

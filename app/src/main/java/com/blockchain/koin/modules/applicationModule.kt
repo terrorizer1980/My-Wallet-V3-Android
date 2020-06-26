@@ -22,7 +22,7 @@ import com.blockchain.koin.payloadScopeQualifier
 import com.blockchain.koin.pitFeatureFlag
 import com.blockchain.koin.simpleBuyFeatureFlag
 import com.blockchain.koin.usdt
-import com.blockchain.koin.usdtAccount
+import com.blockchain.koin.usdtStrategy
 import com.blockchain.koin.xlm
 import com.blockchain.koin.xlmStrategy
 import com.blockchain.network.websocket.Options
@@ -117,6 +117,7 @@ import piuk.blockchain.android.ui.send.strategy.PaxSendStrategy
 import piuk.blockchain.android.ui.send.strategy.ResourceSendFundsResultLocalizer
 import piuk.blockchain.android.ui.send.strategy.SendFundsResultLocalizer
 import piuk.blockchain.android.ui.send.strategy.SendStrategy
+import piuk.blockchain.android.ui.send.strategy.TetherSendStrategy
 import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
 import piuk.blockchain.android.ui.settings.SettingsPresenter
 import piuk.blockchain.android.ui.ssl.SSLVerifyPresenter
@@ -191,7 +192,7 @@ val applicationModule = module {
             )
         }.bind(Erc20Account::class)
 
-        factory(usdtAccount) {
+        factory {
             UsdtAccount(
                 ethDataManager = get(),
                 dataStore = get(),
@@ -445,6 +446,7 @@ val applicationModule = module {
                 etherStrategy = get(etherStrategy),
                 xlmStrategy = get(xlmStrategy),
                 paxStrategy = get(paxStrategy),
+                usdtStrategy = get(usdtStrategy),
                 prefs = get(),
                 exchangeRates = get(),
                 stringUtils = get(),
@@ -552,6 +554,26 @@ val applicationModule = module {
                 payloadDataManager = get(),
                 ethDataManager = get(),
                 paxAccount = get(),
+                stringUtils = get(),
+                dynamicFeeCache = get(),
+                feeDataManager = get(),
+                exchangeRates = get(),
+                environmentConfig = get(),
+                currencyState = get(),
+                nabuToken = get(),
+                nabuDataManager = get(),
+                pitLinking = get(),
+                analytics = get(),
+                prefs = get()
+            )
+        }
+
+        factory<SendStrategy<SendView>>(usdtStrategy) {
+            TetherSendStrategy(
+                walletAccountHelper = get(),
+                payloadDataManager = get(),
+                ethDataManager = get(),
+                usdtAccount = get(),
                 stringUtils = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),
