@@ -1,7 +1,6 @@
 package piuk.blockchain.android.coincore
 
 import com.blockchain.koin.payloadScopeQualifier
-import com.blockchain.koin.usdtAccount
 import org.koin.dsl.module
 import piuk.blockchain.android.coincore.alg.AlgoTokens
 import piuk.blockchain.android.coincore.bch.BchTokens
@@ -114,12 +113,11 @@ val coincoreModule = module {
         scoped {
             UsdtTokens(
                 rxBus = get(),
-                erc20Account = get(usdtAccount),
+                erc20Account = get(),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
                 custodialManager = get(),
-                stringUtils = get(),
                 crashLogger = get(),
                 labels = get()
             )

@@ -828,6 +828,9 @@
     <string name="pax_to_field_helper_no_dropdown_1">Enter USD-D/ETH address</string>
     <string name="pax_to_field_helper_1">Enter USD-D/ETH address or select</string>
     <string name="pax_invalid_address_1">Invalid USD-D address</string>
+    <string name="usdt_to_field_helper_no_dropdown_1">Enter TETHER/ETH address</string>
+    <string name="usdt_to_field_helper_1">Enter TETHER/ETH address or select</string>
+    <string name="usdt_invalid_address_1">Invalid TETHER address</string>
 
     <!-- DASHBOARD -->
     <string name="dashboard_title">Dashboard</string>
@@ -920,6 +923,7 @@
 
     <string name="pax_title_1">USD Digital</string>
     <string name="pax_wallet_name_1">My USD Digital Wallet</string>
+    <string name="usdt_wallet_name">My Tether Wallet</string>
 
     <string name="morph_exchange">Swap</string>
 

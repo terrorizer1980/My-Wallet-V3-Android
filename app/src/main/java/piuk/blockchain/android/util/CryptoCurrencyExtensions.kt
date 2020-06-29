@@ -65,7 +65,7 @@ fun CryptoCurrency.maskedAsset(): Int =
         CryptoCurrency.BCH -> R.drawable.ic_bch_circled_mask
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         CryptoCurrency.ALGO -> R.drawable.ic_algo_circled_mask
-        CryptoCurrency.USDT -> TODO("STUB: USDT NOT IMPLEMENTED")
+        CryptoCurrency.USDT -> R.drawable.ic_usdt_circled_mask
     }
 
 fun ImageView.setImageDrawable(@DrawableRes res: Int) {
@@ -85,8 +85,8 @@ fun CryptoCurrency.errorIcon(): Int =
         CryptoCurrency.XLM -> R.drawable.vector_xlm_error
         CryptoCurrency.PAX -> R.drawable.vector_pax_error
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-        CryptoCurrency.ALGO -> R.drawable.vector_algo_error // TODO update
-        CryptoCurrency.USDT -> TODO("STUB: USDT NOT IMPLEMENTED")
+        CryptoCurrency.ALGO -> R.drawable.vector_algo_error
+        CryptoCurrency.USDT -> R.drawable.vecctor_usdt_error
     }
 
 @StringRes

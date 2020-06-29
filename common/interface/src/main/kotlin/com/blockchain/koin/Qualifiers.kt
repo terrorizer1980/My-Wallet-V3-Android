@@ -3,7 +3,6 @@ package com.blockchain.koin
 import org.koin.core.qualifier.StringQualifier
 import org.koin.core.qualifier.named
 
-val usdtAccount = StringQualifier("usdt")
 val pitFeatureFlag = StringQualifier("ff_pit_linking")
 val simpleBuyFeatureFlag = StringQualifier("ff_simple_buy")
 val cardPaymentsFeatureFlag = StringQualifier("ff_card_payments")
@@ -18,6 +17,7 @@ val bchStrategy = StringQualifier("BCHStrategy")
 val etherStrategy = StringQualifier("EtherStrategy")
 val xlmStrategy = StringQualifier("XLMStrategy")
 val paxStrategy = StringQualifier("PaxStrategy")
+val usdtStrategy = StringQualifier("UsdtStrategy")
 val moshiExplorerRetrofit = StringQualifier("moshi_explorer")
 val nabu = StringQualifier("nabu")
 val kotlinApiRetrofit = StringQualifier("kotlin-api")

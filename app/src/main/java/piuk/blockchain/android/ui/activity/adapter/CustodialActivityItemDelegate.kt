@@ -46,7 +46,8 @@ private class CustodialActivityItemViewHolder(
     ) {
         with(itemView) {
             icon.setIcon(tx.status)
-            if (tx.status != OrderState.PENDING_EXECUTION) {
+            if (tx.status != OrderState.PENDING_EXECUTION &&
+                tx.status != OrderState.AWAITING_FUNDS) {
                 icon.setAssetTint(tx.cryptoCurrency)
             }
 
@@ -108,7 +109,11 @@ private fun ImageView.setAssetTint(cryptoCurrency: CryptoCurrency) {
         }
         CryptoCurrency.ALGO -> {
             background.setTint(ContextCompat.getColor(context, R.color.algo_bkgd))
-            drawable.setTint(ContextCompat.getColor(context, R.color.algo))
+            setColorFilter(ContextCompat.getColor(context, R.color.algo))
+        }
+        CryptoCurrency.USDT -> {
+            background.setTint(ContextCompat.getColor(context, R.color.usdt_bkgd))
+            setColorFilter(ContextCompat.getColor(context, R.color.usdt))
         }
         else -> {
             // STX left, do nothing
