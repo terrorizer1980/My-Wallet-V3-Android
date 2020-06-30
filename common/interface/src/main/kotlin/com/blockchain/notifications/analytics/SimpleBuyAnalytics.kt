@@ -55,6 +55,8 @@ enum class SimpleBuyAnalytics(override val event: String, override val params: M
     CARD_INFO_SET("sb_card_info_set"),
     CARD_BILLING_ADDRESS_SET("sb_billing_address_set"),
     CARD_3DS_COMPLETED("sb_three_d_secure_complete"),
+    PAYMENT_METHODS_SHOWN("sb_payment_method_shown"),
+    REMOVE_CARD("sb_remove_card")
 }
 
 fun buyConfirmClicked(amount: String, fiatCurrency: String): AnalyticsEvent = object : AnalyticsEvent {
@@ -83,6 +85,13 @@ class CustodialBalanceClicked(cryptoCurrency: CryptoCurrency) : AnalyticsEvent {
     override val event: String = "sb_trading_wallet_clicked"
     override val params: Map<String, String> = mapOf(
         "asset" to cryptoCurrency.networkTicker
+    )
+}
+
+class PaymentMethodSelected(paymentMethod: String) : AnalyticsEvent {
+    override val event: String = "sb_payment_method_selected"
+    override val params: Map<String, String> = mapOf(
+        "selection" to paymentMethod
     )
 }
 

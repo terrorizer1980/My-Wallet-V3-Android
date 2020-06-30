@@ -1,44 +1,47 @@
 package piuk.blockchain.android.coincore
 
-import org.koin.dsl.module.applicationContext
+import com.blockchain.koin.payloadScopeQualifier
+import org.koin.dsl.module
+import piuk.blockchain.android.coincore.alg.AlgoTokens
 import piuk.blockchain.android.coincore.bch.BchTokens
-import piuk.blockchain.android.coincore.pax.PaxTokens
 import piuk.blockchain.android.coincore.btc.BtcTokens
 import piuk.blockchain.android.coincore.eth.EthTokens
+import piuk.blockchain.android.coincore.pax.PaxTokens
 import piuk.blockchain.android.coincore.stx.StxTokens
 import piuk.blockchain.android.coincore.xlm.XlmTokens
+import piuk.blockchain.android.repositories.AssetActivityRepository
 
-val coincoreModule = applicationContext {
+val coincoreModule = module {
 
-    context("Payload") {
+    scope(payloadScopeQualifier) {
 
-        bean {
+        scoped {
             StxTokens(
                 rxBus = get(),
                 payloadManager = get(),
                 exchangeRates = get(),
+                historicRates = get(),
                 currencyPrefs = get(),
-                custodialWalletManager = get(),
+                custodialManager = get(),
                 crashLogger = get(),
                 labels = get()
             )
         }
 
-        bean {
+        scoped {
             BtcTokens(
-                payloadManager = get(),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
                 payloadDataManager = get(),
                 rxBus = get(),
-                custodialWalletManager = get(),
+                custodialManager = get(),
                 crashLogger = get(),
                 labels = get()
             )
         }
 
-        bean {
+        scoped {
             BchTokens(
                 bchDataManager = get(),
                 exchangeRates = get(),
@@ -47,26 +50,26 @@ val coincoreModule = applicationContext {
                 rxBus = get(),
                 crashLogger = get(),
                 stringUtils = get(),
-                custodialWalletManager = get(),
+                custodialManager = get(),
                 environmentSettings = get(),
                 labels = get()
             )
         }
 
-        bean {
+        scoped {
             XlmTokens(
                 rxBus = get(),
                 xlmDataManager = get(),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
-                custodialWalletManager = get(),
+                custodialManager = get(),
                 crashLogger = get(),
                 labels = get()
             )
         }
 
-        bean {
+        scoped {
             EthTokens(
                 ethDataManager = get(),
                 exchangeRates = get(),
@@ -75,25 +78,38 @@ val coincoreModule = applicationContext {
                 rxBus = get(),
                 crashLogger = get(),
                 stringUtils = get(),
-                custodialWalletManager = get(),
+                custodialManager = get(),
                 labels = get()
             )
         }
 
-        bean {
+        scoped {
             PaxTokens(
                 rxBus = get(),
                 paxAccount = get(),
                 exchangeRates = get(),
+                historicRates = get(),
                 currencyPrefs = get(),
-                custodialWalletManager = get(),
+                custodialManager = get(),
                 stringUtils = get(),
                 crashLogger = get(),
                 labels = get()
             )
         }
 
-        bean {
+        scoped {
+            AlgoTokens(
+                rxBus = get(),
+                exchangeRates = get(),
+                historicRates = get(),
+                currencyPrefs = get(),
+                custodialManager = get(),
+                crashLogger = get(),
+                labels = get()
+            )
+        }
+
+        scoped {
             Coincore(
                 btcTokens = get(),
                 bchTokens = get(),
@@ -101,7 +117,15 @@ val coincoreModule = applicationContext {
                 xlmTokens = get(),
                 paxTokens = get(),
                 stxTokens = get(),
+                algoTokens = get(),
                 defaultLabels = get()
+            )
+        }
+
+        scoped {
+            AssetActivityRepository(
+                coincore = get(),
+                rxBus = get()
             )
         }
     }

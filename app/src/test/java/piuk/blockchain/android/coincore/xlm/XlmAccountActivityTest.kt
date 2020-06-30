@@ -16,7 +16,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
-import piuk.blockchain.android.coincore.impl.TxCacheImpl
 import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import java.math.BigInteger
@@ -32,12 +31,11 @@ class XlmAccountActivityTest {
     private val xlmDataManager: XlmDataManager = mock()
 
     private val subject =
-        XlmCryptoAccountNonCustodial(
+        XlmCryptoWalletAccount(
             label = "TEst Xlm Account",
             address = "Test XLM Address",
             xlmManager = xlmDataManager,
-            exchangeRates = exchangeRates,
-            txCache = TxCacheImpl()
+            exchangeRates = exchangeRates
         )
 
     @get:Rule
@@ -83,7 +81,7 @@ class XlmAccountActivityTest {
         assertEquals(TransactionSummary.Direction.RECEIVED, activityItem.direction)
         assertEquals(1, activityItem.confirmations.toLong())
         assertFalse(activityItem.isFeeTransaction)
-        assertEquals(output, activityItem.totalCrypto.amount)
+        assertEquals(output, activityItem.cryptoValue.amount)
         assertEquals(
             mapOf(HORIZON_ACCOUNT_ID_2 to CryptoValue.fromMinor(CryptoCurrency.XLM, BigInteger.ZERO)),
             activityItem.inputsMap

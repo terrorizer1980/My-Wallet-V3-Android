@@ -5,14 +5,15 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.blockchain.koin.scopedInject
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.PaymentMethod
+import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.CardStatus
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_add_new_card.*
-import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
@@ -25,11 +26,11 @@ import java.util.Calendar
 
 class AddNewCardFragment : MviFragment<CardModel, CardIntent, CardState>(), AddCardFlowFragment {
 
-    override val model: CardModel by inject()
+    override val model: CardModel by scopedInject()
 
     private var availableCards: List<PaymentMethod.Card> = emptyList()
     private val compositeDisposable = CompositeDisposable()
-    private val custodialWalletManager: CustodialWalletManager by inject()
+    private val custodialWalletManager: CustodialWalletManager by scopedInject()
 
     override val navigator: AddCardNavigator
         get() = (activity as? AddCardNavigator)
@@ -82,7 +83,8 @@ class AddNewCardFragment : MviFragment<CardModel, CardIntent, CardState>(), AddC
             }
         }
 
-        compositeDisposable += custodialWalletManager.fetchUnawareLimitsCards(emptyList()).subscribeBy(onSuccess = {
+        compositeDisposable += custodialWalletManager.fetchUnawareLimitsCards(listOf(CardStatus.PENDING,
+            CardStatus.ACTIVE)).subscribeBy(onSuccess = {
             availableCards = it
         })
 
@@ -92,7 +94,7 @@ class AddNewCardFragment : MviFragment<CardModel, CardIntent, CardState>(), AddC
     }
 
     private fun cardHasAlreadyBeenAdded(): Boolean {
-        availableCards?.forEach {
+        availableCards.forEach {
             if (it.expireDate.hasSameMonthAndYear(month = expiry_date.month.toInt(),
                     year = expiry_date.year.toInt().asCalendarYear()) &&
                 card_number.text?.toString()?.takeLast(4) == it.endDigits &&

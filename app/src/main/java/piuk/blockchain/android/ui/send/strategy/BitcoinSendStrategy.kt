@@ -568,7 +568,7 @@ class BitcoinSendStrategy(
      */
     private fun getUnspentApiResponse(address: String): Observable<UnspentOutputs> {
 
-        return if (payloadDataManager.getAddressBalance(address).toLong() > 0) {
+        return if (payloadDataManager.getAddressBalance(address) > CryptoValue.ZeroBtc) {
             return if (unspentApiResponsesBtc.containsKey(address)) {
                 Observable.just(unspentApiResponsesBtc[address])
             } else {

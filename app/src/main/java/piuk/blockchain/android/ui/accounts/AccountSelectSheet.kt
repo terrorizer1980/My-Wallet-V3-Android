@@ -2,7 +2,10 @@ package piuk.blockchain.android.ui.accounts
 
 import android.os.Bundle
 import android.view.View
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.blockchain.koin.scopedInject
+import com.blockchain.notifications.analytics.activityShown
 import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -33,8 +36,8 @@ class AccountSelectSheet : SlidingModalBottomDialog() {
     override val layoutResource: Int
         get() = R.layout.dialog_account_selector_sheet
 
-    private val coincore: Coincore by inject()
-    private val exchangeRates: ExchangeRateDataManager by inject()
+    private val coincore: Coincore by scopedInject()
+    private val exchangeRates: ExchangeRateDataManager by scopedInject()
     private val currencyPrefs: CurrencyPrefs by inject()
     private val disposables = CompositeDisposable()
     private val uiScheduler = AndroidSchedulers.mainThread()
@@ -53,6 +56,7 @@ class AccountSelectSheet : SlidingModalBottomDialog() {
     }
 
     private fun onAccountSelected(account: CryptoAccount) {
+        analytics.logEvent(activityShown(account.label))
         host.onAccountSelected(account)
         dismiss()
     }
@@ -61,6 +65,9 @@ class AccountSelectSheet : SlidingModalBottomDialog() {
         with(view.account_list) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = theAdapter
+
+            addItemDecoration(
+                DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
 
             val itemList = mutableListOf<CryptoAccount>()
             theAdapter.items = itemList

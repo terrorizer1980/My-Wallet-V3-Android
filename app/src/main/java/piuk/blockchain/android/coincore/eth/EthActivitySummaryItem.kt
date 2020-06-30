@@ -13,31 +13,30 @@ import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 
 internal class EthActivitySummaryItem(
     private val ethDataManager: EthDataManager,
-    private val ethTransaction: EthTransaction,
+    val ethTransaction: EthTransaction,
     override val isFeeTransaction: Boolean,
     private val blockHeight: Long,
-    override val exchangeRates: ExchangeRateDataManager
+    override val exchangeRates: ExchangeRateDataManager,
+    override val account: EthCryptoWalletAccount
 ) : NonCustodialActivitySummaryItem() {
 
     override val cryptoCurrency: CryptoCurrency = CryptoCurrency.ETHER
 
     override val direction: TransactionSummary.Direction by unsafeLazy {
-        val combinedEthModel = ethDataManager.getEthResponseModel()!!
-        combinedEthModel.getAccounts().let {
-            when {
-                it[0] == ethTransaction.to && it[0] == ethTransaction.from ->
-                    TransactionSummary.Direction.TRANSFERRED
-                it.contains(ethTransaction.from) ->
-                    TransactionSummary.Direction.SENT
-                else ->
-                    TransactionSummary.Direction.RECEIVED
-            }
+        val ethAddress = account.address.toLowerCase()
+        when {
+            ethAddress == ethTransaction.to && ethAddress == ethTransaction.from ->
+                TransactionSummary.Direction.TRANSFERRED
+            ethAddress == ethTransaction.from ->
+                TransactionSummary.Direction.SENT
+            else ->
+                TransactionSummary.Direction.RECEIVED
         }
     }
 
-    override val timeStampMs: Long = ethTransaction.timeStamp * 1000
+    override val timeStampMs: Long = ethTransaction.timestamp * 1000
 
-    override val totalCrypto: CryptoValue by unsafeLazy {
+    override val cryptoValue: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.ETHER,
             when (direction) {
                 TransactionSummary.Direction.RECEIVED -> ethTransaction.value

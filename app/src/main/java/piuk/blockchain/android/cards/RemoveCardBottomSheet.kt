@@ -2,6 +2,8 @@ package piuk.blockchain.android.cards
 
 import android.os.Bundle
 import android.view.View
+import com.blockchain.koin.scopedInject
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -9,7 +11,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.remove_card_bottom_sheet.view.*
-import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -21,7 +22,7 @@ class RemoveCardBottomSheet : SlidingModalBottomDialog() {
         fun onCardRemoved(cardId: String)
     }
 
-    private val custodialWalletManager: CustodialWalletManager by inject()
+    private val custodialWalletManager: CustodialWalletManager by scopedInject()
 
     private val card: PaymentMethod.Card by unsafeLazy {
         arguments?.getSerializable(CARD_KEY) as? PaymentMethod.Card
@@ -49,6 +50,7 @@ class RemoveCardBottomSheet : SlidingModalBottomDialog() {
                     .subscribeBy(onComplete = {
                         (parentFragment as? Host)?.onCardRemoved(card.cardId)
                         dismiss()
+                        analytics.logEvent(SimpleBuyAnalytics.REMOVE_CARD)
                     }, onError = {})
             }
         }

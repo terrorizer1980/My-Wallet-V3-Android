@@ -8,13 +8,15 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.compareTo
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Observable
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 
 class XlmActivitySummaryItem(
     private val xlmTransaction: XlmTransaction,
-    override val exchangeRates: ExchangeRateDataManager
+    override val exchangeRates: ExchangeRateDataManager,
+    override val account: CryptoSingleAccount
 ) : NonCustodialActivitySummaryItem() {
     override val cryptoCurrency = CryptoCurrency.XLM
 
@@ -28,7 +30,7 @@ class XlmActivitySummaryItem(
     override val timeStampMs: Long
         get() = xlmTransaction.timeStamp.fromIso8601ToUtc()!!.toLocalTime().time
 
-    override val totalCrypto: CryptoValue by unsafeLazy {
+    override val cryptoValue: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.XLM, xlmTransaction.accountDelta.amount.abs())
     }
 
@@ -46,7 +48,7 @@ class XlmActivitySummaryItem(
         get() = hashMapOf(xlmTransaction.from.accountId to CryptoValue.ZeroXlm)
 
     override val outputsMap: Map<String, CryptoValue>
-        get() = hashMapOf(xlmTransaction.to.accountId to CryptoValue.fromMinor(CryptoCurrency.XLM, totalCrypto.amount))
+        get() = hashMapOf(xlmTransaction.to.accountId to CryptoValue.fromMinor(CryptoCurrency.XLM, cryptoValue.amount))
 
     override val confirmations: Int
         get() = CryptoCurrency.XLM.requiredConfirmations

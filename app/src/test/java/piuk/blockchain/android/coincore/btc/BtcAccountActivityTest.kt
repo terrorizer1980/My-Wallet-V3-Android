@@ -8,7 +8,7 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.multiaddress.TransactionSummary
-import info.blockchain.wallet.payload.PayloadManager
+import io.reactivex.Single
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -19,21 +19,18 @@ import java.math.BigInteger
 
 class BtcAccountActivityTest {
 
-    private val payloadManager: PayloadManager = mock()
     private val currencyState: CurrencyState = mock()
     private val payloadDataManager: PayloadDataManager = mock()
     private val exchangeRates: ExchangeRateDataManager = mock()
     private val currencyPrefs: CurrencyPrefs = mock()
 
     private val subject =
-        BtcCryptoAccountNonCustodial(
+        BtcCryptoWalletAccount(
             label = "TestBtcAccount",
             address = "",
-            payloadManager = payloadManager,
             payloadDataManager = payloadDataManager,
             isDefault = true,
-            exchangeRates = exchangeRates,
-            txCache = mock()
+            exchangeRates = exchangeRates
         )
 
     @get:Rule
@@ -65,15 +62,15 @@ class BtcAccountActivityTest {
 
         val transactionSummaries = listOf(summary)
 
-        whenever(payloadManager.getAccountTransactions(any(), any(), any()))
-            .thenReturn(transactionSummaries)
+        whenever(payloadDataManager.getAccountTransactions(any(), any(), any()))
+            .thenReturn(Single.just(transactionSummaries))
 
         subject.activity
             .test()
             .assertComplete()
             .assertNoErrors()
 
-        verify(payloadManager).getAccountTransactions(any(), any(), any())
+        verify(payloadDataManager).getAccountTransactions(any(), any(), any())
 
         // TODO: Validate returned list
     }

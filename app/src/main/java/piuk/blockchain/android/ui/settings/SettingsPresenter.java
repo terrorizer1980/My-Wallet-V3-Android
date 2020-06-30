@@ -3,11 +3,7 @@ package piuk.blockchain.android.ui.settings;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import info.blockchain.wallet.payment.Payment;
 import io.reactivex.Single;
-import io.reactivex.SingleSource;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper;
 
 import com.blockchain.notifications.NotificationTokenManager;
@@ -18,6 +14,8 @@ import com.blockchain.remoteconfig.FeatureFlag;
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager;
 import com.blockchain.swap.nabu.datamanagers.PaymentMethod;
 import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.CardStatus;
+import com.blockchain.swap.nabu.models.nabu.KycTierLevel;
+import com.blockchain.swap.nabu.models.nabu.KycTiersKt;
 import com.blockchain.swap.nabu.models.nabu.NabuApiException;
 import com.blockchain.swap.nabu.models.nabu.NabuErrorStatusCodes;
 
@@ -142,19 +140,22 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
 
     private void updateCards() {
         getCompositeDisposable().add(
-                cardsFeatureFlag.getEnabled().doOnSuccess(enabled -> {
-                    getView().cardsEnabled(enabled);
-                }).flatMap(enabled -> {
-                    if (enabled) {
-                        return custodialWalletManager.fetchUnawareLimitsCards(
-                                Arrays.asList(CardStatus.ACTIVE, CardStatus.EXPIRED));
-
-                    } else {
-                        return Single.just(Collections.<PaymentMethod.Card>emptyList());
-                    }
-                })
-                        .observeOn(AndroidSchedulers.mainThread()).doOnSubscribe(disposable ->
-                        onCardsUpdated(Collections.emptyList())).subscribe(this::onCardsUpdated));
+                Single.zip(cardsFeatureFlag.getEnabled(), kycStatusHelper.getSettingsKycStateTier(),
+                        (enabled, kycState) -> enabled && kycState.isApprovedFor(KycTierLevel.GOLD))
+                        .doOnSuccess(enabled -> getView().cardsEnabled(enabled))
+                        .flatMap(enabled -> {
+                            if (enabled) {
+                                return custodialWalletManager.updateSupportedCardTypes(getFiatUnits(), true).andThen(
+                                        custodialWalletManager.fetchUnawareLimitsCards(
+                                                Arrays.asList(CardStatus.ACTIVE, CardStatus.EXPIRED)));
+                            } else {
+                                return Single.just(Collections.<PaymentMethod.Card>emptyList());
+                            }
+                        })
+                        .observeOn(AndroidSchedulers.mainThread()).doOnSubscribe(disposable -> {
+                    getView().cardsEnabled(false);
+                    onCardsUpdated(Collections.emptyList());
+                }).subscribe(this::onCardsUpdated));
     }
 
 
@@ -173,7 +174,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
 
     private void loadKyc2TierState() {
         getCompositeDisposable().add(
-                kycStatusHelper.getSettingsKycState2Tier()
+                kycStatusHelper.getSettingsKycStateTier()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 settingsKycState -> getView().setKycState(settingsKycState),

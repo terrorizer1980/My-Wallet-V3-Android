@@ -2,9 +2,12 @@ package com.blockchain.swap.nabu.api.nabu
 
 import com.blockchain.swap.nabu.models.cards.CardResponse
 import com.blockchain.swap.nabu.models.cards.PaymentMethodsResponse
+import com.blockchain.swap.nabu.models.interest.InterestAccountBalanceResponse
+import com.blockchain.swap.nabu.models.interest.InterestResponse
 import com.blockchain.swap.nabu.models.nabu.AddAddressRequest
 import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
 import com.blockchain.swap.nabu.models.nabu.ApplicantIdRequest
+import com.blockchain.swap.nabu.models.nabu.KycTiers
 import com.blockchain.swap.nabu.models.nabu.NabuBasicUser
 import com.blockchain.swap.nabu.models.nabu.NabuCountryResponse
 import com.blockchain.swap.nabu.models.nabu.NabuJwt
@@ -17,24 +20,24 @@ import com.blockchain.swap.nabu.models.nabu.SendToMercuryAddressResponse
 import com.blockchain.swap.nabu.models.nabu.SendWithdrawalAddressesRequest
 import com.blockchain.swap.nabu.models.nabu.SupportedDocumentsResponse
 import com.blockchain.swap.nabu.models.nabu.TierUpdateJson
-import com.blockchain.swap.nabu.models.nabu.TiersJson
 import com.blockchain.swap.nabu.models.nabu.UpdateCoinifyTraderIdRequest
 import com.blockchain.swap.nabu.models.nabu.VeriffToken
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
 import com.blockchain.swap.nabu.models.simplebuy.ActivateCardResponse
 import com.blockchain.swap.nabu.models.simplebuy.AddNewCardBodyRequest
 import com.blockchain.swap.nabu.models.simplebuy.AddNewCardResponse
+import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
 import com.blockchain.swap.nabu.models.simplebuy.BuyOrderListResponse
 import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
-import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
 import com.blockchain.swap.nabu.models.simplebuy.CardPartnerAttributes
 import com.blockchain.swap.nabu.models.simplebuy.ConfirmOrderRequestBody
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyAllBalancesResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyBalanceResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyQuoteResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairsResp
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyQuoteResponse
 import com.blockchain.swap.nabu.models.simplebuy.TransferRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
@@ -156,7 +159,7 @@ internal interface Nabu {
     @GET(NABU_KYC_TIERS)
     fun getTiers(
         @Header("authorization") authorization: String
-    ): Single<TiersJson>
+    ): Single<KycTiers>
 
     @POST(NABU_KYC_TIERS)
     fun setTier(
@@ -285,7 +288,8 @@ internal interface Nabu {
     @GET(NABU_PAYMENT_METHODS)
     fun getPaymentMethods(
         @Header("authorization") authorization: String,
-        @Query("currency") currency: String
+        @Query("currency") currency: String,
+        @Query("checkEligibility") checkEligibility: Boolean?
     ): Single<PaymentMethodsResponse>
 
     @GET(NABU_CARDS)
@@ -299,10 +303,27 @@ internal interface Nabu {
         @Query("ccy") cryptoSymbol: String
     ): Single<Response<SimpleBuyBalanceResponse>>
 
+    @GET(NABU_SIMPLE_BUY_ASSET_BALANCE)
+    fun getBalanceForAllAssets(
+        @Header("authorization") authorization: String
+    ): Single<SimpleBuyAllBalancesResponse>
+
     @Headers("blockchain-origin: simplebuy")
     @POST(NABU_SIMPLE_BUY_BALANCE_TRANSFER)
     fun transferFunds(
         @Header("authorization") authorization: String,
         @Body request: TransferRequest
     ): Completable
+
+    @GET(NABU_INTEREST_RATES)
+    fun getInterestRates(
+        @Header("authorization") authorization: String,
+        @Query("ccy") currency: String
+    ): Single<Response<InterestResponse>>
+
+    @GET(NABU_INTEREST_ACCOUNT_BALANCE)
+    fun getInterestAccountBalance(
+        @Header("authorization") authorization: String,
+        @Query("ccy") cryptoSymbol: String
+    ): Single<Response<InterestAccountBalanceResponse>>
 }

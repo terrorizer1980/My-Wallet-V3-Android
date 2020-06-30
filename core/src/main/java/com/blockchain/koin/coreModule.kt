@@ -19,8 +19,8 @@ import com.blockchain.logging.TimberLogger
 import com.blockchain.metadata.MetadataRepository
 import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.preferences.CurrencyPrefs
-import com.blockchain.preferences.NotificationPrefs
 import com.blockchain.preferences.DashboardPrefs
+import com.blockchain.preferences.NotificationPrefs
 import com.blockchain.preferences.SecurityPrefs
 import com.blockchain.preferences.SimpleBuyPrefs
 import com.blockchain.preferences.ThePitLinkingPrefs
@@ -33,7 +33,8 @@ import info.blockchain.api.blockexplorer.BlockExplorer
 import info.blockchain.wallet.metadata.MetadataDerivation
 import info.blockchain.wallet.util.PrivateKeyFactory
 import org.bitcoinj.params.BitcoinMainNetParams
-import org.koin.dsl.module.applicationContext
+import org.koin.dsl.bind
+import org.koin.dsl.module
 import piuk.blockchain.android.util.RootUtil
 import piuk.blockchain.androidcore.BuildConfig
 import piuk.blockchain.androidcore.data.access.AccessState
@@ -73,14 +74,14 @@ import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsState
 import piuk.blockchain.androidcore.utils.AESUtilWrapper
 import piuk.blockchain.androidcore.utils.DeviceIdGenerator
 import piuk.blockchain.androidcore.utils.DeviceIdGeneratorImpl
-import piuk.blockchain.androidcore.utils.PrefsUtil
 import piuk.blockchain.androidcore.utils.PersistentPrefs
+import piuk.blockchain.androidcore.utils.PrefsUtil
 import piuk.blockchain.androidcore.utils.UUIDGenerator
 import java.util.UUID
 
-val coreModule = applicationContext {
+val coreModule = module {
 
-    bean { RxBus() }
+    single { RxBus() }
 
     factory { AuthService(get(), get()) }
 
@@ -88,7 +89,7 @@ val coreModule = applicationContext {
 
     factory { RootUtil() }
 
-    context("Payload") {
+    scope(payloadScopeQualifier) {
 
         factory { PayloadService(get()) }
 
@@ -100,7 +101,7 @@ val coreModule = applicationContext {
             .bind(SeedAccessWithoutPrompt::class)
             .bind(SeedAccess::class)
 
-        bean {
+        scoped {
             MetadataManager(
                 payloadDataManager = get(),
                 metadataInteractor = get(),
@@ -109,7 +110,7 @@ val coreModule = applicationContext {
             )
         }
 
-        bean { MoshiMetadataRepositoryAdapter(get(), get()) as MetadataRepository }
+        scoped { MoshiMetadataRepositoryAdapter(get(), get()) as MetadataRepository }
 
         factory { AddressResolver(get(), get(), get()) }
 
@@ -131,7 +132,7 @@ val coreModule = applicationContext {
             ) as TransactionExecutor
         }
 
-        factory("Regular") {
+        factory(regularFee) {
             SelfFeeCalculatingTransactionExecutor(
                 get(),
                 get(),
@@ -140,7 +141,7 @@ val coreModule = applicationContext {
             ) as TransactionExecutorWithoutFees
         }
 
-        factory("Priority") {
+        factory(priorityFee) {
             SelfFeeCalculatingTransactionExecutor(
                 get(),
                 get(),
@@ -149,38 +150,38 @@ val coreModule = applicationContext {
             ) as TransactionExecutorWithoutFees
         }
 
-        factory("Regular") {
-            get<TransactionExecutorWithoutFees>("Regular") as MaximumSpendableCalculator
+        factory(regularFee) {
+            get<TransactionExecutorWithoutFees>(regularFee) as MaximumSpendableCalculator
         }
 
-        factory("Priority") {
-            get<TransactionExecutorWithoutFees>("Priority") as MaximumSpendableCalculator
+        factory(priorityFee) {
+            get<TransactionExecutorWithoutFees>(priorityFee) as MaximumSpendableCalculator
         }
 
-        bean { EthDataStore() }
+        scoped { EthDataStore() }
 
-        bean { Erc20DataStore() }
+        scoped { Erc20DataStore() }
 
-        bean { BchDataStore() }
+        scoped { BchDataStore() }
 
-        bean { WalletOptionsState() }
+        scoped { WalletOptionsState() }
 
-        bean { SettingsDataManager(get(), get(), get(), get()) }
+        scoped { SettingsDataManager(get(), get(), get(), get()) }
 
-        bean { SettingsService(get()) }
+        scoped { SettingsService(get()) }
 
-        bean {
+        scoped {
             SettingsDataStore(SettingsMemoryStore(), get<SettingsService>().getSettingsObservable())
         }
 
-        factory { WalletOptionsDataManager(get(), get(), get(), get("explorer-url")) }
+        factory { WalletOptionsDataManager(get(), get(), get(), get(explorerUrl)) }
             .bind(XlmTransactionTimeoutFetcher::class).bind(XlmHorizonUrlFetcher::class)
 
         factory { ExchangeRateDataManager(get(), get()) }
 
-        bean { ExchangeRateDataStore(get(), get()) }
+        scoped { ExchangeRateDataStore(get(), get()) }
 
-        bean { FeeDataManager(get(), get(), get()) }
+        scoped { FeeDataManager(get(), get(), get()) }
 
         factory {
             AuthDataManager(
@@ -193,18 +194,24 @@ val coreModule = applicationContext {
             )
         }
 
-        factory { LastTxUpdateDateOnSettingsService(get()) as LastTxUpdater }
+        factory { LastTxUpdateDateOnSettingsService(get()) }.bind(LastTxUpdater::class)
 
         factory { SendDataManager(get(), get(), get()) }
 
-        factory { SettingsPhoneVerificationQuery(get()).applyFlag(get("ff_sms_verification")) }
+        factory { SettingsPhoneVerificationQuery(get()).applyFlag(get(smsVerifFeatureFlag)) }
 
-        factory { SettingsPhoneNumberUpdater(get()) as PhoneNumberUpdater }
+        factory { SettingsPhoneNumberUpdater(get()) }.bind(PhoneNumberUpdater::class)
 
-        factory { SettingsEmailAndSyncUpdater(get(), get()) as EmailSyncUpdater }
+        factory { SettingsEmailAndSyncUpdater(get(), get()) }.bind(EmailSyncUpdater::class)
     }
 
-    bean { BlockExplorer(get("explorer"), get("api"), getProperty("api-code")) }
+    single {
+        BlockExplorer(
+            get(explorerRetrofit),
+            get(apiRetrofit),
+            getProperty("api-code")
+        )
+    }
 
     factory { ExchangeRateService(get()) }
 
@@ -221,7 +228,7 @@ val coreModule = applicationContext {
         }
     }.bind(UUIDGenerator::class)
 
-    bean {
+    single {
         PrefsUtil(
             store = get(),
             idGenerator = get(),
@@ -244,7 +251,7 @@ val coreModule = applicationContext {
         )
     }
 
-    bean {
+    single {
         if (BuildConfig.DEBUG)
             TimberLogger()
         else
@@ -253,7 +260,7 @@ val coreModule = applicationContext {
 
     factory { EthereumAccountWrapper() }
 
-    bean {
+    single {
         AccessStateImpl(
             context = get(),
             prefs = get(),
@@ -272,8 +279,8 @@ val coreModule = applicationContext {
             override fun stop() {
                 accessState.stopLogoutTimer()
             }
-        } as LogoutTimer
-    }
+        }
+    }.bind(LogoutTimer::class)
 
     factory { AESUtilWrapper() }
 }

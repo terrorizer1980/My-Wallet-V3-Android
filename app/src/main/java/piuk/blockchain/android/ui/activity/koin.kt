@@ -1,13 +1,17 @@
 package piuk.blockchain.android.ui.activity
 
+import com.blockchain.koin.payloadScopeQualifier
 import io.reactivex.android.schedulers.AndroidSchedulers
-import org.koin.dsl.module.applicationContext
+import org.koin.dsl.module
+import piuk.blockchain.android.ui.activity.detail.ActivityDetailState
+import piuk.blockchain.android.ui.activity.detail.ActivityDetailsInteractor
+import piuk.blockchain.android.ui.activity.detail.ActivityDetailsModel
 import piuk.blockchain.android.ui.activity.detail.TransactionHelper
 import piuk.blockchain.android.ui.activity.detail.TransactionInOutMapper
 
-val activitiesModule = applicationContext {
+val activitiesModule = module {
 
-    context("Payload") {
+    scope(payloadScopeQualifier) {
 
         factory {
             ActivitiesModel(
@@ -19,7 +23,28 @@ val activitiesModule = applicationContext {
 
         factory {
             ActivitiesInteractor(
-                coincore = get()
+                coincore = get(),
+                activityRepository = get(),
+                custodialWalletManager = get(),
+                simpleBuyPrefs = get(),
+                analytics = get()
+            )
+        }
+
+        factory {
+            ActivityDetailsModel(
+                initialState = ActivityDetailState(),
+                mainScheduler = AndroidSchedulers.mainThread(),
+                interactor = get()
+            )
+        }
+
+        factory {
+            ActivityDetailsInteractor(
+                currencyPrefs = get(),
+                transactionInputOutputMapper = get(),
+                assetActivityRepository = get(),
+                custodialWalletManager = get()
             )
         }
 

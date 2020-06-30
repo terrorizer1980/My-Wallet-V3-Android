@@ -2,11 +2,13 @@ package piuk.blockchain.android.ui.dashboard.assetdetails
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.core.content.ContextCompat
-import androidx.appcompat.widget.AppCompatTextView
 import android.view.View
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockchain.extensions.exhaustive
+import com.blockchain.koin.scopedInject
 import com.blockchain.preferences.CurrencyPrefs
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -23,13 +25,12 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.dialog_dashboared_asset_details.view.*
-import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.AssetFilter
-import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.AssetTokens
+import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.CryptoAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
@@ -54,7 +55,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
     val compositeDisposable = CompositeDisposable()
 
     private val currencyPrefs: CurrencyPrefs by inject()
-    private val assetDetailsViewModel: AssetDetailsCalculator by inject()
+    private val assetDetailsViewModel: AssetDetailsCalculator by scopedInject()
     private val locale = Locale.getDefault()
 
     interface Host : SlidingModalBottomDialog.Host {
@@ -65,7 +66,8 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
     }
 
     override val host: Host by lazy {
-        super.host as? Host ?: throw IllegalStateException("Host fragment is not a AssetDetailSheet.Host")
+        super.host as? Host ?: throw IllegalStateException(
+            "Host fragment is not a AssetDetailSheet.Host")
     }
 
     private val cryptoCurrency: CryptoCurrency by lazy {
@@ -73,7 +75,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
             ?: throw IllegalArgumentException("No cryptoCurrency specified")
     }
 
-    private val assetSelect: Coincore by inject()
+    private val assetSelect: Coincore by scopedInject()
     private val token: AssetTokens by lazy {
         assetSelect[cryptoCurrency]
     }
@@ -91,14 +93,15 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
             configureTabs(view.chart_price_periods)
 
             assetDetailsViewModel.token.accept(token)
-            current_price_title.text = getString(R.string.dashboard_price_for_asset, cryptoCurrency.displayTicker)
+            current_price_title.text =
+                getString(R.string.dashboard_price_for_asset, cryptoCurrency.displayTicker)
 
-            compositeDisposable += assetDetailsViewModel.balanceMap
+            compositeDisposable += assetDetailsViewModel.assetDisplayDetails
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onError = { },
                     onNext = { map ->
-                        onGotBalances(view, map)
+                        onGotAssetDetails(view, map)
                     }
                 )
 
@@ -136,25 +139,33 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
         }
     }
 
-    private fun onGotBalances(view: View, balanceMap: BalanceMap) {
+    private fun onGotAssetDetails(view: View, assetDetails: AssetDisplayMap) {
         with(view) {
 
             asset_list.layoutManager = LinearLayoutManager(requireContext())
-
+            asset_list.addItemDecoration(
+                DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
             val itemList = mutableListOf<AssetDetailItem>()
 
-            balanceMap[AssetFilter.Wallet]?.let {
+            assetDetails[AssetFilter.Wallet]?.let {
                 itemList.add(
-                    AssetDetailItem(AssetFilter.Wallet, token, it.first, it.second)
+                    AssetDetailItem(AssetFilter.Wallet, token, it.cryptoValue, it.fiatValue,
+                        it.actions, it.interestRate)
                 )
             }
 
-            balanceMap[AssetFilter.Custodial]?.let {
-                if (!it.first.isZero) {
-                    itemList.add(
-                        AssetDetailItem(AssetFilter.Custodial, token, it.first, it.second)
-                    )
-                }
+            assetDetails[AssetFilter.Custodial]?.let {
+                itemList.add(
+                    AssetDetailItem(AssetFilter.Custodial, token, it.cryptoValue, it.fiatValue,
+                        it.actions, it.interestRate)
+                )
+            }
+
+            assetDetails[AssetFilter.Interest]?.let {
+                itemList.add(
+                    AssetDetailItem(AssetFilter.Interest, token, it.cryptoValue, it.fiatValue,
+                        it.actions, it.interestRate)
+                )
             }
 
             asset_list.adapter = AssetDetailAdapter(itemList, ::onAssetActionSelected, analytics)
@@ -173,7 +184,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
 
     // Temp patch fn until coincore and accounts are used throughout: TODO - remove this nonsense
     private fun startActivityWithDefaultAccountForAsset(assetFilter: AssetFilter) {
-        val coincore: Coincore = get()
+        val coincore: Coincore by scopedInject()
         val asset = coincore[cryptoCurrency]
 
         compositeDisposable += asset.accounts(assetFilter)
@@ -271,8 +282,8 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
     @SuppressLint("SetTextI18n")
     private fun updatePriceChange(percentageView: AppCompatTextView, data: PriceSeries) {
         // We have filtered out nulls by here, so we can 'safely' default to zeros for the price
-        val firstPrice: Double = data.first().price ?: 0.0
-        val lastPrice: Double = data.last().price ?: 0.0
+        val firstPrice: Double = data.firstOrNull()?.price ?: 0.0
+        val lastPrice: Double = data.lastOrNull()?.price ?: 0.0
         val difference = lastPrice - firstPrice
 
         val percentChange = (difference / firstPrice) * 100
@@ -379,6 +390,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
             CryptoCurrency.XLM -> 4
             CryptoCurrency.PAX -> 2
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+            CryptoCurrency.ALGO -> 2
         }
 
     companion object {

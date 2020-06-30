@@ -12,12 +12,12 @@ import java.util.Locale
  * @return A formatted [String] object.
  */
 fun Date.toFormattedString(locale: Locale = Locale.getDefault()): String {
-    val dateFormat = SimpleDateFormat.getDateInstance(DateFormat.LONG)
+    val dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM)
     val timeFormat = SimpleDateFormat("hh:mm a", locale)
     val dateText = dateFormat.format(this)
     val timeText = timeFormat.format(this)
 
-    return "$dateText @ $timeText"
+    return "$timeText on $dateText"
 }
 
 /**
