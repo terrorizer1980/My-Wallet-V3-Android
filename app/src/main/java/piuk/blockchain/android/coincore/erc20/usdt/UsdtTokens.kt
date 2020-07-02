@@ -54,7 +54,6 @@ internal class UsdtTokens(
 
     override fun parseAddress(address: String): CryptoAddress? =
         null
-
 }
 
 internal class UsdtAddress(
