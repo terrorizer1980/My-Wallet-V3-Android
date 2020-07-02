@@ -75,7 +75,7 @@ class UsdtAccountTest {
                     it.totalBalance.currency == CryptoCurrency.USDT
         }
         verify(erc20DataStore).erc20DataModel = any(Erc20DataModel::class)
-        verify(ethDataManager).getErc20Address(CryptoCurrency.PAX)
+        verify(ethDataManager).getErc20Address(CryptoCurrency.USDT)
     }
 
     @Test
