@@ -5,14 +5,18 @@ import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Single
+import piuk.blockchain.android.coincore.CryptoAddress
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.erc20.Erc20TokensBase
+import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
+import piuk.blockchain.androidcore.data.charts.PriceSeries
+import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.rxjava.RxBus
 
 internal class UsdtTokens(
     private val erc20Account: Erc20Account,
@@ -22,7 +26,7 @@ internal class UsdtTokens(
     currencyPrefs: CurrencyPrefs,
     labels: DefaultLabels,
     crashLogger: CrashLogger,
-    rxBus: RxBus
+    pitLinking: PitLinking
 ) : Erc20TokensBase(
     CryptoCurrency.USDT,
     erc20Account,
@@ -31,8 +35,8 @@ internal class UsdtTokens(
     historicRates,
     currencyPrefs,
     labels,
-    crashLogger,
-    rxBus
+    pitLinking,
+    crashLogger
 ) {
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         Single.just(listOf(getNonCustodialUsdtAccount()))
@@ -44,4 +48,18 @@ internal class UsdtTokens(
         return UsdtCryptoWalletAccount(labels.getDefaultNonCustodialWalletLabel(asset), usdtAddress,
             erc20Account, exchangeRates)
     }
+
+    override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
+        Single.just(emptyList())
+
+    override fun parseAddress(address: String): CryptoAddress? =
+        null
+
+}
+
+internal class UsdtAddress(
+    override val address: String,
+    override val label: String = address
+) : CryptoAddress {
+    override val asset: CryptoCurrency = CryptoCurrency.USDT
 }

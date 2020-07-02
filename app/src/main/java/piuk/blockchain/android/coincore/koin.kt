@@ -1,6 +1,8 @@
 package piuk.blockchain.android.coincore
 
 import com.blockchain.koin.payloadScopeQualifier
+import info.blockchain.balance.CryptoCurrency
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import piuk.blockchain.android.coincore.alg.AlgoTokens
 import piuk.blockchain.android.coincore.bch.BchTokens
@@ -18,13 +20,13 @@ val coincoreModule = module {
 
         scoped {
             StxTokens(
-                rxBus = get(),
                 payloadManager = get(),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
                 custodialManager = get(),
                 crashLogger = get(),
+                pitLinking = get(),
                 labels = get()
             )
         }
@@ -32,11 +34,12 @@ val coincoreModule = module {
         scoped {
             BtcTokens(
                 exchangeRates = get(),
+                environmentSettings = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
                 payloadDataManager = get(),
-                rxBus = get(),
                 custodialManager = get(),
+                pitLinking = get(),
                 crashLogger = get(),
                 labels = get()
             )
@@ -48,23 +51,23 @@ val coincoreModule = module {
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
-                rxBus = get(),
                 crashLogger = get(),
                 stringUtils = get(),
                 custodialManager = get(),
                 environmentSettings = get(),
+                pitLinking = get(),
                 labels = get()
             )
         }
 
         scoped {
             XlmTokens(
-                rxBus = get(),
                 xlmDataManager = get(),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
                 custodialManager = get(),
+                pitLinking = get(),
                 crashLogger = get(),
                 labels = get()
             )
@@ -73,26 +76,27 @@ val coincoreModule = module {
         scoped {
             EthTokens(
                 ethDataManager = get(),
+                feeDataManager = get(),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
-                rxBus = get(),
                 crashLogger = get(),
                 stringUtils = get(),
                 custodialManager = get(),
+                pitLinking = get(),
                 labels = get()
             )
         }
 
         scoped {
             PaxTokens(
-                rxBus = get(),
                 erc20Account = get(),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
                 custodialManager = get(),
                 stringUtils = get(),
+                pitLinking = get(),
                 crashLogger = get(),
                 labels = get()
             )
@@ -100,11 +104,11 @@ val coincoreModule = module {
 
         scoped {
             AlgoTokens(
-                rxBus = get(),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
                 custodialManager = get(),
+                pitLinking = get(),
                 crashLogger = get(),
                 labels = get()
             )
@@ -112,27 +116,30 @@ val coincoreModule = module {
 
         scoped {
             UsdtTokens(
-                rxBus = get(),
                 erc20Account = get(),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
                 custodialManager = get(),
                 crashLogger = get(),
-                labels = get()
+                labels = get(),
+                pitLinking = get()
             )
         }
 
         scoped {
             Coincore(
-                btcTokens = get(),
-                bchTokens = get(),
-                ethTokens = get(),
-                xlmTokens = get(),
-                paxTokens = get(),
-                stxTokens = get(),
-                algoTokens = get(),
-                usdtTokens = get(),
+                payloadManager = get(),
+                tokenMap = mapOf(
+                    CryptoCurrency.BTC to get<BtcTokens>(),
+                    CryptoCurrency.BCH to get<BchTokens>(),
+                    CryptoCurrency.ETHER to get<EthTokens>(),
+                    CryptoCurrency.XLM to get<XlmTokens>(),
+                    CryptoCurrency.PAX to get<PaxTokens>(),
+                    CryptoCurrency.STX to get<StxTokens>(),
+                    CryptoCurrency.ALGO to get<AlgoTokens>(),
+                    CryptoCurrency.USDT to get<UsdtTokens>()
+                ),
                 defaultLabels = get()
             )
         }
@@ -143,5 +150,11 @@ val coincoreModule = module {
                 rxBus = get()
             )
         }
+
+        scoped {
+            AddressFactoryImpl(
+                coincore = get()
+            )
+        }.bind(AddressFactory::class)
     }
 }

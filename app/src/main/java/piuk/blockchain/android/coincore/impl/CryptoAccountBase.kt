@@ -6,6 +6,7 @@ import com.blockchain.swap.nabu.datamanagers.OrderState
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
+import info.blockchain.balance.compareTo
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import piuk.blockchain.android.coincore.ActivitySummaryItem
@@ -13,12 +14,16 @@ import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.AvailableActions
 import piuk.blockchain.android.coincore.CryptoAccountGroup
+import piuk.blockchain.android.coincore.CryptoAddress
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.CustodialActivitySummaryItem
 import piuk.blockchain.android.coincore.erc20.Erc20ActivitySummaryItem
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
+import piuk.blockchain.android.coincore.ReceiveAddress
+import piuk.blockchain.android.coincore.SendProcessor
+import piuk.blockchain.android.coincore.SendState
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.utils.extensions.mapList
@@ -29,11 +34,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 internal const val transactionFetchCount = 50
 internal const val transactionFetchOffset = 0
 
-abstract class CryptoSingleAccountBase : CryptoSingleAccount {
+abstract class CryptoSingleAccountBase(
+    cryptoCurrency: CryptoCurrency
+) : CryptoSingleAccount {
 
     protected abstract val exchangeRates: ExchangeRateDataManager
 
-    protected val cryptoAsset: CryptoCurrency
+    final override val cryptoCurrencies = setOf(cryptoCurrency)
+    final override val asset: CryptoCurrency
         get() = cryptoCurrencies.first()
 
     final override var hasTransactions: Boolean = false
@@ -51,6 +59,9 @@ abstract class CryptoSingleAccountBase : CryptoSingleAccount {
     protected fun setHasTransactions(hasTransactions: Boolean) {
         this.hasTransactions = hasTransactions
     }
+
+    override val sendState: Single<SendState>
+        get() = Single.just(SendState.NOT_SUPPORTED)
 }
 
 open class CustodialTradingAccount(
@@ -58,37 +69,52 @@ open class CustodialTradingAccount(
     override val label: String,
     override val exchangeRates: ExchangeRateDataManager,
     val custodialWalletManager: CustodialWalletManager
-) : CryptoSingleAccountBase() {
+) : CryptoSingleAccountBase(cryptoCurrency) {
 
-    private val isConfigured = AtomicBoolean(false)
+    private val hasSeenFunds = AtomicBoolean(false)
 
-    override val cryptoCurrencies = setOf(cryptoCurrency)
-
-    override val receiveAddress: Single<String>
+    override val receiveAddress: Single<ReceiveAddress>
         get() = Single.error(NotImplementedError("Custodial accounts don't support receive"))
 
     override val balance: Single<CryptoValue>
-        get() = custodialWalletManager.getBalanceForAsset(cryptoAsset)
-            .doOnComplete { isConfigured.set(false) }
-            .doOnSuccess { isConfigured.set(true) }
-            .switchToSingleIfEmpty { Single.just(CryptoValue.zero(cryptoAsset)) }
+        get() = custodialWalletManager.getBalanceForAsset(asset)
+            .doOnComplete { hasSeenFunds.set(false) }
+            .doOnSuccess { hasSeenFunds.set(true) }
+            .switchToSingleIfEmpty { Single.just(CryptoValue.zero(asset)) }
             .onErrorReturn {
                 Timber.d("Unable to get custodial trading balance: $it")
-                CryptoValue.zero(cryptoAsset)
+                CryptoValue.zero(asset)
             }
 
     override val activity: Single<ActivitySummaryList>
-        get() = custodialWalletManager.getAllBuyOrdersFor(cryptoAsset)
+        get() = custodialWalletManager.getAllBuyOrdersFor(asset)
             .mapList { buyOrderToSummary(it) }
             .filterActivityStates()
             .doOnSuccess { setHasTransactions(it.isNotEmpty()) }
             .onErrorReturn { emptyList() }
 
     override val isFunded: Boolean
-        get() = isConfigured.get()
+        get() = hasSeenFunds.get()
 
     override val isDefault: Boolean =
         false // Default is, presently, only ever a non-custodial account.
+
+    override fun createSendProcessor(address: ReceiveAddress): Single<SendProcessor> =
+        Single.just(
+            CustodialTransferProcessor(
+                sendingAccount = this,
+                address = address as CryptoAddress,
+                walletManager = custodialWalletManager
+            )
+        )
+
+    override val sendState: Single<SendState>
+        get() = balance.map { balance ->
+                if (balance <= CryptoValue.zero(asset))
+                    SendState.NO_FUNDS
+                else
+                    SendState.CAN_SEND
+            }
 
     override val actions: AvailableActions
         get() = availableActions
@@ -136,22 +162,21 @@ internal class CryptoInterestAccount(
     override val label: String,
     val custodialWalletManager: CustodialWalletManager,
     override val exchangeRates: ExchangeRateDataManager
-) : CryptoSingleAccountBase() {
-    override val cryptoCurrencies = setOf(cryptoCurrency)
+) : CryptoSingleAccountBase(cryptoCurrency) {
 
     private val isConfigured = AtomicBoolean(false)
 
-    override val receiveAddress: Single<String>
+    override val receiveAddress: Single<ReceiveAddress>
         get() = Single.error(NotImplementedError("Interest accounts don't support receive"))
 
     override val balance: Single<CryptoValue>
-        get() = custodialWalletManager.getInterestAccountDetails(cryptoAsset)
+        get() = custodialWalletManager.getInterestAccountDetails(asset)
             .doOnSuccess {
                 isConfigured.set(true)
             }.doOnComplete {
                 isConfigured.set(false)
             }.switchIfEmpty(
-                Single.just(CryptoValue.zero(cryptoAsset))
+                Single.just(CryptoValue.zero(asset))
             )
 
     override val activity: Single<ActivitySummaryList>
@@ -163,29 +188,29 @@ internal class CryptoInterestAccount(
     override val isDefault: Boolean =
         false // Default is, presently, only ever a non-custodial account.
 
+    override fun createSendProcessor(address: ReceiveAddress): Single<SendProcessor> =
+        Single.error<SendProcessor>(NotImplementedError("Cannot Send from Interest Wallet"))
+
+    override val sendState: Single<SendState>
+        get() = Single.just(SendState.NOT_SUPPORTED)
+
     override val actions: AvailableActions
         get() = availableActions
 
     private val availableActions = emptySet<AssetAction>()
 }
 
-abstract class Erc20CryptoSingleNonCustodialAccountBase(
+abstract class Erc20CryptoNonCustodialAccountBase(
     private val cryptoCurrency: CryptoCurrency,
     override val label: String,
-    private val address: String,
     private val erc20Account: Erc20Account,
     override val exchangeRates: ExchangeRateDataManager
-) : CryptoSingleAccountNonCustodialBase() {
+) : CryptoNonCustodialAccount(cryptoCurrency) {
     override val isDefault: Boolean = true // Only one account, so always default
-
-    override val cryptoCurrencies = setOf(cryptoCurrency)
 
     override val balance: Single<CryptoValue>
         get() = erc20Account.getBalance()
             .map { CryptoValue.fromMinor(cryptoCurrency, it) }
-
-    override val receiveAddress: Single<String>
-        get() = Single.just(address)
 
     override val activity: Single<ActivitySummaryList>
         get() {
@@ -223,10 +248,43 @@ abstract class Erc20CryptoSingleNonCustodialAccountBase(
         }
 }
 
-abstract class CryptoSingleAccountNonCustodialBase : CryptoSingleAccountBase() {
+// To handle Send to PIT
+internal class CryptoExchangeAccount(
+    cryptoCurrency: CryptoCurrency,
+    override val label: String,
+    private val address: String,
+    override val exchangeRates: ExchangeRateDataManager
+) : CryptoSingleAccountBase(cryptoCurrency) {
 
-    override val isFunded: Boolean
-        get() = true
+    override val balance: Single<CryptoValue>
+        get() = Single.just(CryptoValue.zero(asset))
+
+    override val receiveAddress: Single<ReceiveAddress>
+        get() = Single.just(
+            ExchangeAddress(
+                asset = asset,
+                label = label,
+                address = address
+            )
+        )
+
+    override val isDefault: Boolean = false
+    override val isFunded: Boolean = false
+
+    override fun createSendProcessor(address: ReceiveAddress): Single<SendProcessor> =
+        Single.error<SendProcessor>(NotImplementedError("Cannot Send from Exchange Wallet"))
+
+    override val activity: Single<ActivitySummaryList>
+        get() = Single.just(emptyList())
+
+    override val actions: AvailableActions = emptySet()
+}
+
+abstract class CryptoNonCustodialAccount(
+    cryptoCurrency: CryptoCurrency
+) : CryptoSingleAccountBase(cryptoCurrency) {
+
+    override val isFunded: Boolean = true
 
     override val actions: AvailableActions
         get() = availableActions
@@ -237,6 +295,10 @@ abstract class CryptoSingleAccountNonCustodialBase : CryptoSingleAccountBase() {
         AssetAction.Receive,
         AssetAction.Swap
     )
+
+    override fun createSendProcessor(address: ReceiveAddress): Single<SendProcessor> {
+        TODO("Implement me")
+    }
 }
 
 // Currently only one custodial account is supported for each asset,
@@ -282,6 +344,9 @@ class CryptoAccountCustodialGroup(
 
     override fun includes(cryptoAccount: CryptoSingleAccount): Boolean =
         accounts.contains(cryptoAccount)
+
+    override val sendState: Single<SendState>
+        get() = Single.just(SendState.NOT_SUPPORTED)
 }
 
 class CryptoAccountCompoundGroup(
@@ -350,4 +415,7 @@ class CryptoAccountCompoundGroup(
 
     override fun includes(cryptoAccount: CryptoSingleAccount): Boolean =
         accounts.contains(cryptoAccount)
+
+    override val sendState: Single<SendState>
+        get() = Single.just(SendState.NOT_SUPPORTED)
 }
