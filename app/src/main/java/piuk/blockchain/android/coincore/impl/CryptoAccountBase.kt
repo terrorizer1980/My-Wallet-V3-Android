@@ -228,7 +228,7 @@ abstract class CryptoSingleAccountNonCustodialBase : CryptoSingleAccountBase() {
     override val isFunded: Boolean
         get() = true
 
-    final override val actions: AvailableActions
+    override val actions: AvailableActions
         get() = availableActions
 
     private val availableActions = setOf(

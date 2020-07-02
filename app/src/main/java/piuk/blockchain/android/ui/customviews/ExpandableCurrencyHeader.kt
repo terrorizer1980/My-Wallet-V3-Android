@@ -134,8 +134,8 @@ class ExpandableCurrencyHeader @JvmOverloads constructor(
             CryptoCurrency.XLM -> textview_lumens
             CryptoCurrency.PAX -> textview_pax
             CryptoCurrency.STX,
-            CryptoCurrency.ALGO -> null
-            CryptoCurrency.USDT -> textview_usdt
+            CryptoCurrency.ALGO,
+            CryptoCurrency.USDT -> null
         }
 
     fun isOpen() = expanded

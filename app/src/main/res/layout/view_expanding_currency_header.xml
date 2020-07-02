@@ -68,13 +68,6 @@
                 style="@style/CryptoCurrencySelectorTextView"
                 android:text="@string/usd_pax_1"
                 tools:drawableLeft="@drawable/vector_pax" />
-
-            <TextView
-                android:id="@+id/textview_usdt"
-                style="@style/CryptoCurrencySelectorTextView"
-                android:text="@string/usdt"
-                tools:drawableLeft="@drawable/vector_usdt_white" />
-
         </LinearLayout>
     </FrameLayout>
 </RelativeLayout>
