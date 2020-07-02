@@ -14,7 +14,7 @@ import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 
 internal abstract class Erc20TokensBase(
-    private val erc20Account: Erc20Account,
+    protected val erc20Account: Erc20Account,
     custodialManager: CustodialWalletManager,
     exchangeRates: ExchangeRateDataManager,
     historicRates: ChartsDataManager,

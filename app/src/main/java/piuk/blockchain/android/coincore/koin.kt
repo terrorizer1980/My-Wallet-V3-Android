@@ -81,7 +81,6 @@ val coincoreModule = module {
                 historicRates = get(),
                 currencyPrefs = get(),
                 crashLogger = get(),
-                stringUtils = get(),
                 custodialManager = get(),
                 pitLinking = get(),
                 labels = get()

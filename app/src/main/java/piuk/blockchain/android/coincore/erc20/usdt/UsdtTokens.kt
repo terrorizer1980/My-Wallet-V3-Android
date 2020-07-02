@@ -20,7 +20,7 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 
 internal class UsdtTokens(
     override val asset: CryptoCurrency = CryptoCurrency.USDT,
-    private val erc20Account: Erc20Account,
+    erc20Account: Erc20Account,
     custodialManager: CustodialWalletManager,
     exchangeRates: ExchangeRateDataManager,
     historicRates: ChartsDataManager,
