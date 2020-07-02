@@ -36,7 +36,7 @@ class PaxAccountActivityTest {
         PaxCryptoWalletAccount(
             label = "Text Pax Account",
             address = "Test Px Address",
-            account = paxAccount,
+            erc20Account = paxAccount,
             exchangeRates = exchangeRates
         )
 
