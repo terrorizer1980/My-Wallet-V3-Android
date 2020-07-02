@@ -8,13 +8,11 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.prices.TimeInterval
 import info.blockchain.wallet.util.FormatsUtil
 import io.reactivex.Single
-import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.CryptoAddress
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.android.coincore.erc20.Erc20TokensBase
 import piuk.blockchain.android.thepit.PitLinking
-import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
@@ -22,8 +20,8 @@ import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 
 internal class PaxTokens(
+    override val asset: CryptoCurrency = CryptoCurrency.PAX,
     private val erc20Account: Erc20Account,
-    private val stringUtils: StringUtils,
     custodialManager: CustodialWalletManager,
     exchangeRates: ExchangeRateDataManager,
     historicRates: ChartsDataManager,
@@ -32,7 +30,6 @@ internal class PaxTokens(
     pitLinking: PitLinking,
     crashLogger: CrashLogger
 ) : Erc20TokensBase(
-    CryptoCurrency.PAX,
     erc20Account,
     custodialManager,
     exchangeRates,
@@ -48,12 +45,11 @@ internal class PaxTokens(
 
     private fun getNonCustodialPaxAccount(): CryptoSingleAccount {
         val paxAddress = erc20Account.ethDataManager.getEthWallet()?.account?.address
-            ?: throw Exception("No pax wallet found")
-
-        val label = stringUtils.getString(R.string.pax_default_account_label_1)
+            ?: throw Exception("No PAX wallet found")
 
         return PaxCryptoWalletAccount(
-            label, paxAddress, erc20Account, exchangeRates)
+            labels.getDefaultNonCustodialWalletLabel(CryptoCurrency.PAX), paxAddress, erc20Account,
+            exchangeRates)
     }
 
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =

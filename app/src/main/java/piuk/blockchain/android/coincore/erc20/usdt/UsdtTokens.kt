@@ -19,6 +19,7 @@ import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 
 internal class UsdtTokens(
+    override val asset: CryptoCurrency = CryptoCurrency.USDT,
     private val erc20Account: Erc20Account,
     custodialManager: CustodialWalletManager,
     exchangeRates: ExchangeRateDataManager,
@@ -28,7 +29,6 @@ internal class UsdtTokens(
     crashLogger: CrashLogger,
     pitLinking: PitLinking
 ) : Erc20TokensBase(
-    CryptoCurrency.USDT,
     erc20Account,
     custodialManager,
     exchangeRates,
