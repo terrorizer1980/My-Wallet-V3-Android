@@ -102,6 +102,42 @@ fun CryptoCurrency.assetName() =
         CryptoCurrency.USDT -> R.string.usdt
     }
 
+@ColorRes
+fun CryptoCurrency.assetTint() =
+    when (this) {
+            CryptoCurrency.BTC -> R.color.btc_bkgd
+            CryptoCurrency.BCH -> R.color.bch_bkgd
+            CryptoCurrency.ETHER -> R.color.ether_bkgd
+            CryptoCurrency.PAX -> R.color.pax_bkgd
+            CryptoCurrency.XLM -> R.color.xlm_bkgd
+            CryptoCurrency.ALGO -> R.color.algo_bkgd
+            CryptoCurrency.USDT -> R.color.usdt_bkgd
+            else -> {
+                android.R.color.transparent // STX left, do nothing
+            }
+    }
+
+@ColorRes
+fun CryptoCurrency.assetFilter() =
+    when (this) {
+        CryptoCurrency.BTC -> R.color.btc
+        CryptoCurrency.BCH -> R.color.bch
+        CryptoCurrency.ETHER -> R.color.eth
+        CryptoCurrency.PAX -> R.color.pax
+        CryptoCurrency.XLM -> R.color.xlm
+        CryptoCurrency.ALGO -> R.color.algo
+        CryptoCurrency.USDT -> R.color.usdt
+        else -> {
+            android.R.color.transparent // STX left, do nothing
+        }
+    }
+
+fun ImageView.setAssetIconColours(cryptoCurrency: CryptoCurrency, context: Context) {
+    setBackgroundResource(R.drawable.bkgd_tx_circle)
+    background.setTint(ContextCompat.getColor(context, cryptoCurrency.assetTint()))
+    setColorFilter(ContextCompat.getColor(context, cryptoCurrency.assetFilter()))
+}
+
 internal class ResourceDefaultLabels(
     private val resources: Resources
 ) : DefaultLabels {
