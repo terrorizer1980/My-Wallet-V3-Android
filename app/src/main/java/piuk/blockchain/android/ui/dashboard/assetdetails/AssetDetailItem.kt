@@ -155,13 +155,12 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
 
 class LabelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bind(token: CryptoAsset) {
-        itemView.asset_label_description.text = when(token.asset) {
+        itemView.asset_label_description.text = when (token.asset) {
             CryptoCurrency.ALGO -> context.getString(R.string.algorand_asset_label)
             CryptoCurrency.USDT -> context.getString(R.string.usdt_asset_label)
             else -> ""
         }
     }
-
 }
 
 typealias AssetActionHandler = (action: AssetAction, account: BlockchainAccount) -> Unit
@@ -184,8 +183,8 @@ internal class AssetDetailAdapter(
     override fun getItemCount(): Int = if (showBanner) itemList.size + 1 else itemList.size
 
     override fun getItemViewType(position: Int): Int =
-        if(showBanner) {
-            if(position >= itemList.size) {
+        if (showBanner) {
+            if (position >= itemList.size) {
                 TYPE_LABEL
             } else {
                 TYPE_CRYPTO
@@ -193,7 +192,6 @@ internal class AssetDetailAdapter(
         } else {
             TYPE_CRYPTO
         }
-
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is AssetDetailViewHolder) {
