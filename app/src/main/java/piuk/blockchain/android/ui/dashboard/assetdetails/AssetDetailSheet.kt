@@ -189,7 +189,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
             }
 
             asset_list.adapter = AssetDetailAdapter(itemList, ::onAssetActionSelected, analytics,
-            cryptoCurrency.hasFeature(CryptoCurrency.CUSTODIAL_ONLY))
+            cryptoCurrency.hasFeature(CryptoCurrency.CUSTODIAL_ONLY), token)
         }
     }
 
