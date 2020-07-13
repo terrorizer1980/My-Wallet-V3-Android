@@ -1781,6 +1781,7 @@
     <string name="tether_announcement_title">Say Hello to Tether!</string>
     <string name="tether_announcement_description">USDT is the world\'s largest Stablecoin. Buy and swap from your app. Full Send and Receive functionality are available on the Web wallet.</string>
     <string name="tether_announcement_action">Buy Tether Now</string>
+    <string name="dashboard_asset_item_label_title">Please note.</string>
 
 
 </resources>

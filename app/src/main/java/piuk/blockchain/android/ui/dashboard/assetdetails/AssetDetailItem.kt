@@ -81,7 +81,8 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
     private fun getAsset(account: BlockchainAccount): CryptoCurrency =
         when (account) {
             is CryptoAccount -> account.asset
-            is AccountGroup -> account.accounts.filterIsInstance<CryptoAccount>().firstOrNull()?.asset
+            is AccountGroup -> account.accounts.filterIsInstance<CryptoAccount>()
+                .firstOrNull()?.asset
             else -> null
         } ?: throw IllegalStateException("Unsupported account type")
 
@@ -149,20 +150,46 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         }.exhaustive
 }
 
+class LabelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+}
+
 typealias AssetActionHandler = (action: AssetAction, account: BlockchainAccount) -> Unit
 
 internal class AssetDetailAdapter(
     private val itemList: List<AssetDetailItem>,
     private val onActionSelected: AssetActionHandler,
-    private val analytics: Analytics
-) : RecyclerView.Adapter<AssetDetailViewHolder>() {
+    private val analytics: Analytics,
+    private val showBanner: Boolean
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AssetDetailViewHolder =
-        AssetDetailViewHolder(parent.inflate(R.layout.dialog_dashboard_asset_detail_item))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+        if (viewType == TYPE_CRYPTO) {
+            AssetDetailViewHolder(parent.inflate(R.layout.dialog_dashboard_asset_detail_item))
+        } else {
+            LabelViewHolder(parent.inflate(R.layout.dialog_dashboard_asset_label_item))
+        }
 
-    override fun getItemCount(): Int = itemList.size
+    override fun getItemCount(): Int = if (showBanner) itemList.size + 1 else itemList.size
 
-    override fun onBindViewHolder(holder: AssetDetailViewHolder, position: Int) {
-        holder.bind(itemList[position], onActionSelected, analytics)
+    override fun getItemViewType(position: Int): Int =
+        if(showBanner) {
+            if(position >= itemList.size) {
+                TYPE_LABEL
+            } else {
+                TYPE_CRYPTO
+            }
+        } else {
+            TYPE_CRYPTO
+        }
+
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is AssetDetailViewHolder) {
+            holder.bind(itemList[position], onActionSelected, analytics)
+        }
     }
+
+    private val TYPE_CRYPTO = 0
+    private val TYPE_LABEL = 1
 }
