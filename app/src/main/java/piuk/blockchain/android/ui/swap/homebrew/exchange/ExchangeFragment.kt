@@ -250,8 +250,11 @@ internal class ExchangeFragment : Fragment() {
         exchangeMenuState.setMenuState(errorState)
     }
 
-    private fun displayFiatLarge(fiatValue: FiatValue, cryptoValue: CryptoValue,
-                                 decimalCursor: Int) {
+    private fun displayFiatLarge(
+        fiatValue: FiatValue,
+        cryptoValue: CryptoValue,
+        decimalCursor: Int
+    ) {
         val parts = fiatValue.toStringParts()
         large_value.setText(
             ThreePartText(parts.symbol,
@@ -264,8 +267,11 @@ internal class ExchangeFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun displayCryptoLarge(cryptoValue: CryptoValue, fiatValue: FiatValue,
-                                   decimalCursor: Int) {
+    private fun displayCryptoLarge(
+        cryptoValue: CryptoValue,
+        fiatValue: FiatValue,
+        decimalCursor: Int
+    ) {
         large_value.setText(
             ThreePartText("",
                 cryptoValue.formatExactly(decimalCursor) + " " + cryptoValue.symbol,
@@ -430,7 +436,8 @@ internal class ExchangeFragment : Fragment() {
             spendableString.append(spendable.toStringWithSymbol())
         } catch (e: Throwable) {
             Timber.e(
-                "Race condition between setting new asset and using the spendable balance of the old asset ${e.message}")
+                "Race condition with new asset and spendable balance of the old asset ${e.message}"
+            )
         }
         return spendableString
     }
@@ -455,7 +462,8 @@ internal class ExchangeFragment : Fragment() {
         "${quote.baseToCounterRate} ${toCrypto.currencyCode}"
 
     private fun ExchangeViewState.formatCounterFromPrices(
-        prices: List<ExchangeRate.CryptoToFiat>): String {
+        prices: List<ExchangeRate.CryptoToFiat>
+    ): String {
         val exchangePriceFrom =
             prices.firstOrNull { it.from == fromCrypto.currency }?.rate ?: return ""
         val exchangePriceTo = prices.firstOrNull { it.from == toCrypto.currency }?.rate ?: return ""
@@ -473,7 +481,8 @@ internal class ExchangeFragment : Fragment() {
     }
 
     private fun ExchangeCryptoButtonLayout.setButtonGraphicsAndTextFromCryptoValue(
-        cryptoValue: CryptoValue) {
+        cryptoValue: CryptoValue
+    ) {
         val fromCryptoString = cryptoValue.formatOrSymbolForZero()
         button.setBackgroundResource(cryptoValue.currency.colorRes())
 
@@ -497,8 +506,11 @@ internal class ExchangeFragment : Fragment() {
         }
     }
 
-    class ExchangeCryptoButtonLayout(val button: Button, val textView: TextView,
-                                     val imageView: ImageView)
+    class ExchangeCryptoButtonLayout(
+        val button: Button,
+        val textView: TextView,
+        val imageView: ImageView
+    )
 }
 
 internal const val REQUEST_CODE_CHOOSE_RECEIVING_ACCOUNT = 800
