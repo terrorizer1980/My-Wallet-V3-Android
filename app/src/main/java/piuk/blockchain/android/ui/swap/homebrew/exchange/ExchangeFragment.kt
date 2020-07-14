@@ -49,9 +49,9 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.swap.customviews.Maximums
 import piuk.blockchain.android.ui.swap.customviews.ThreePartText
 import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewHostActivityListener
-import piuk.blockchain.android.ui.swap.logging.amountErrorEvent
 import piuk.blockchain.android.ui.swap.logging.AmountErrorType
 import piuk.blockchain.android.ui.swap.logging.FixType
+import piuk.blockchain.android.ui.swap.logging.amountErrorEvent
 import piuk.blockchain.android.ui.swap.logging.fixTypeEvent
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.coinIconWhite
@@ -60,6 +60,7 @@ import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.getResolvedColor
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.logging.Logging
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -401,26 +402,27 @@ internal class ExchangeFragment : Fragment() {
         val cryptoCurrency = fromCrypto.currency
         val fiatCode = fromFiat.currencyCode
         val spendable = maxSpendable ?: CryptoValue.zero(cryptoCurrency)
-
         val spendableString = SpannableStringBuilder()
-
-        val fiatSpendable = latestQuote?.baseToFiatRate?.let { baseToFiatRate ->
-            ExchangeRate.CryptoToFiat(cryptoCurrency, fiatCode, baseToFiatRate)
-                .applyRate(spendable)
-        } ?: spendable * c2fRate
-
-        fiatSpendable?.let {
-            val fiatString = SpannableString(it.toStringWithSymbol())
-            fiatString.setSpan(
-                ForegroundColorSpan(getResolvedColor(R.color.product_green_medium)),
-                0,
-                fiatString.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            spendableString.append(fiatString)
-            spendableString.append(" ")
+        try {
+            val fiatSpendable = latestQuote?.baseToFiatRate?.let { baseToFiatRate ->
+                ExchangeRate.CryptoToFiat(cryptoCurrency, fiatCode, baseToFiatRate)
+                    .applyRate(spendable)
+            } ?: spendable * c2fRate
+            fiatSpendable?.let {
+                val fiatString = SpannableString(it.toStringWithSymbol())
+                fiatString.setSpan(
+                    ForegroundColorSpan(getResolvedColor(R.color.product_green_medium)),
+                    0,
+                    fiatString.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                spendableString.append(fiatString)
+                spendableString.append(" ")
+            }
+            spendableString.append(spendable.toStringWithSymbol())
+        } catch(e: Throwable) {
+            Timber.e(e)
         }
-        spendableString.append(spendable.toStringWithSymbol())
         return spendableString
     }
 
