@@ -174,13 +174,16 @@ internal class ExchangeFragment : Fragment() {
             .subscribeBy {
                 when (it.fix) {
                     Fix.BASE_FIAT -> displayFiatLarge(it.fromFiat, it.fromCrypto, it.decimalCursor)
-                    Fix.BASE_CRYPTO -> displayCryptoLarge(it.fromCrypto, it.fromFiat, it.decimalCursor)
+                    Fix.BASE_CRYPTO -> displayCryptoLarge(it.fromCrypto, it.fromFiat,
+                        it.decimalCursor)
                     Fix.COUNTER_FIAT -> displayFiatLarge(it.toFiat, it.toCrypto, it.decimalCursor)
-                    Fix.COUNTER_CRYPTO -> displayCryptoLarge(it.toCrypto, it.toFiat, it.decimalCursor)
+                    Fix.COUNTER_CRYPTO -> displayCryptoLarge(it.toCrypto, it.toFiat,
+                        it.decimalCursor)
                 }
 
                 inputTypeRelay.onNext(it.fix)
-                lastUserValue = it.lastUserValue.userDecimalPlaces to it.lastUserValue.toBigDecimal()
+                lastUserValue =
+                    it.lastUserValue.userDecimalPlaces to it.lastUserValue.toBigDecimal()
                 ExchangeCryptoButtonLayout(select_from_account_button,
                     select_from_account_text,
                     select_from_account_icon).setButtonGraphicsAndTextFromCryptoValue(it.fromCrypto)
@@ -193,7 +196,8 @@ internal class ExchangeFragment : Fragment() {
                 }
                 latestCryptoValue = it.toCrypto
 
-                keyboard.setValue(it.lastUserValue.userDecimalPlaces, it.lastUserValue.toBigDecimal())
+                keyboard.setValue(it.lastUserValue.userDecimalPlaces,
+                    it.lastUserValue.toBigDecimal())
 
                 exchange_button.isEnabled = it.isValid()
 
@@ -223,7 +227,8 @@ internal class ExchangeFragment : Fragment() {
     }
 
     private fun updateBalance(viewState: ExchangeViewState) {
-        balance_title.text = getString(R.string.morph_balance_title, viewState.fromCrypto.currencyCode)
+        balance_title.text =
+            getString(R.string.morph_balance_title, viewState.fromCrypto.currencyCode)
         balance_value.text = viewState.formatSpendableString()
     }
 
@@ -245,7 +250,8 @@ internal class ExchangeFragment : Fragment() {
         exchangeMenuState.setMenuState(errorState)
     }
 
-    private fun displayFiatLarge(fiatValue: FiatValue, cryptoValue: CryptoValue, decimalCursor: Int) {
+    private fun displayFiatLarge(fiatValue: FiatValue, cryptoValue: CryptoValue,
+                                 decimalCursor: Int) {
         val parts = fiatValue.toStringParts()
         large_value.setText(
             ThreePartText(parts.symbol,
@@ -258,7 +264,8 @@ internal class ExchangeFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun displayCryptoLarge(cryptoValue: CryptoValue, fiatValue: FiatValue, decimalCursor: Int) {
+    private fun displayCryptoLarge(cryptoValue: CryptoValue, fiatValue: FiatValue,
+                                   decimalCursor: Int) {
         large_value.setText(
             ThreePartText("",
                 cryptoValue.formatExactly(decimalCursor) + " " + cryptoValue.symbol,
@@ -363,7 +370,8 @@ internal class ExchangeFragment : Fragment() {
                 ExchangeMenuState.ExchangeMenuError(
                     fromCrypto.currency,
                     userTier,
-                    getString(R.string.not_enough_balance_for_coin, fromCrypto.currency.displayTicker),
+                    getString(R.string.not_enough_balance_for_coin,
+                        fromCrypto.currency.displayTicker),
                     getString(
                         R.string.not_enough_balance,
                         maxSpendable?.toStringWithSymbol(),
@@ -420,8 +428,9 @@ internal class ExchangeFragment : Fragment() {
                 spendableString.append(" ")
             }
             spendableString.append(spendable.toStringWithSymbol())
-        } catch(e: Throwable) {
-            Timber.e(e)
+        } catch (e: Throwable) {
+            Timber.e(
+                "Race condition between setting new asset and using the spendable balance of the old asset ${e.message}")
         }
         return spendableString
     }
@@ -445,8 +454,10 @@ internal class ExchangeFragment : Fragment() {
     private fun ExchangeViewState.formatCounterFromQuote(quote: Quote): String =
         "${quote.baseToCounterRate} ${toCrypto.currencyCode}"
 
-    private fun ExchangeViewState.formatCounterFromPrices(prices: List<ExchangeRate.CryptoToFiat>): String {
-        val exchangePriceFrom = prices.firstOrNull { it.from == fromCrypto.currency }?.rate ?: return ""
+    private fun ExchangeViewState.formatCounterFromPrices(
+        prices: List<ExchangeRate.CryptoToFiat>): String {
+        val exchangePriceFrom =
+            prices.firstOrNull { it.from == fromCrypto.currency }?.rate ?: return ""
         val exchangePriceTo = prices.firstOrNull { it.from == toCrypto.currency }?.rate ?: return ""
         return "${exchangePriceFrom.divide(
             exchangePriceTo,
@@ -461,7 +472,8 @@ internal class ExchangeFragment : Fragment() {
         Fix.COUNTER_CRYPTO -> FixType.CounterCrypto
     }
 
-    private fun ExchangeCryptoButtonLayout.setButtonGraphicsAndTextFromCryptoValue(cryptoValue: CryptoValue) {
+    private fun ExchangeCryptoButtonLayout.setButtonGraphicsAndTextFromCryptoValue(
+        cryptoValue: CryptoValue) {
         val fromCryptoString = cryptoValue.formatOrSymbolForZero()
         button.setBackgroundResource(cryptoValue.currency.colorRes())
 
@@ -477,14 +489,16 @@ internal class ExchangeFragment : Fragment() {
 
     private fun ImageView.setCryptoImageIfZero(cryptoValue: CryptoValue) {
         if (cryptoValue.isZero) {
-            val drawable = ContextCompat.getDrawable(activity ?: return, cryptoValue.currency.coinIconWhite())
+            val drawable =
+                ContextCompat.getDrawable(activity ?: return, cryptoValue.currency.coinIconWhite())
             setImageDrawable(drawable)
         } else {
             setImageDrawable(null)
         }
     }
 
-    class ExchangeCryptoButtonLayout(val button: Button, val textView: TextView, val imageView: ImageView)
+    class ExchangeCryptoButtonLayout(val button: Button, val textView: TextView,
+                                     val imageView: ImageView)
 }
 
 internal const val REQUEST_CODE_CHOOSE_RECEIVING_ACCOUNT = 800
