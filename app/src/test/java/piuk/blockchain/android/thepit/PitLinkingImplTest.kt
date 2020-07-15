@@ -69,7 +69,7 @@ class PitLinkingImplTest {
     @Test
     fun `fetch user data on subscribe, user is linked`() {
         // Arrange
-        whenever(nabuUser.products).thenReturn(ProductsUsed(exchange = true))
+        whenever(nabuUser.productsUsed).thenReturn(ProductsUsed(exchange = true))
         whenever(nabu.getUser(validOfflineToken)).thenReturn(Single.just(nabuUser))
 
         // Act
@@ -87,7 +87,7 @@ class PitLinkingImplTest {
     fun `fetch user data on subscribe, user is not linked`() {
         // Arrange
         whenever(nabuUser.userName).thenReturn(null)
-        whenever(nabuUser.products).thenReturn(ProductsUsed())
+        whenever(nabuUser.productsUsed).thenReturn(ProductsUsed())
         whenever(nabu.getUser(validOfflineToken)).thenReturn(Single.just(nabuUser))
 
         // Act
@@ -104,7 +104,7 @@ class PitLinkingImplTest {
     @Test
     fun `two subscriptions with isPitLinked() helper function`() {
         // Arrange
-        whenever(nabuUser.products).thenReturn(ProductsUsed(exchange = true))
+        whenever(nabuUser.productsUsed).thenReturn(ProductsUsed(exchange = true))
         whenever(nabu.getUser(validOfflineToken)).thenReturn(Single.just(nabuUser))
 
         // Act
