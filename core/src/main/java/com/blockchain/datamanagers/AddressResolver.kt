@@ -49,7 +49,7 @@ internal class AddressResolver(
             CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
         }
 
-    private fun getEthereumAddress(reference: AccountReference) : Single<AddressPair> {
+    private fun getEthereumAddress(reference: AccountReference): Single<AddressPair> {
         val account = accountLookup.getAccountFromAddressOrXPub(reference) as EthereumAccount
         val address = account.address
         return Single.just(AddressPair(address, address))
