@@ -39,7 +39,8 @@ internal class AddressResolver(
                     }
             }
             CryptoCurrency.ETHER -> {
-                val account = accountLookup.getAccountFromAddressOrXPub(reference) as EthereumAccount
+                val account =
+                    accountLookup.getAccountFromAddressOrXPub(reference) as EthereumAccount
                 val address = account.address
                 Single.just(AddressPair(address, address))
             }
@@ -48,7 +49,8 @@ internal class AddressResolver(
                 Single.just(AddressPair(receivingAddress, receivingAddress))
             }
             CryptoCurrency.PAX -> {
-                val account = accountLookup.getAccountFromAddressOrXPub(reference) as EthereumAccount
+                val account =
+                    accountLookup.getAccountFromAddressOrXPub(reference) as EthereumAccount
                 val address = account.address
                 Single.just(AddressPair(address, address))
             }
