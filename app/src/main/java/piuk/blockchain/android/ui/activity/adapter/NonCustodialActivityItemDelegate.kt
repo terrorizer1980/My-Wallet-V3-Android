@@ -129,7 +129,7 @@ private fun ImageView.setDirectionIcon(
     )
 }
 
-private fun ImageView.setIsConfirming()  =
+private fun ImageView.setIsConfirming() =
     icon.apply {
         setImageDrawable(
             AppCompatResources.getDrawable(
