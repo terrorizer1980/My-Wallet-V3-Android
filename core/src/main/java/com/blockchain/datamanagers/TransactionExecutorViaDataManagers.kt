@@ -94,29 +94,32 @@ internal class TransactionExecutorViaDataManagers(
                     memo = memo
                 )
             ).logAnalyticsError(analytics).map { it.hash!! }
-            CryptoCurrency.PAX ->
-                sendPaxTransaction(fees as EthereumFees, destination, amount)
+            CryptoCurrency.PAX,
+            CryptoCurrency.USDT ->
+                sendErc20Transaction(fees as EthereumFees, destination, amount, amount.currency)
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
             CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
-            CryptoCurrency.USDT -> TODO("STUB: USDT NOT IMPLEMENTED")
         }
 
-    private fun sendPaxTransaction(
+    private fun sendErc20Transaction(
         feeOptions: EthereumFees,
         receivingAddress: String,
-        cryptoValue: CryptoValue
-    ): Single<String> =
-        createPaxTransaction(feeOptions, receivingAddress, cryptoValue.toBigInteger())
-            .flatMap {
-                val ecKey = EthereumAccount.deriveECKey(payloadDataManager.wallet!!.hdWallets[0].masterKey, 0)
-                return@flatMap ethDataManager.signEthTransaction(it, ecKey)
-            }
-            .flatMap { ethDataManager.pushEthTx(it).logAnalyticsError(analytics) }
-            .flatMap { ethDataManager.setLastTxHashObservable(it, System.currentTimeMillis()) }
-            .subscribeOn(Schedulers.io())
-            .singleOrError()
+        cryptoValue: CryptoValue,
+        asset: CryptoCurrency
+    ) = createErc20Transaction(asset, feeOptions, receivingAddress, cryptoValue.toBigInteger())
+        .flatMap {
+            val ecKey =
+                EthereumAccount.deriveECKey(payloadDataManager.wallet!!.hdWallets[0].masterKey,
+                    0)
+            return@flatMap ethDataManager.signEthTransaction(it, ecKey)
+        }
+        .flatMap { ethDataManager.pushEthTx(it).logAnalyticsError(analytics) }
+        .flatMap { ethDataManager.setLastTxHashObservable(it, System.currentTimeMillis()) }
+        .subscribeOn(Schedulers.io())
+        .singleOrError()
 
-    private fun createPaxTransaction(
+    private fun createErc20Transaction(
+        asset: CryptoCurrency,
         ethFees: EthereumFees,
         receivingAddress: String,
         amount: BigInteger
@@ -129,7 +132,7 @@ internal class TransactionExecutorViaDataManagers(
                 erc20Account.createTransaction(
                     nonce = it,
                     to = receivingAddress,
-                    contractAddress = ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress,
+                    contractAddress = ethDataManager.getErc20TokenData(asset).contractAddress,
                     gasPriceWei = feeWei,
                     gasLimitGwei = ethFees.gasLimitInGwei,
                     amount = amount)
@@ -349,7 +352,9 @@ internal class TransactionExecutorViaDataManagers(
                         )
                     }
                     .flatMap { ethDataManager.pushEthTx(it).logAnalyticsError(analytics) }
-                    .flatMap { ethDataManager.setLastTxHashObservable(it, System.currentTimeMillis()) }
+                    .flatMap {
+                        ethDataManager.setLastTxHashObservable(it, System.currentTimeMillis())
+                    }
                     .subscribeOn(Schedulers.io())
                     .singleOrError()
             }
@@ -372,12 +377,13 @@ internal class TransactionExecutorViaDataManagers(
         when (currency) {
             CryptoCurrency.BTC -> sendDataManager.getUnspentBtcOutputs(address)
             CryptoCurrency.BCH -> sendDataManager.getUnspentBchOutputs(address)
-            CryptoCurrency.ETHER -> throw IllegalArgumentException("Ether does not have unspent outputs")
-            CryptoCurrency.XLM -> throw IllegalArgumentException("Xlm does not have unspent outputs")
-            CryptoCurrency.PAX -> throw IllegalArgumentException("PAX does not have unspent outputs")
-            CryptoCurrency.STX -> throw IllegalArgumentException("STX not supported by this method")
-            CryptoCurrency.ALGO -> throw IllegalArgumentException("ALGO not supported by this method")
-            CryptoCurrency.USDT -> throw IllegalArgumentException("USDT not supported by this method")
+            CryptoCurrency.ETHER,
+            CryptoCurrency.XLM,
+            CryptoCurrency.PAX,
+            CryptoCurrency.STX,
+            CryptoCurrency.ALGO,
+            CryptoCurrency.USDT -> throw IllegalArgumentException(
+                "${currency.networkTicker} does not have unspent outputs")
         }.subscribeOn(Schedulers.io())
             .singleOrError()
 
@@ -405,12 +411,13 @@ internal class TransactionExecutorViaDataManagers(
             absoluteFee,
             amount.toBigInteger()
         )
-        CryptoCurrency.ETHER -> throw IllegalArgumentException("Ether not supported by this method")
-        CryptoCurrency.XLM -> throw IllegalArgumentException("XLM not supported by this method")
-        CryptoCurrency.PAX -> throw IllegalArgumentException("PAX not supported by this method")
-        CryptoCurrency.STX -> throw IllegalArgumentException("STX not supported by this method")
-        CryptoCurrency.ALGO -> throw IllegalArgumentException("ALGO not supported by this method")
-        CryptoCurrency.USDT -> throw IllegalArgumentException("USDT not supported by this method")
+        CryptoCurrency.ETHER,
+        CryptoCurrency.XLM,
+        CryptoCurrency.PAX,
+        CryptoCurrency.STX,
+        CryptoCurrency.ALGO,
+        CryptoCurrency.USDT -> throw IllegalArgumentException(
+            "${amount.currency.networkTicker} not supported by this method")
     }.subscribeOn(Schedulers.io())
         .singleOrError()
 
