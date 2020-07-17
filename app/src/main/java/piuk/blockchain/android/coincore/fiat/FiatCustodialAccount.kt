@@ -26,7 +26,9 @@ internal class FiatCustodialAccount(
 ) : FiatAccount {
 
     override val balance: Single<Money>
-        get() = Single.just(funds)
+        // FIXME: this is a temporary workaround, as soon as 6.35.1 is released this should return to
+        // using Single.just(funds)
+        get() = Single.just(FiatValue.zero(fiatCurrency))
 
     override val activity: Single<ActivitySummaryList>
         get() = Single.just(emptyList())
