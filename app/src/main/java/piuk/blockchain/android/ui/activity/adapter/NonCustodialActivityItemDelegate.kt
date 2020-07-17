@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.activity.adapter
 
+import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -128,13 +129,17 @@ private fun ImageView.setDirectionIcon(
     )
 }
 
-private fun ImageView.setIsConfirming() =
-    icon.setImageDrawable(
-        AppCompatResources.getDrawable(
-            context,
-            R.drawable.ic_tx_confirming
+private fun ImageView.setIsConfirming()  =
+    icon.apply {
+        setImageDrawable(
+            AppCompatResources.getDrawable(
+                context,
+                R.drawable.ic_tx_confirming
+            )
         )
-    )
+        background = null
+        setColorFilter(Color.TRANSPARENT)
+    }
 
 private fun TextView.setTxLabel(
     cryptoCurrency: CryptoCurrency,

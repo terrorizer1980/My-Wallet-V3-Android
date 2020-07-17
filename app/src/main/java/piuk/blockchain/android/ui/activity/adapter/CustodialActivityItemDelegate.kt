@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.activity.adapter
 
+import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -50,6 +51,9 @@ private class CustodialActivityItemViewHolder(
             if (tx.status != OrderState.PENDING_EXECUTION &&
                 tx.status != OrderState.AWAITING_FUNDS) {
                 icon.setAssetIconColours(tx.cryptoCurrency, context)
+            } else {
+                icon.background = null
+                icon.setColorFilter(Color.TRANSPARENT)
             }
 
             tx_type.setTxLabel(tx.cryptoCurrency)
