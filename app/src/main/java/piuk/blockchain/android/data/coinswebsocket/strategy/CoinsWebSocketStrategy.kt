@@ -240,8 +240,7 @@ class CoinsWebSocketStrategy(
         val ethResponse = gson.fromJson(response, EthResponse::class.java)
         val title = stringUtils.getString(R.string.app_name)
 
-        if (ethResponse.transaction != null && ethResponse.isEthButNotReferredToPax() &&
-            ethResponse.isEthButNotReferredToUsdt()) {
+        if (ethResponse.transaction != null && ethResponse.getTokenType() == CryptoCurrency.ETHER) {
             val transaction: EthTransaction = ethResponse.transaction
             if (transaction.state == TransactionState.CONFIRMED &&
                 transaction.to.equals(ethAddress(), true)
@@ -249,7 +248,7 @@ class CoinsWebSocketStrategy(
                 val marquee = stringUtils.getString(R.string.received_ethereum) + " " +
                     Convert.fromWei(BigDecimal(transaction.value), Convert.Unit.ETHER) + " ETH"
                 val text = marquee + " " + stringUtils.getString(R.string.from)
-                        .toLowerCase(Locale.US) + " " + transaction.from
+                    .toLowerCase(Locale.US) + " " + transaction.from
 
                 messagesSocketHandler?.triggerNotification(
                     title, marquee, text
@@ -264,7 +263,7 @@ class CoinsWebSocketStrategy(
         ) {
             val tokenTransaction = ethResponse.tokenTransfer
 
-            if (ethResponse.isEthButNotReferredToUsdt()) {
+            if (ethResponse.getTokenType() == CryptoCurrency.PAX) {
                 val marquee = stringUtils.getString(R.string.received_usd_pax_1) + " " +
                     CryptoValue.fromMinor(CryptoCurrency.PAX, tokenTransaction.value)
                         .toStringWithSymbol()
@@ -277,7 +276,7 @@ class CoinsWebSocketStrategy(
                 )
 
                 updatePaxTransactions()
-            } else if (ethResponse.isEthButNotReferredToPax()) {
+            } else if (ethResponse.getTokenType() == CryptoCurrency.USDT) {
                 val marquee = stringUtils.getString(R.string.received_usdt) + " " +
                     CryptoValue.fromMinor(CryptoCurrency.USDT, tokenTransaction.value)
                         .toStringWithSymbol()
@@ -581,14 +580,30 @@ class CoinsWebSocketStrategy(
         coinsWebSocket.send(gson.toJson(SocketRequest.PingRequest))
     }
 
-    private fun EthResponse.isEthButNotReferredToPax() = entity == Entity.Account &&
-        !transaction?.to.equals(
-            ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress,
+    private fun EthResponse.getTokenType(): CryptoCurrency {
+        require(entity == Entity.Account || entity == Entity.TokenAccount)
+        return when {
+            entity == Entity.Account && !isErc20TransactionType(CryptoCurrency.PAX) &&
+                !isErc20TransactionType(CryptoCurrency.USDT) -> CryptoCurrency.ETHER
+            entity == Entity.TokenAccount && isErc20ParamType(CryptoCurrency.PAX) ->
+                CryptoCurrency.PAX
+            entity == Entity.TokenAccount && isErc20ParamType(CryptoCurrency.USDT) -> {
+                CryptoCurrency.USDT
+            }
+            else -> {
+                TODO("This should never trigger, did we add a new ERC20 token?")
+            }
+        }
+    }
+
+    private fun EthResponse.isErc20ParamType(cryptoCurrency: CryptoCurrency) =
+        param?.tokenAddress.equals(
+            ethDataManager.getErc20TokenData(cryptoCurrency).contractAddress,
             true)
 
-    private fun EthResponse.isEthButNotReferredToUsdt() = entity == Entity.Account &&
-        !transaction?.to.equals(
-            ethDataManager.getErc20TokenData(CryptoCurrency.USDT).contractAddress,
+    private fun EthResponse.isErc20TransactionType(cryptoCurrency: CryptoCurrency) =
+        transaction?.to.equals(
+            ethDataManager.getErc20TokenData(cryptoCurrency).contractAddress,
             true)
 
     private fun PayloadDataManager.totalAccounts(): Int =

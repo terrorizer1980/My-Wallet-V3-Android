@@ -245,7 +245,7 @@ val applicationModule = module {
                 bchDataManager = get(),
                 xlmDataManager = get(),
                 environmentSettings = get(),
-                paxAccount = get(),
+                paxAccount = get(paxAccount),
                 crashLogger = get()
             )
         }
@@ -276,6 +276,7 @@ val applicationModule = module {
             CredentialsWiper(
                 payloadManagerWiper = get(),
                 paxAccount = get(paxAccount),
+                usdtAccount = get(usdtAccount),
                 accessState = get(),
                 appUtil = get()
             )
