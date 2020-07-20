@@ -17,11 +17,13 @@ import com.blockchain.koin.gbp
 import com.blockchain.koin.interestAccount
 import com.blockchain.koin.moshiExplorerRetrofit
 import com.blockchain.koin.pax
+import com.blockchain.koin.paxAccount
 import com.blockchain.koin.paxStrategy
 import com.blockchain.koin.payloadScopeQualifier
 import com.blockchain.koin.pitFeatureFlag
 import com.blockchain.koin.simpleBuyFeatureFlag
 import com.blockchain.koin.usdt
+import com.blockchain.koin.usdtAccount
 import com.blockchain.koin.usdtStrategy
 import com.blockchain.koin.xlm
 import com.blockchain.koin.xlmStrategy
@@ -184,7 +186,7 @@ val applicationModule = module {
             )
         }
 
-        factory {
+        factory(paxAccount) {
             PaxAccount(
                 ethDataManager = get(),
                 dataStore = get(),
@@ -192,7 +194,7 @@ val applicationModule = module {
             )
         }.bind(Erc20Account::class)
 
-        factory {
+        factory(usdtAccount) {
             UsdtAccount(
                 ethDataManager = get(),
                 dataStore = get(),
@@ -243,7 +245,7 @@ val applicationModule = module {
                 bchDataManager = get(),
                 xlmDataManager = get(),
                 environmentSettings = get(),
-                paxAccount = get(),
+                paxAccount = get(paxAccount),
                 crashLogger = get()
             )
         }
@@ -273,7 +275,8 @@ val applicationModule = module {
         scoped {
             CredentialsWiper(
                 payloadManagerWiper = get(),
-                paxAccount = get(),
+                paxAccount = get(paxAccount),
+                usdtAccount = get(usdtAccount),
                 accessState = get(),
                 appUtil = get()
             )
@@ -330,7 +333,8 @@ val applicationModule = module {
                 swipeToReceiveHelper = get(),
                 stringUtils = get(),
                 gson = get(),
-                erc20Account = get(),
+                paxAccount = get(paxAccount),
+                usdtAccount = get(usdtAccount),
                 payloadDataManager = get(),
                 bchDataManager = get(),
                 rxBus = get(),
@@ -553,7 +557,7 @@ val applicationModule = module {
                 walletAccountHelper = get(),
                 payloadDataManager = get(),
                 ethDataManager = get(),
-                paxAccount = get(),
+                paxAccount = get(paxAccount),
                 stringUtils = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),
@@ -573,7 +577,7 @@ val applicationModule = module {
                 walletAccountHelper = get(),
                 payloadDataManager = get(),
                 ethDataManager = get(),
-                usdtAccount = get(),
+                usdtAccount = get(usdtAccount),
                 stringUtils = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),

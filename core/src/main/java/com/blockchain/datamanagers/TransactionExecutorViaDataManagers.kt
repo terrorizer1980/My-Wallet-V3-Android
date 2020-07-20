@@ -42,7 +42,8 @@ import java.math.BigInteger
 internal class TransactionExecutorViaDataManagers(
     private val payloadDataManager: PayloadDataManager,
     private val ethDataManager: EthDataManager,
-    private val erc20Account: Erc20Account,
+    private val paxAccount: Erc20Account,
+    private val usdtAccount: Erc20Account,
     private val sendDataManager: SendDataManager,
     private val addressResolver: AddressResolver,
     private val accountLookup: AccountLookup,
@@ -129,13 +130,32 @@ internal class TransactionExecutorViaDataManagers(
         return ethDataManager.fetchEthAddress()
             .map { ethDataManager.getEthResponseModel()!!.getNonce() }
             .map {
-                erc20Account.createTransaction(
-                    nonce = it,
-                    to = receivingAddress,
-                    contractAddress = ethDataManager.getErc20TokenData(asset).contractAddress,
-                    gasPriceWei = feeWei,
-                    gasLimitGwei = ethFees.gasLimitInGwei,
-                    amount = amount)
+                when (asset) {
+                    CryptoCurrency.PAX -> {
+                        paxAccount.createTransaction(
+                            nonce = it,
+                            to = receivingAddress,
+                            contractAddress = ethDataManager.getErc20TokenData(
+                                asset).contractAddress,
+                            gasPriceWei = feeWei,
+                            gasLimitGwei = ethFees.gasLimitInGwei,
+                            amount = amount)
+                    }
+                    CryptoCurrency.USDT -> {
+                        usdtAccount.createTransaction(
+                            nonce = it,
+                            to = receivingAddress,
+                            contractAddress = ethDataManager.getErc20TokenData(
+                                asset).contractAddress,
+                            gasPriceWei = feeWei,
+                            gasLimitGwei = ethFees.gasLimitInGwei,
+                            amount = amount)
+                    }
+                    else -> {
+                        throw IllegalStateException(
+                            "This should not happen, did we add a new ERC-20 asset?")
+                    }
+                }
             }
     }
 
@@ -209,7 +229,8 @@ internal class TransactionExecutorViaDataManagers(
         feePerKb: BigInteger,
         useNewCoinSelection: Boolean
     ): BigInteger =
-        sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb, useNewCoinSelection).absoluteFee
+        sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb,
+            useNewCoinSelection).absoluteFee
 
     private fun AccountReference.BitcoinLike.getMaximumSpendable(
         fees: BitcoinLikeFees,
@@ -246,13 +267,13 @@ internal class TransactionExecutorViaDataManagers(
             .singleOrError()
 
     private fun getMaxSpendablePax(): Single<CryptoValue> =
-        erc20Account.getBalance()
+        paxAccount.getBalance()
             .map { CryptoValue.fromMinor(CryptoCurrency.PAX, it) }
             .doOnError { Timber.e(it) }
             .onErrorReturn { CryptoValue.ZeroPax }
 
     private fun getMaxSpendableUsdt(): Single<CryptoValue> =
-        erc20Account.getBalance()
+        usdtAccount.getBalance()
             .map { CryptoValue.fromMinor(CryptoCurrency.USDT, it) }
             .doOnError { Timber.e(it) }
             .onErrorReturn { CryptoValue.ZeroUsdt }
@@ -328,7 +349,8 @@ internal class TransactionExecutorViaDataManagers(
         ethDataManager.isLastTxPending()
             .doOnSuccess {
                 if (it == true)
-                    throw TransactionInProgressException("Transaction pending, user cannot send funds at this time")
+                    throw TransactionInProgressException(
+                        "Transaction pending, user cannot send funds at this time")
             }
             .flatMap {
                 ethDataManager.fetchEthAddress()
@@ -367,7 +389,8 @@ internal class TransactionExecutorViaDataManagers(
         .zipWith(coinSelectionRemoteConfig.enabled)
         .subscribeOn(Schedulers.io())
         .map { (unspentOutputs, newCoinSelectionEnabled) ->
-            sendDataManager.getSpendableCoins(unspentOutputs, amount, feePerKb, newCoinSelectionEnabled)
+            sendDataManager.getSpendableCoins(unspentOutputs, amount, feePerKb,
+                newCoinSelectionEnabled)
         }
 
     private fun getUnspentOutputs(

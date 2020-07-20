@@ -75,7 +75,7 @@ enum class CryptoCurrency(
     USDT(
         networkTicker = "USDT",
         displayTicker = "USDT",
-        dp = 18,
+        dp = 6,
         userDp = 6,
         requiredConfirmations = 12,
         featureFlags = CryptoCurrency.CUSTODIAL_ONLY

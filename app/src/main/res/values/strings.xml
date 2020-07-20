@@ -269,6 +269,7 @@
     <string name="received_ethereum">Received Ether</string>
 
     <string name="received_usd_pax_1">Received USD Digital</string>
+    <string name="received_usdt">Received Tether</string>
 
     <string name="received_bitcoin_cash">Received Bitcoin Cash</string>
 
