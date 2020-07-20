@@ -579,7 +579,6 @@ class TransactionExecutorViaDataManagersTest {
         testObserver.assertValue(CryptoValue(CryptoCurrency.USDT, 100.toBigInteger()))
     }
 
-
     @Test
     fun `get maximum spendable BTC with priority fee`() {
         // Arrange

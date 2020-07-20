@@ -25,6 +25,7 @@ import piuk.blockchain.android.data.coinswebsocket.models.Output
 import piuk.blockchain.android.data.coinswebsocket.models.Parameters
 import piuk.blockchain.android.data.coinswebsocket.models.SocketRequest
 import piuk.blockchain.android.data.coinswebsocket.models.SocketResponse
+import piuk.blockchain.android.data.coinswebsocket.models.TokenTransfer
 import piuk.blockchain.android.data.coinswebsocket.models.TransactionState
 import piuk.blockchain.android.data.coinswebsocket.service.MessagesSocketHandler
 import piuk.blockchain.android.data.rxjava.RxUtil
@@ -262,35 +263,48 @@ class CoinsWebSocketStrategy(
             ethResponse.tokenTransfer.to.equals(ethAddress(), true)
         ) {
             val tokenTransaction = ethResponse.tokenTransfer
-
-            if (ethResponse.getTokenType() == CryptoCurrency.PAX) {
-                val marquee = stringUtils.getString(R.string.received_usd_pax_1) + " " +
-                    CryptoValue.fromMinor(CryptoCurrency.PAX, tokenTransaction.value)
-                        .toStringWithSymbol()
-                val text =
-                    marquee + " " + stringUtils.getString(R.string.from).toLowerCase(Locale.US) +
-                        " " + tokenTransaction.from
-
-                messagesSocketHandler?.triggerNotification(
-                    title, marquee, text
-                )
-
-                updatePaxTransactions()
-            } else if (ethResponse.getTokenType() == CryptoCurrency.USDT) {
-                val marquee = stringUtils.getString(R.string.received_usdt) + " " +
-                    CryptoValue.fromMinor(CryptoCurrency.USDT, tokenTransaction.value)
-                        .toStringWithSymbol()
-                val text =
-                    marquee + " " + stringUtils.getString(R.string.from).toLowerCase(Locale.US) +
-                        " " + tokenTransaction.from
-
-                messagesSocketHandler?.triggerNotification(
-                    title, marquee, text
-                )
-
-                updateUsdtTransactions()
+            when (ethResponse.getTokenType()) {
+                CryptoCurrency.PAX -> triggerPaxNotificationAndUpdate(tokenTransaction, title)
+                CryptoCurrency.USDT -> triggerUsdtNotificationAndUpdate(tokenTransaction, title)
+                else -> throw IllegalStateException("Unsupported ERC-20 token, have we added a new asset?")
             }
         }
+    }
+
+    private fun triggerUsdtNotificationAndUpdate(
+        tokenTransaction: TokenTransfer,
+        title: String
+    ) {
+        val marquee = stringUtils.getString(R.string.received_usdt) + " " +
+            CryptoValue.fromMinor(CryptoCurrency.USDT, tokenTransaction.value)
+                .toStringWithSymbol()
+        val text =
+            marquee + " " + stringUtils.getString(R.string.from).toLowerCase(Locale.US) +
+                " " + tokenTransaction.from
+
+        messagesSocketHandler?.triggerNotification(
+            title, marquee, text
+        )
+
+        updateUsdtTransactions()
+    }
+
+    private fun triggerPaxNotificationAndUpdate(
+        tokenTransaction: TokenTransfer,
+        title: String
+    ) {
+        val marquee = stringUtils.getString(R.string.received_usd_pax_1) + " " +
+            CryptoValue.fromMinor(CryptoCurrency.PAX, tokenTransaction.value)
+                .toStringWithSymbol()
+        val text =
+            marquee + " " + stringUtils.getString(R.string.from).toLowerCase(Locale.US) +
+                " " + tokenTransaction.from
+
+        messagesSocketHandler?.triggerNotification(
+            title, marquee, text
+        )
+
+        updatePaxTransactions()
     }
 
     private fun updateEthTransactions() {
@@ -583,8 +597,7 @@ class CoinsWebSocketStrategy(
     private fun EthResponse.getTokenType(): CryptoCurrency {
         require(entity == Entity.Account || entity == Entity.TokenAccount)
         return when {
-            entity == Entity.Account && !isErc20TransactionType(CryptoCurrency.PAX) &&
-                !isErc20TransactionType(CryptoCurrency.USDT) -> CryptoCurrency.ETHER
+            entity == Entity.Account && !isErc20Token() -> CryptoCurrency.ETHER
             entity == Entity.TokenAccount && isErc20ParamType(CryptoCurrency.PAX) ->
                 CryptoCurrency.PAX
             entity == Entity.TokenAccount && isErc20ParamType(CryptoCurrency.USDT) -> {
@@ -600,6 +613,10 @@ class CoinsWebSocketStrategy(
         param?.tokenAddress.equals(
             ethDataManager.getErc20TokenData(cryptoCurrency).contractAddress,
             true)
+
+    private fun EthResponse.isErc20Token(): Boolean =
+        isErc20TransactionType(CryptoCurrency.PAX) ||
+        isErc20TransactionType(CryptoCurrency.USDT)
 
     private fun EthResponse.isErc20TransactionType(cryptoCurrency: CryptoCurrency) =
         transaction?.to.equals(
