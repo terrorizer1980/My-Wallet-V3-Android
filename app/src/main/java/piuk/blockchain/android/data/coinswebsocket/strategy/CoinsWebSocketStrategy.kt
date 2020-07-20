@@ -240,8 +240,8 @@ class CoinsWebSocketStrategy(
         val ethResponse = gson.fromJson(response, EthResponse::class.java)
         val title = stringUtils.getString(R.string.app_name)
 
-        if (ethResponse.transaction != null && ethResponse.isEthButNotReferredToPax()
-            && ethResponse.isEthButNotReferredToUsdt()) {
+        if (ethResponse.transaction != null && ethResponse.isEthButNotReferredToPax() &&
+            ethResponse.isEthButNotReferredToUsdt()) {
             val transaction: EthTransaction = ethResponse.transaction
             if (transaction.state == TransactionState.CONFIRMED &&
                 transaction.to.equals(ethAddress(), true)
