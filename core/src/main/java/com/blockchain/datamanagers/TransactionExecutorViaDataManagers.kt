@@ -150,7 +150,7 @@ internal class TransactionExecutorViaDataManagers(
                             amount = amount)
                     }
                     else -> {
-                        TODO("this should not happen, did we add a new ERC-20 asset?")
+                        throw IllegalStateException("This should not happen, did we add a new ERC-20 asset?")
                     }
                 }
             }

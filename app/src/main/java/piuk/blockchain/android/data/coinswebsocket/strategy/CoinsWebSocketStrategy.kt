@@ -591,7 +591,7 @@ class CoinsWebSocketStrategy(
                 CryptoCurrency.USDT
             }
             else -> {
-                TODO("This should never trigger, did we add a new ERC20 token?")
+                throw IllegalStateException("This should never trigger, did we add a new ERC20 token?")
             }
         }
     }
