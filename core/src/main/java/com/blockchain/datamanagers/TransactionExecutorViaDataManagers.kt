@@ -42,7 +42,8 @@ import java.math.BigInteger
 internal class TransactionExecutorViaDataManagers(
     private val payloadDataManager: PayloadDataManager,
     private val ethDataManager: EthDataManager,
-    private val erc20Account: Erc20Account,
+    private val paxAccount: Erc20Account,
+    private val usdtAccount: Erc20Account,
     private val sendDataManager: SendDataManager,
     private val addressResolver: AddressResolver,
     private val accountLookup: AccountLookup,
@@ -129,13 +130,29 @@ internal class TransactionExecutorViaDataManagers(
         return ethDataManager.fetchEthAddress()
             .map { ethDataManager.getEthResponseModel()!!.getNonce() }
             .map {
-                erc20Account.createTransaction(
-                    nonce = it,
-                    to = receivingAddress,
-                    contractAddress = ethDataManager.getErc20TokenData(asset).contractAddress,
-                    gasPriceWei = feeWei,
-                    gasLimitGwei = ethFees.gasLimitInGwei,
-                    amount = amount)
+                when (asset) {
+                    CryptoCurrency.PAX -> {
+                        paxAccount.createTransaction(
+                            nonce = it,
+                            to = receivingAddress,
+                            contractAddress = ethDataManager.getErc20TokenData(asset).contractAddress,
+                            gasPriceWei = feeWei,
+                            gasLimitGwei = ethFees.gasLimitInGwei,
+                            amount = amount)
+                    }
+                    CryptoCurrency.USDT -> {
+                        usdtAccount.createTransaction(
+                            nonce = it,
+                            to = receivingAddress,
+                            contractAddress = ethDataManager.getErc20TokenData(asset).contractAddress,
+                            gasPriceWei = feeWei,
+                            gasLimitGwei = ethFees.gasLimitInGwei,
+                            amount = amount)
+                    }
+                    else -> {
+                        TODO("this should not happen, did we add a new ERC-20 asset?")
+                    }
+                }
             }
     }
 
@@ -246,13 +263,13 @@ internal class TransactionExecutorViaDataManagers(
             .singleOrError()
 
     private fun getMaxSpendablePax(): Single<CryptoValue> =
-        erc20Account.getBalance()
+        paxAccount.getBalance()
             .map { CryptoValue.fromMinor(CryptoCurrency.PAX, it) }
             .doOnError { Timber.e(it) }
             .onErrorReturn { CryptoValue.ZeroPax }
 
     private fun getMaxSpendableUsdt(): Single<CryptoValue> =
-        erc20Account.getBalance()
+        usdtAccount.getBalance()
             .map { CryptoValue.fromMinor(CryptoCurrency.USDT, it) }
             .doOnError { Timber.e(it) }
             .onErrorReturn { CryptoValue.ZeroUsdt }

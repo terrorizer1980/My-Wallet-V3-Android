@@ -120,7 +120,8 @@ val coreModule = module {
             TransactionExecutorViaDataManagers(
                 payloadDataManager = get(),
                 ethDataManager = get(),
-                erc20Account = get(),
+                paxAccount = get(paxAccount),
+                usdtAccount = get(usdtAccount),
                 sendDataManager = get(),
                 addressResolver = get(),
                 accountLookup = get(),
