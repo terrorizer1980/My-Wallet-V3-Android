@@ -135,7 +135,8 @@ internal class TransactionExecutorViaDataManagers(
                         paxAccount.createTransaction(
                             nonce = it,
                             to = receivingAddress,
-                            contractAddress = ethDataManager.getErc20TokenData(asset).contractAddress,
+                            contractAddress = ethDataManager.getErc20TokenData(
+                                asset).contractAddress,
                             gasPriceWei = feeWei,
                             gasLimitGwei = ethFees.gasLimitInGwei,
                             amount = amount)
@@ -144,13 +145,15 @@ internal class TransactionExecutorViaDataManagers(
                         usdtAccount.createTransaction(
                             nonce = it,
                             to = receivingAddress,
-                            contractAddress = ethDataManager.getErc20TokenData(asset).contractAddress,
+                            contractAddress = ethDataManager.getErc20TokenData(
+                                asset).contractAddress,
                             gasPriceWei = feeWei,
                             gasLimitGwei = ethFees.gasLimitInGwei,
                             amount = amount)
                     }
                     else -> {
-                        throw IllegalStateException("This should not happen, did we add a new ERC-20 asset?")
+                        throw IllegalStateException(
+                            "This should not happen, did we add a new ERC-20 asset?")
                     }
                 }
             }
@@ -226,7 +229,8 @@ internal class TransactionExecutorViaDataManagers(
         feePerKb: BigInteger,
         useNewCoinSelection: Boolean
     ): BigInteger =
-        sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb, useNewCoinSelection).absoluteFee
+        sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb,
+            useNewCoinSelection).absoluteFee
 
     private fun AccountReference.BitcoinLike.getMaximumSpendable(
         fees: BitcoinLikeFees,
@@ -345,7 +349,8 @@ internal class TransactionExecutorViaDataManagers(
         ethDataManager.isLastTxPending()
             .doOnSuccess {
                 if (it == true)
-                    throw TransactionInProgressException("Transaction pending, user cannot send funds at this time")
+                    throw TransactionInProgressException(
+                        "Transaction pending, user cannot send funds at this time")
             }
             .flatMap {
                 ethDataManager.fetchEthAddress()
@@ -384,7 +389,8 @@ internal class TransactionExecutorViaDataManagers(
         .zipWith(coinSelectionRemoteConfig.enabled)
         .subscribeOn(Schedulers.io())
         .map { (unspentOutputs, newCoinSelectionEnabled) ->
-            sendDataManager.getSpendableCoins(unspentOutputs, amount, feePerKb, newCoinSelectionEnabled)
+            sendDataManager.getSpendableCoins(unspentOutputs, amount, feePerKb,
+                newCoinSelectionEnabled)
         }
 
     private fun getUnspentOutputs(

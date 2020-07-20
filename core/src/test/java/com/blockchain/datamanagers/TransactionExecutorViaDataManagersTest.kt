@@ -194,7 +194,8 @@ class TransactionExecutorViaDataManagersTest {
             .thenReturn(Observable.just(txHash))
 
         // Act
-        subject.executeTransaction(amount, destination, accountReference, ethereumNetworkFee, FeeType.Priority)
+        subject.executeTransaction(amount, destination, accountReference, ethereumNetworkFee,
+            FeeType.Priority)
             .test()
             .assertComplete()
 
@@ -455,7 +456,8 @@ class TransactionExecutorViaDataManagersTest {
                 )
             )
         )
-        whenever(accountLookup.getAccountFromAddressOrXPub(accountReference)) `it throws` IllegalArgumentException()
+        whenever(accountLookup.getAccountFromAddressOrXPub(
+            accountReference)) `it throws` IllegalArgumentException()
         // Act
         val testObserver =
             subject.executeTransaction(
@@ -495,10 +497,12 @@ class TransactionExecutorViaDataManagersTest {
                 )
             )
         )
-        whenever(accountLookup.getAccountFromAddressOrXPub(accountReference)) `it throws` IllegalArgumentException()
+        whenever(accountLookup.getAccountFromAddressOrXPub(
+            accountReference)) `it throws` IllegalArgumentException()
         // Act
         val testObserver =
-            subject.executeTransaction(amount, destination, accountReference, XlmFees(100.stroops(), 1.stroops()))
+            subject.executeTransaction(amount, destination, accountReference,
+                XlmFees(100.stroops(), 1.stroops()))
                 .test()
         // Assert
         testObserver.assertNotComplete().assertError(SendException::class.java)
@@ -554,7 +558,7 @@ class TransactionExecutorViaDataManagersTest {
 
         // Act
         val testObserver = subject.getMaximumSpendable(account, mock())
-                .test()
+            .test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertValue(CryptoValue(CryptoCurrency.PAX, 100.toBigInteger()))
@@ -676,7 +680,7 @@ class TransactionExecutorViaDataManagersTest {
         testObserver.assertValue(
             CryptoValue.fromMinor(CryptoCurrency.ETHER,
                 1_000_000_000_000_000_000L.toBigInteger() -
-                        ethereumNetworkFee.absoluteRegularFeeInWei.toBigInteger()
+                    ethereumNetworkFee.absoluteRegularFeeInWei.toBigInteger()
             )
         )
     }
@@ -831,8 +835,9 @@ class TransactionExecutorViaDataManagersTest {
         val amount = 150.stroops()
         val account = AccountReference.Xlm("", "")
         // Act
-        val testObserver = subject.getFeeForTransaction(amount, account, XlmFees(200.stroops(), 250.stroops()))
-            .test()
+        val testObserver =
+            subject.getFeeForTransaction(amount, account, XlmFees(200.stroops(), 250.stroops()))
+                .test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertValue(200.stroops())
