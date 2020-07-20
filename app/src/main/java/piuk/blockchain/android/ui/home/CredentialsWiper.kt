@@ -20,6 +20,5 @@ class CredentialsWiper(
         appUtil.restartApp(LauncherActivity::class.java)
         accessState.clearPin()
         paxAccount.clear()
-        paxAccount.clear()
     }
 }

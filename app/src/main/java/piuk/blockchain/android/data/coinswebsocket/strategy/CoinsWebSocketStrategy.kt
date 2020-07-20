@@ -60,7 +60,8 @@ class CoinsWebSocketStrategy(
     private val prefs: PersistentPrefs,
     private val accessState: AccessState,
     private val appUtil: AppUtil,
-    private val erc20Account: Erc20Account,
+    private val paxAccount: Erc20Account,
+    private val usdtAccount: Erc20Account,
     private val payloadDataManager: PayloadDataManager,
     private val bchDataManager: BchDataManager
 ) {
@@ -89,17 +90,18 @@ class CoinsWebSocketStrategy(
             }
         }
 
-        compositeDisposable += coinsWebSocket.responses.distinctUntilChanged().subscribe { response ->
-            val socketResponse = gson.fromJson(response, SocketResponse::class.java)
-            if (socketResponse.op == "on_change") checkForWalletChange(socketResponse.checksum)
-            when (socketResponse.coin) {
-                Coin.ETH -> handleEthTransaction(response)
-                Coin.BTC -> handleBtcTransaction(response)
-                Coin.BCH -> handleBchTransaction(response)
-                else -> {
+        compositeDisposable += coinsWebSocket.responses.distinctUntilChanged()
+            .subscribe { response ->
+                val socketResponse = gson.fromJson(response, SocketResponse::class.java)
+                if (socketResponse.op == "on_change") checkForWalletChange(socketResponse.checksum)
+                when (socketResponse.coin) {
+                    Coin.ETH -> handleEthTransaction(response)
+                    Coin.BTC -> handleBtcTransaction(response)
+                    Coin.BCH -> handleBchTransaction(response)
+                    else -> {
+                    }
                 }
             }
-        }
     }
 
     private fun checkForWalletChange(checksum: String?) {
@@ -194,7 +196,8 @@ class CoinsWebSocketStrategy(
         val transaction = bchResponse.transaction ?: return
 
         val (inAddr, totalValue) =
-            handleTransactionInputsAndOutputs(transaction.inputs, transaction.outputs, transaction.hash) { x ->
+            handleTransactionInputsAndOutputs(transaction.inputs, transaction.outputs,
+                transaction.hash) { x ->
                 bchDataManager.getLegacyAddressStringList().contains(x)
             }
 
@@ -204,7 +207,8 @@ class CoinsWebSocketStrategy(
 
         if (totalValue > BigDecimal.ZERO) {
             val amount = CryptoValue.fromMinor(CryptoCurrency.BCH, totalValue)
-            val marquee = stringUtils.getString(R.string.received_bitcoin_cash) + amount.toStringWithSymbol()
+            val marquee =
+                stringUtils.getString(R.string.received_bitcoin_cash) + amount.toStringWithSymbol()
 
             var text = marquee
             text += " ${stringUtils.getString(R.string.from).toLowerCase(Locale.US)} $inAddr"
@@ -217,30 +221,35 @@ class CoinsWebSocketStrategy(
     private fun updateBtcBalancesAndTransactions() {
         payloadDataManager.updateAllBalances()
             .andThen(payloadDataManager.updateAllTransactions())
-            .doOnComplete { rxBus.emitEvent(ActionEvent::class.java, WalletAndTransactionsUpdatedEvent()) }
+            .doOnComplete {
+                rxBus.emitEvent(ActionEvent::class.java, WalletAndTransactionsUpdatedEvent())
+            }
             .subscribe(IgnorableDefaultObserver<Any>())
     }
 
     private fun updateBchBalancesAndTransactions() {
         bchDataManager.updateAllBalances()
             .andThen(bchDataManager.getWalletTransactions(50, 0))
-            .doOnComplete { rxBus.emitEvent(ActionEvent::class.java, WalletAndTransactionsUpdatedEvent()) }
+            .doOnComplete {
+                rxBus.emitEvent(ActionEvent::class.java, WalletAndTransactionsUpdatedEvent())
+            }
             .subscribe(IgnorableDefaultObserver<List<TransactionSummary>>())
     }
 
     private fun handleEthTransaction(response: String) {
         val ethResponse = gson.fromJson(response, EthResponse::class.java)
+        val title = stringUtils.getString(R.string.app_name)
 
-        if (ethResponse.transaction != null && ethResponse.isEthButNotReferredToPax()) {
+        if (ethResponse.transaction != null && ethResponse.isEthButNotReferredToPax()
+            && ethResponse.isEthButNotReferredToUsdt()) {
             val transaction: EthTransaction = ethResponse.transaction
             if (transaction.state == TransactionState.CONFIRMED &&
                 transaction.to.equals(ethAddress(), true)
             ) {
-                val title = stringUtils.getString(R.string.app_name)
                 val marquee = stringUtils.getString(R.string.received_ethereum) + " " +
-                        Convert.fromWei(BigDecimal(transaction.value), Convert.Unit.ETHER) + " ETH"
-                val text =
-                    marquee + " " + stringUtils.getString(R.string.from).toLowerCase(Locale.US) + " " + transaction.from
+                    Convert.fromWei(BigDecimal(transaction.value), Convert.Unit.ETHER) + " ETH"
+                val text = marquee + " " + stringUtils.getString(R.string.from)
+                        .toLowerCase(Locale.US) + " " + transaction.from
 
                 messagesSocketHandler?.triggerNotification(
                     title, marquee, text
@@ -255,17 +264,33 @@ class CoinsWebSocketStrategy(
         ) {
             val tokenTransaction = ethResponse.tokenTransfer
 
-            val title = stringUtils.getString(R.string.app_name)
-            val marquee = stringUtils.getString(R.string.received_usd_pax_1) + " " +
-                    CryptoValue.fromMinor(CryptoCurrency.PAX, tokenTransaction.value).toStringWithSymbol()
-            val text =
-                marquee + " " + stringUtils.getString(R.string.from).toLowerCase(Locale.US) +
+            if (ethResponse.isEthButNotReferredToUsdt()) {
+                val marquee = stringUtils.getString(R.string.received_usd_pax_1) + " " +
+                    CryptoValue.fromMinor(CryptoCurrency.PAX, tokenTransaction.value)
+                        .toStringWithSymbol()
+                val text =
+                    marquee + " " + stringUtils.getString(R.string.from).toLowerCase(Locale.US) +
                         " " + tokenTransaction.from
 
-            messagesSocketHandler?.triggerNotification(
-                title, marquee, text
-            )
-            updatePaxTransactions()
+                messagesSocketHandler?.triggerNotification(
+                    title, marquee, text
+                )
+
+                updatePaxTransactions()
+            } else if (ethResponse.isEthButNotReferredToPax()) {
+                val marquee = stringUtils.getString(R.string.received_usdt) + " " +
+                    CryptoValue.fromMinor(CryptoCurrency.USDT, tokenTransaction.value)
+                        .toStringWithSymbol()
+                val text =
+                    marquee + " " + stringUtils.getString(R.string.from).toLowerCase(Locale.US) +
+                        " " + tokenTransaction.from
+
+                messagesSocketHandler?.triggerNotification(
+                    title, marquee, text
+                )
+
+                updateUsdtTransactions()
+            }
         }
     }
 
@@ -295,10 +320,17 @@ class CoinsWebSocketStrategy(
     }
 
     private fun updatePaxTransactions() {
-        compositeDisposable += erc20Account.fetchAddressCompletable()
+        compositeDisposable += paxAccount.fetchAddressCompletable()
             .subscribe(
                 { messagesSocketHandler?.sendBroadcast(TransactionsUpdatedEvent()) },
                 { throwable -> Timber.e(throwable, "downloadPaxTransactions failed") })
+    }
+
+    private fun updateUsdtTransactions() {
+        compositeDisposable += usdtAccount.fetchAddressCompletable()
+            .subscribe(
+                { messagesSocketHandler?.sendBroadcast(TransactionsUpdatedEvent()) },
+                { throwable -> Timber.e(throwable, "downloadUsdtTransactions failed") })
     }
 
     fun close() {
@@ -346,8 +378,9 @@ class CoinsWebSocketStrategy(
                     tokenAddress = input.erc20PaxContractAddress
                 ))))
 
-            coinsWebSocket.send(gson.toJson(SocketRequest.UnSubscribeRequest(Entity.Wallet, Coin.None,
-                Parameters.Guid(input.guid)))
+            coinsWebSocket.send(
+                gson.toJson(SocketRequest.UnSubscribeRequest(Entity.Wallet, Coin.None,
+                    Parameters.Guid(input.guid)))
             )
         }
     }
@@ -465,18 +498,22 @@ class CoinsWebSocketStrategy(
     }
 
     private fun erc20PaxContractAddress(): String =
-        ethDataManager.getEthWallet()?.getErc20TokenData(Erc20TokenData.PAX_CONTRACT_NAME)?.contractAddress
+        ethDataManager.getEthWallet()
+            ?.getErc20TokenData(Erc20TokenData.PAX_CONTRACT_NAME)?.contractAddress
             ?: ""
 
     private fun erc20UsdtContractAddress(): String =
-        ethDataManager.getEthWallet()?.getErc20TokenData(Erc20TokenData.USDT_CONTRACT_NAME)?.contractAddress
+        ethDataManager.getEthWallet()
+            ?.getErc20TokenData(Erc20TokenData.USDT_CONTRACT_NAME)?.contractAddress
             ?: ""
 
     private fun erc20Address(): String =
-        ethDataManager.getEthWallet()?.account?.address ?: swipeToReceiveHelper.getEthReceiveAddress()
+        ethDataManager.getEthWallet()?.account?.address
+            ?: swipeToReceiveHelper.getEthReceiveAddress()
 
     private fun ethAddress(): String =
-        ethDataManager.getEthWallet()?.account?.address ?: swipeToReceiveHelper.getEthReceiveAddress()
+        ethDataManager.getEthWallet()?.account?.address
+            ?: swipeToReceiveHelper.getEthReceiveAddress()
 
     private fun subscribe(coinWebSocketInput: CoinWebSocketInput) {
 
@@ -545,8 +582,14 @@ class CoinsWebSocketStrategy(
     }
 
     private fun EthResponse.isEthButNotReferredToPax() = entity == Entity.Account &&
-            !transaction?.to.equals(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress,
-                true)
+        !transaction?.to.equals(
+            ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress,
+            true)
+
+    private fun EthResponse.isEthButNotReferredToUsdt() = entity == Entity.Account &&
+        !transaction?.to.equals(
+            ethDataManager.getErc20TokenData(CryptoCurrency.USDT).contractAddress,
+            true)
 
     private fun PayloadDataManager.totalAccounts(): Int =
         wallet?.hdWallets?.get(0)?.accounts?.size ?: 0
