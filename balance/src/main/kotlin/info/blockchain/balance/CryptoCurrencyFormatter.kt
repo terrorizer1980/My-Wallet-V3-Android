@@ -78,7 +78,7 @@ internal class CryptoCurrencyFormatter(locale: Locale) {
         }
         CryptoCurrency.STX -> stxFormat
         CryptoCurrency.ALGO -> algFormat
-        CryptoCurrency.USDT ->  when (displayMode) {
+        CryptoCurrency.USDT -> when (displayMode) {
             FormatPrecision.Short -> usdtShortFormat
             FormatPrecision.Full -> usdtFormat
         }
