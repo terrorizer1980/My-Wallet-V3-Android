@@ -47,6 +47,7 @@ internal class CryptoCurrencyFormatter(locale: Locale) {
     private val stxFormat = createCryptoDecimalFormat(locale, CryptoCurrency.STX.dp)
     private val algFormat = createCryptoDecimalFormat(locale, CryptoCurrency.ALGO.dp)
     private val usdtFormat = createCryptoDecimalFormat(locale, CryptoCurrency.USDT.dp)
+    private val usdtShortFormat = createCryptoDecimalFormat(locale, CryptoCurrency.USDT.userDp)
 
     fun format(
         cryptoValue: CryptoValue,
@@ -77,7 +78,10 @@ internal class CryptoCurrencyFormatter(locale: Locale) {
         }
         CryptoCurrency.STX -> stxFormat
         CryptoCurrency.ALGO -> algFormat
-        CryptoCurrency.USDT -> usdtFormat
+        CryptoCurrency.USDT ->  when (displayMode) {
+            FormatPrecision.Short -> usdtShortFormat
+            FormatPrecision.Full -> usdtFormat
+        }
     }
 
     private fun DecimalFormat.formatWithUnit(value: BigDecimal, symbol: String) =
