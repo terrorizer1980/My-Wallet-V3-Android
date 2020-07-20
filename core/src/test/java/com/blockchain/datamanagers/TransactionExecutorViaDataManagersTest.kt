@@ -58,7 +58,8 @@ class TransactionExecutorViaDataManagersTest {
     private lateinit var subject: TransactionExecutor
     private val payloadDataManager: PayloadDataManager = mock()
     private val ethDataManager: EthDataManager = mock()
-    private val erc20Account: Erc20Account = mock()
+    private val paxAccount: Erc20Account = mock()
+    private val usdtAccount: Erc20Account = mock()
     private val sendDataManager: SendDataManager = mock()
     private val defaultAccountDataManager: DefaultAccountDataManager = mock()
     private val ethereumAccountWrapper: EthereumAccountWrapper = mock()
@@ -82,7 +83,8 @@ class TransactionExecutorViaDataManagersTest {
         subject = TransactionExecutorViaDataManagers(
             payloadDataManager,
             ethDataManager,
-            erc20Account,
+            paxAccount,
+            usdtAccount,
             sendDataManager,
             addressResolver,
             accountLookup,
@@ -548,7 +550,7 @@ class TransactionExecutorViaDataManagersTest {
         // Arrange
         val account = AccountReference.Pax("", "", "")
 
-        whenever(erc20Account.getBalance()).thenReturn(Single.just(100.toBigInteger()))
+        whenever(paxAccount.getBalance()).thenReturn(Single.just(100.toBigInteger()))
 
         // Act
         val testObserver = subject.getMaximumSpendable(account, mock())
@@ -557,6 +559,22 @@ class TransactionExecutorViaDataManagersTest {
         testObserver.assertComplete()
         testObserver.assertValue(CryptoValue(CryptoCurrency.PAX, 100.toBigInteger()))
     }
+
+    @Test
+    fun `get maximum spendable USDT`() {
+        // Arrange
+        val account = AccountReference.Usdt("", "", "")
+
+        whenever(usdtAccount.getBalance()).thenReturn(Single.just(100.toBigInteger()))
+
+        // Act
+        val testObserver = subject.getMaximumSpendable(account, mock())
+            .test()
+        // Assert
+        testObserver.assertComplete()
+        testObserver.assertValue(CryptoValue(CryptoCurrency.USDT, 100.toBigInteger()))
+    }
+
 
     @Test
     fun `get maximum spendable BTC with priority fee`() {
