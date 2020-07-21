@@ -7,6 +7,7 @@ import com.blockchain.koin.pitAnnouncementFeatureFlag
 import io.reactivex.android.schedulers.AndroidSchedulers
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import piuk.blockchain.android.ui.dashboard.announcements.rule.AlgorandAvailableAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.BackupPhraseAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.BitpayAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.BuyBitcoinAnnouncement
@@ -24,6 +25,7 @@ import piuk.blockchain.android.ui.dashboard.announcements.rule.SimpleBuyFinishSi
 import piuk.blockchain.android.ui.dashboard.announcements.rule.SimpleBuyPendingBuyAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.StxCompleteAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.SwapAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.TetherAvailableAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.TransferBitcoinAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.TwoFAAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.VerifyEmailAnnouncement
@@ -208,6 +210,18 @@ val dashboardAnnouncementsModule = module {
                 dismissRecorder = get(),
                 analytics = get(),
                 queries = get()
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            AlgorandAvailableAnnouncement(
+                dismissRecorder = get()
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            TetherAvailableAnnouncement(
+                dismissRecorder = get()
             )
         }.bind(AnnouncementRule::class)
     }

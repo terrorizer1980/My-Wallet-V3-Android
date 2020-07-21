@@ -25,8 +25,9 @@ internal class AccountLookup(
                     .filter { it.xpub == xpub }
                     .first()
             }
-            CryptoCurrency.ETHER -> ethDataManager.getEthWallet()!!.account
-            CryptoCurrency.PAX -> ethDataManager.getEthWallet()!!.account
+            CryptoCurrency.ETHER,
+            CryptoCurrency.PAX,
+            CryptoCurrency.USDT -> ethDataManager.getEthWallet()!!.account
             CryptoCurrency.XLM -> throw IllegalArgumentException(
                 "Access to the XLM Json data is not allowed or required"
             )

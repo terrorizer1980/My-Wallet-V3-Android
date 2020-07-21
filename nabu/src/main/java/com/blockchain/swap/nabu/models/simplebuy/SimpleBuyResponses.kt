@@ -58,7 +58,13 @@ data class SimpleBuyAllBalancesResponse(
     @Json(name = "PAX")
     val PAX: SimpleBuyBalanceResponse? = null,
     @Json(name = "ALGO")
-    val ALGO: SimpleBuyBalanceResponse? = null
+    val ALGO: SimpleBuyBalanceResponse? = null,
+    @Json(name = "USDT")
+    val USDT: SimpleBuyBalanceResponse? = null,
+    @Json(name = "EUR")
+    val EUR: SimpleBuyBalanceResponse? = null,
+    @Json(name = "GBP")
+    val GBP: SimpleBuyBalanceResponse? = null
 ) {
     operator fun get(ccy: CryptoCurrency): String? {
         return when (ccy) {
@@ -68,6 +74,15 @@ data class SimpleBuyAllBalancesResponse(
             CryptoCurrency.XLM -> XLM
             CryptoCurrency.PAX -> PAX
             CryptoCurrency.ALGO -> ALGO
+            CryptoCurrency.USDT -> USDT
+            else -> null
+        }?.available
+    }
+
+    operator fun get(fiat: String): String? {
+        return when (fiat) {
+            "EUR" -> EUR
+            "GBP" -> GBP
             else -> null
         }?.available
     }

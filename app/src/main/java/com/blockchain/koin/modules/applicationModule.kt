@@ -17,10 +17,14 @@ import com.blockchain.koin.gbp
 import com.blockchain.koin.interestAccount
 import com.blockchain.koin.moshiExplorerRetrofit
 import com.blockchain.koin.pax
+import com.blockchain.koin.paxAccount
 import com.blockchain.koin.paxStrategy
 import com.blockchain.koin.payloadScopeQualifier
 import com.blockchain.koin.pitFeatureFlag
 import com.blockchain.koin.simpleBuyFeatureFlag
+import com.blockchain.koin.usdt
+import com.blockchain.koin.usdtAccount
+import com.blockchain.koin.usdtStrategy
 import com.blockchain.koin.xlm
 import com.blockchain.koin.xlmStrategy
 import com.blockchain.network.websocket.Options
@@ -45,6 +49,7 @@ import piuk.blockchain.android.accounts.BchAccountListAdapter
 import piuk.blockchain.android.accounts.BtcAccountListAdapter
 import piuk.blockchain.android.accounts.EthAccountListAdapter
 import piuk.blockchain.android.accounts.PaxAccountListAdapter
+import piuk.blockchain.android.accounts.UsdtAccountListAdapter
 import piuk.blockchain.android.cards.CardModel
 import piuk.blockchain.android.cards.partners.EverypayCardActivator
 import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
@@ -114,6 +119,7 @@ import piuk.blockchain.android.ui.send.strategy.PaxSendStrategy
 import piuk.blockchain.android.ui.send.strategy.ResourceSendFundsResultLocalizer
 import piuk.blockchain.android.ui.send.strategy.SendFundsResultLocalizer
 import piuk.blockchain.android.ui.send.strategy.SendStrategy
+import piuk.blockchain.android.ui.send.strategy.TetherSendStrategy
 import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
 import piuk.blockchain.android.ui.settings.SettingsPresenter
 import piuk.blockchain.android.ui.ssl.SSLVerifyPresenter
@@ -137,6 +143,7 @@ import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.erc20.PaxAccount
+import piuk.blockchain.androidcore.data.erc20.UsdtAccount
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.SSLVerifyUtil
@@ -168,7 +175,7 @@ val applicationModule = module {
     scope(payloadScopeQualifier) {
         factory {
             EthDataManager(
-                payloadManager = get(),
+                payloadDataManager = get(),
                 ethAccountApi = get(),
                 ethDataStore = get(),
                 walletOptionsDataManager = get(),
@@ -179,8 +186,16 @@ val applicationModule = module {
             )
         }
 
-        factory {
+        factory(paxAccount) {
             PaxAccount(
+                ethDataManager = get(),
+                dataStore = get(),
+                environmentSettings = get()
+            )
+        }.bind(Erc20Account::class)
+
+        factory(usdtAccount) {
+            UsdtAccount(
                 ethDataManager = get(),
                 dataStore = get(),
                 environmentSettings = get()
@@ -230,7 +245,7 @@ val applicationModule = module {
                 bchDataManager = get(),
                 xlmDataManager = get(),
                 environmentSettings = get(),
-                paxAccount = get(),
+                paxAccount = get(paxAccount),
                 crashLogger = get()
             )
         }
@@ -260,7 +275,8 @@ val applicationModule = module {
         scoped {
             CredentialsWiper(
                 payloadManagerWiper = get(),
-                paxAccount = get(),
+                paxAccount = get(paxAccount),
+                usdtAccount = get(usdtAccount),
                 accessState = get(),
                 appUtil = get()
             )
@@ -317,7 +333,8 @@ val applicationModule = module {
                 swipeToReceiveHelper = get(),
                 stringUtils = get(),
                 gson = get(),
-                erc20Account = get(),
+                paxAccount = get(paxAccount),
+                usdtAccount = get(usdtAccount),
                 payloadDataManager = get(),
                 bchDataManager = get(),
                 rxBus = get(),
@@ -433,6 +450,7 @@ val applicationModule = module {
                 etherStrategy = get(etherStrategy),
                 xlmStrategy = get(xlmStrategy),
                 paxStrategy = get(paxStrategy),
+                usdtStrategy = get(usdtStrategy),
                 prefs = get(),
                 exchangeRates = get(),
                 stringUtils = get(),
@@ -539,7 +557,27 @@ val applicationModule = module {
                 walletAccountHelper = get(),
                 payloadDataManager = get(),
                 ethDataManager = get(),
-                paxAccount = get(),
+                paxAccount = get(paxAccount),
+                stringUtils = get(),
+                dynamicFeeCache = get(),
+                feeDataManager = get(),
+                exchangeRates = get(),
+                environmentConfig = get(),
+                currencyState = get(),
+                nabuToken = get(),
+                nabuDataManager = get(),
+                pitLinking = get(),
+                analytics = get(),
+                prefs = get()
+            )
+        }
+
+        factory<SendStrategy<SendView>>(usdtStrategy) {
+            TetherSendStrategy(
+                walletAccountHelper = get(),
+                payloadDataManager = get(),
+                ethDataManager = get(),
+                usdtAccount = get(usdtAccount),
                 stringUtils = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),
@@ -889,6 +927,7 @@ val applicationModule = module {
         factory(bch) { BchAccountListAdapter(get()) }.bind(AccountList::class)
         factory(eth) { EthAccountListAdapter(get()) }.bind(AccountList::class)
         factory(pax) { PaxAccountListAdapter(get(), get()) }.bind(AccountList::class)
+        factory(usdt) { UsdtAccountListAdapter(get(), get()) }.bind(AccountList::class)
 
         factory {
             AsyncAllAccountListImplementation(
@@ -897,7 +936,8 @@ val applicationModule = module {
                     CryptoCurrency.ETHER to get(eth),
                     CryptoCurrency.BCH to get(bch),
                     CryptoCurrency.XLM to get(xlm),
-                    CryptoCurrency.PAX to get(pax)
+                    CryptoCurrency.PAX to get(pax),
+                    CryptoCurrency.USDT to get(usdt)
                 )
             )
         }.bind(AsyncAllAccountList::class)

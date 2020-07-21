@@ -42,7 +42,8 @@ import java.math.BigInteger
 internal class TransactionExecutorViaDataManagers(
     private val payloadDataManager: PayloadDataManager,
     private val ethDataManager: EthDataManager,
-    private val erc20Account: Erc20Account,
+    private val paxAccount: Erc20Account,
+    private val usdtAccount: Erc20Account,
     private val sendDataManager: SendDataManager,
     private val addressResolver: AddressResolver,
     private val accountLookup: AccountLookup,
@@ -94,28 +95,32 @@ internal class TransactionExecutorViaDataManagers(
                     memo = memo
                 )
             ).logAnalyticsError(analytics).map { it.hash!! }
-            CryptoCurrency.PAX ->
-                sendPaxTransaction(fees as EthereumFees, destination, amount)
+            CryptoCurrency.PAX,
+            CryptoCurrency.USDT ->
+                sendErc20Transaction(fees as EthereumFees, destination, amount, amount.currency)
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
             CryptoCurrency.ALGO -> TODO("STUB: ALGO NOT IMPLEMENTED")
         }
 
-    private fun sendPaxTransaction(
+    private fun sendErc20Transaction(
         feeOptions: EthereumFees,
         receivingAddress: String,
-        cryptoValue: CryptoValue
-    ): Single<String> =
-        createPaxTransaction(feeOptions, receivingAddress, cryptoValue.amount)
-            .flatMap {
-                val ecKey = EthereumAccount.deriveECKey(payloadDataManager.wallet!!.hdWallets[0].masterKey, 0)
-                return@flatMap ethDataManager.signEthTransaction(it, ecKey)
-            }
-            .flatMap { ethDataManager.pushEthTx(it).logAnalyticsError(analytics) }
-            .flatMap { ethDataManager.setLastTxHashObservable(it, System.currentTimeMillis()) }
-            .subscribeOn(Schedulers.io())
-            .singleOrError()
+        cryptoValue: CryptoValue,
+        asset: CryptoCurrency
+    ) = createErc20Transaction(asset, feeOptions, receivingAddress, cryptoValue.toBigInteger())
+        .flatMap {
+            val ecKey =
+                EthereumAccount.deriveECKey(payloadDataManager.wallet!!.hdWallets[0].masterKey,
+                    0)
+            return@flatMap ethDataManager.signEthTransaction(it, ecKey)
+        }
+        .flatMap { ethDataManager.pushEthTx(it).logAnalyticsError(analytics) }
+        .flatMap { ethDataManager.setLastTxHashObservable(it, System.currentTimeMillis()) }
+        .subscribeOn(Schedulers.io())
+        .singleOrError()
 
-    private fun createPaxTransaction(
+    private fun createErc20Transaction(
+        asset: CryptoCurrency,
         ethFees: EthereumFees,
         receivingAddress: String,
         amount: BigInteger
@@ -125,13 +130,32 @@ internal class TransactionExecutorViaDataManagers(
         return ethDataManager.fetchEthAddress()
             .map { ethDataManager.getEthResponseModel()!!.getNonce() }
             .map {
-                erc20Account.createTransaction(
-                    nonce = it,
-                    to = receivingAddress,
-                    contractAddress = ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress,
-                    gasPriceWei = feeWei,
-                    gasLimitGwei = ethFees.gasLimitInGwei,
-                    amount = amount)
+                when (asset) {
+                    CryptoCurrency.PAX -> {
+                        paxAccount.createTransaction(
+                            nonce = it,
+                            to = receivingAddress,
+                            contractAddress = ethDataManager.getErc20TokenData(
+                                asset).contractAddress,
+                            gasPriceWei = feeWei,
+                            gasLimitGwei = ethFees.gasLimitInGwei,
+                            amount = amount)
+                    }
+                    CryptoCurrency.USDT -> {
+                        usdtAccount.createTransaction(
+                            nonce = it,
+                            to = receivingAddress,
+                            contractAddress = ethDataManager.getErc20TokenData(
+                                asset).contractAddress,
+                            gasPriceWei = feeWei,
+                            gasLimitGwei = ethFees.gasLimitInGwei,
+                            amount = amount)
+                    }
+                    else -> {
+                        throw IllegalStateException(
+                            "This should not happen, did we add a new ERC-20 asset?")
+                    }
+                }
             }
     }
 
@@ -150,6 +174,7 @@ internal class TransactionExecutorViaDataManagers(
             is AccountReference.Xlm -> defaultAccountDataManager.getMaxSpendableAfterFees(feeType)
             is AccountReference.Pax -> getMaxSpendablePax()
             is AccountReference.Stx -> TODO("STUB: STX NOT IMPLEMENTED")
+            is AccountReference.Usdt -> getMaxSpendableUsdt()
         }
 
     override fun getFeeForTransaction(
@@ -165,6 +190,7 @@ internal class TransactionExecutorViaDataManagers(
                 (fees as BitcoinLikeFees).feeForType(feeType)
             )
             is AccountReference.Pax,
+            is AccountReference.Usdt,
             is AccountReference.Ethereum -> {
                 when (feeType) {
                     FeeType.Regular -> (fees as EthereumFees).absoluteRegularFeeInWei.just()
@@ -203,7 +229,8 @@ internal class TransactionExecutorViaDataManagers(
         feePerKb: BigInteger,
         useNewCoinSelection: Boolean
     ): BigInteger =
-        sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb, useNewCoinSelection).absoluteFee
+        sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb,
+            useNewCoinSelection).absoluteFee
 
     private fun AccountReference.BitcoinLike.getMaximumSpendable(
         fees: BitcoinLikeFees,
@@ -232,18 +259,24 @@ internal class TransactionExecutorViaDataManagers(
                     is FeeType.Regular -> fees.absoluteRegularFeeInWei
                     is FeeType.Priority -> fees.absolutePriorityFeeInWei
                 }
-                (it.getAddressResponse()!!.balance - fee.amount).max(BigInteger.ZERO)
+                (it.getAddressResponse()!!.balance - fee.toBigInteger()).max(BigInteger.ZERO)
             }
-            .map { CryptoValue.etherFromWei(it) }
+            .map { CryptoValue.fromMinor(CryptoCurrency.ETHER, it) }
             .doOnError { Timber.e(it) }
             .onErrorReturn { CryptoValue.ZeroEth }
             .singleOrError()
 
     private fun getMaxSpendablePax(): Single<CryptoValue> =
-        erc20Account.getBalance()
-            .map { CryptoValue.usdPaxFromMinor(it) }
+        paxAccount.getBalance()
+            .map { CryptoValue.fromMinor(CryptoCurrency.PAX, it) }
             .doOnError { Timber.e(it) }
             .onErrorReturn { CryptoValue.ZeroPax }
+
+    private fun getMaxSpendableUsdt(): Single<CryptoValue> =
+        usdtAccount.getBalance()
+            .map { CryptoValue.fromMinor(CryptoCurrency.USDT, it) }
+            .doOnError { Timber.e(it) }
+            .onErrorReturn { CryptoValue.ZeroUsdt }
 
     private fun sendBtcTransaction(
         amount: CryptoValue,
@@ -316,7 +349,8 @@ internal class TransactionExecutorViaDataManagers(
         ethDataManager.isLastTxPending()
             .doOnSuccess {
                 if (it == true)
-                    throw TransactionInProgressException("Transaction pending, user cannot send funds at this time")
+                    throw TransactionInProgressException(
+                        "Transaction pending, user cannot send funds at this time")
             }
             .flatMap {
                 ethDataManager.fetchEthAddress()
@@ -330,7 +364,7 @@ internal class TransactionExecutorViaDataManagers(
                             to = destination,
                             gasPriceWei = gasPrice,
                             gasLimitGwei = fees.gasLimitInGwei,
-                            weiValue = amount.amount
+                            weiValue = amount.toBigInteger()
                         )
                     }
                     .map {
@@ -340,7 +374,9 @@ internal class TransactionExecutorViaDataManagers(
                         )
                     }
                     .flatMap { ethDataManager.pushEthTx(it).logAnalyticsError(analytics) }
-                    .flatMap { ethDataManager.setLastTxHashObservable(it, System.currentTimeMillis()) }
+                    .flatMap {
+                        ethDataManager.setLastTxHashObservable(it, System.currentTimeMillis())
+                    }
                     .subscribeOn(Schedulers.io())
                     .singleOrError()
             }
@@ -353,7 +389,8 @@ internal class TransactionExecutorViaDataManagers(
         .zipWith(coinSelectionRemoteConfig.enabled)
         .subscribeOn(Schedulers.io())
         .map { (unspentOutputs, newCoinSelectionEnabled) ->
-            sendDataManager.getSpendableCoins(unspentOutputs, amount, feePerKb, newCoinSelectionEnabled)
+            sendDataManager.getSpendableCoins(unspentOutputs, amount, feePerKb,
+                newCoinSelectionEnabled)
         }
 
     private fun getUnspentOutputs(
@@ -363,11 +400,13 @@ internal class TransactionExecutorViaDataManagers(
         when (currency) {
             CryptoCurrency.BTC -> sendDataManager.getUnspentBtcOutputs(address)
             CryptoCurrency.BCH -> sendDataManager.getUnspentBchOutputs(address)
-            CryptoCurrency.ETHER -> throw IllegalArgumentException("Ether does not have unspent outputs")
-            CryptoCurrency.XLM -> throw IllegalArgumentException("Xlm does not have unspent outputs")
-            CryptoCurrency.PAX -> throw IllegalArgumentException("PAX does not have unspent outputs")
-            CryptoCurrency.STX -> throw IllegalArgumentException("STX not supported by this method")
-            CryptoCurrency.ALGO -> throw IllegalArgumentException("ALG not supported by this method")
+            CryptoCurrency.ETHER,
+            CryptoCurrency.XLM,
+            CryptoCurrency.PAX,
+            CryptoCurrency.STX,
+            CryptoCurrency.ALGO,
+            CryptoCurrency.USDT -> throw IllegalArgumentException(
+                "${currency.networkTicker} does not have unspent outputs")
         }.subscribeOn(Schedulers.io())
             .singleOrError()
 
@@ -385,7 +424,7 @@ internal class TransactionExecutorViaDataManagers(
             depositAddress,
             changeAddress,
             absoluteFee,
-            amount.amount
+            amount.toBigInteger()
         )
         CryptoCurrency.BCH -> sendDataManager.submitBchPayment(
             unspent,
@@ -393,13 +432,15 @@ internal class TransactionExecutorViaDataManagers(
             depositAddress,
             changeAddress,
             absoluteFee,
-            amount.amount
+            amount.toBigInteger()
         )
-        CryptoCurrency.ETHER -> throw IllegalArgumentException("Ether not supported by this method")
-        CryptoCurrency.XLM -> throw IllegalArgumentException("XLM not supported by this method")
-        CryptoCurrency.PAX -> throw IllegalArgumentException("PAX not supported by this method")
-        CryptoCurrency.STX -> throw IllegalArgumentException("STX not supported by this method")
-        CryptoCurrency.ALGO -> throw IllegalArgumentException("ALG not supported by this method")
+        CryptoCurrency.ETHER,
+        CryptoCurrency.XLM,
+        CryptoCurrency.PAX,
+        CryptoCurrency.STX,
+        CryptoCurrency.ALGO,
+        CryptoCurrency.USDT -> throw IllegalArgumentException(
+            "${amount.currency.networkTicker} not supported by this method")
     }.subscribeOn(Schedulers.io())
         .singleOrError()
 

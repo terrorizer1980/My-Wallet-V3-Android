@@ -12,7 +12,9 @@ import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.bitcoinCash
 import com.blockchain.testutils.ether
 import com.blockchain.testutils.lumens
+import com.blockchain.testutils.satoshi
 import com.blockchain.testutils.stroops
+import com.blockchain.testutils.wei
 import com.blockchain.transactions.Memo
 import com.blockchain.transactions.SendDetails
 import com.blockchain.transactions.SendException
@@ -56,7 +58,8 @@ class TransactionExecutorViaDataManagersTest {
     private lateinit var subject: TransactionExecutor
     private val payloadDataManager: PayloadDataManager = mock()
     private val ethDataManager: EthDataManager = mock()
-    private val erc20Account: Erc20Account = mock()
+    private val paxAccount: Erc20Account = mock()
+    private val usdtAccount: Erc20Account = mock()
     private val sendDataManager: SendDataManager = mock()
     private val defaultAccountDataManager: DefaultAccountDataManager = mock()
     private val ethereumAccountWrapper: EthereumAccountWrapper = mock()
@@ -80,7 +83,8 @@ class TransactionExecutorViaDataManagersTest {
         subject = TransactionExecutorViaDataManagers(
             payloadDataManager,
             ethDataManager,
-            erc20Account,
+            paxAccount,
+            usdtAccount,
             sendDataManager,
             addressResolver,
             accountLookup,
@@ -96,7 +100,7 @@ class TransactionExecutorViaDataManagersTest {
 
     @Test
     fun `execute ethereum transaction should set regular fee by default`() {
-        val amount = CryptoValue.etherFromWei(10.toBigInteger())
+        val amount = 10.wei()
         val destination = "DESTINATION"
         val account: EthereumAccount = mock()
         val combinedEthModel: CombinedEthModel = mock()
@@ -116,7 +120,7 @@ class TransactionExecutorViaDataManagersTest {
                 destination,
                 ethereumNetworkFee.gasPriceRegularInWei,
                 ethereumNetworkFee.gasLimitInGwei,
-                amount.amount
+                amount.toBigInteger()
             )
         ).thenReturn(rawTransaction)
         val deterministicKey: DeterministicKey = mock()
@@ -145,13 +149,13 @@ class TransactionExecutorViaDataManagersTest {
             to = destination,
             gasPriceWei = ethereumNetworkFee.gasPriceRegularInWei,
             gasLimitGwei = ethereumNetworkFee.gasLimitInGwei,
-            weiValue = amount.amount
+            weiValue = amount.toBigInteger()
         )
     }
 
     @Test
     fun `execute ethereum transaction with high priority fee`() {
-        val amount = CryptoValue.etherFromWei(10.toBigInteger())
+        val amount = 10.wei()
         val destination = "DESTINATION"
         val account: EthereumAccount = mock()
         val combinedEthModel: CombinedEthModel = mock()
@@ -171,7 +175,7 @@ class TransactionExecutorViaDataManagersTest {
                 destination,
                 ethereumNetworkFee.gasPricePriorityInWei,
                 ethereumNetworkFee.gasLimitInGwei,
-                amount.amount
+                amount.toBigInteger()
             )
         ).thenReturn(rawTransaction)
         val deterministicKey: DeterministicKey = mock()
@@ -190,7 +194,8 @@ class TransactionExecutorViaDataManagersTest {
             .thenReturn(Observable.just(txHash))
 
         // Act
-        subject.executeTransaction(amount, destination, accountReference, ethereumNetworkFee, FeeType.Priority)
+        subject.executeTransaction(amount, destination, accountReference, ethereumNetworkFee,
+            FeeType.Priority)
             .test()
             .assertComplete()
 
@@ -200,14 +205,14 @@ class TransactionExecutorViaDataManagersTest {
             to = destination,
             gasPriceWei = ethereumNetworkFee.gasPricePriorityInWei,
             gasLimitGwei = ethereumNetworkFee.gasLimitInGwei,
-            weiValue = amount.amount
+            weiValue = amount.toBigInteger()
         )
     }
 
     @Test
     fun `execute bitcoin transaction should set regular fee by default`() {
         // Arrange
-        val amount = CryptoValue.bitcoinFromSatoshis(10)
+        val amount = 10.satoshi()
         val destination = "DESTINATION"
         val account = Account().apply { xpub = "XPUB" }
         val accountReference = AccountReference.BitcoinLike(CryptoCurrency.BTC, "", "XPUB")
@@ -237,7 +242,7 @@ class TransactionExecutorViaDataManagersTest {
     @Test
     fun `execute bitcoin transaction with high priority fee`() {
         // Arrange
-        val amount = CryptoValue.bitcoinFromSatoshis(10)
+        val amount = 10.satoshi()
         val destination = "DESTINATION"
         val unspentOutputs = UnspentOutputs()
         val account = Account().apply { xpub = "XPUB" }
@@ -272,7 +277,7 @@ class TransactionExecutorViaDataManagersTest {
     @Test
     fun `execute bitcoin transaction verify entire flow`() {
         // Arrange
-        val amount = CryptoValue.bitcoinFromSatoshis(10)
+        val amount = 10.satoshi()
         val destination = "DESTINATION"
         val change = "CHANGE"
         val accountReference = AccountReference.BitcoinLike(CryptoCurrency.BTC, "", "XPUB")
@@ -297,7 +302,7 @@ class TransactionExecutorViaDataManagersTest {
                 destination,
                 change,
                 spendable.absoluteFee,
-                amount.amount
+                amount.toBigInteger()
             )
         ).thenReturn(Observable.just(txHash))
         // Act
@@ -313,7 +318,7 @@ class TransactionExecutorViaDataManagersTest {
             destination,
             change,
             spendable.absoluteFee,
-            amount.amount
+            amount.toBigInteger()
         )
     }
 
@@ -348,7 +353,7 @@ class TransactionExecutorViaDataManagersTest {
                 destination,
                 change,
                 spendable.absoluteFee,
-                amount.amount
+                amount.toBigInteger()
             )
         ).thenReturn(Observable.just(txHash))
         // Act
@@ -364,14 +369,14 @@ class TransactionExecutorViaDataManagersTest {
             destination,
             change,
             spendable.absoluteFee,
-            amount.amount
+            amount.toBigInteger()
         )
     }
 
     @Test
     fun `execute ethereum transaction verify entire flow`() {
         // Arrange
-        val amount = CryptoValue.etherFromWei(10.toBigInteger())
+        val amount = 10.wei()
         val destination = "DESTINATION"
         val account: EthereumAccount = mock()
         val combinedEthModel: CombinedEthModel = mock()
@@ -391,7 +396,7 @@ class TransactionExecutorViaDataManagersTest {
                 destination,
                 ethereumNetworkFee.gasPriceRegularInWei,
                 ethereumNetworkFee.gasLimitInGwei,
-                amount.amount
+                amount.toBigInteger()
             )
         ).thenReturn(rawTransaction)
         val deterministicKey: DeterministicKey = mock()
@@ -420,7 +425,7 @@ class TransactionExecutorViaDataManagersTest {
             destination,
             ethereumNetworkFee.gasPriceRegularInWei,
             ethereumNetworkFee.gasLimitInGwei,
-            amount.amount
+            amount.toBigInteger()
         )
     }
 
@@ -451,7 +456,8 @@ class TransactionExecutorViaDataManagersTest {
                 )
             )
         )
-        whenever(accountLookup.getAccountFromAddressOrXPub(accountReference)) `it throws` IllegalArgumentException()
+        whenever(accountLookup.getAccountFromAddressOrXPub(
+            accountReference)) `it throws` IllegalArgumentException()
         // Act
         val testObserver =
             subject.executeTransaction(
@@ -491,10 +497,12 @@ class TransactionExecutorViaDataManagersTest {
                 )
             )
         )
-        whenever(accountLookup.getAccountFromAddressOrXPub(accountReference)) `it throws` IllegalArgumentException()
+        whenever(accountLookup.getAccountFromAddressOrXPub(
+            accountReference)) `it throws` IllegalArgumentException()
         // Act
         val testObserver =
-            subject.executeTransaction(amount, destination, accountReference, XlmFees(100.stroops(), 1.stroops()))
+            subject.executeTransaction(amount, destination, accountReference,
+                XlmFees(100.stroops(), 1.stroops()))
                 .test()
         // Assert
         testObserver.assertNotComplete().assertError(SendException::class.java)
@@ -503,7 +511,7 @@ class TransactionExecutorViaDataManagersTest {
     @Test
     fun `execute ethereum transaction fails due to pending transaction`() {
         // Arrange
-        val amount = CryptoValue.etherFromWei(10.toBigInteger())
+        val amount = 10.wei()
         val destination = "DESTINATION"
         val account: EthereumAccount = mock()
         val accountReference = AccountReference.Ethereum("", "")
@@ -538,7 +546,7 @@ class TransactionExecutorViaDataManagersTest {
                 .test()
         // Assert
         testObserver.assertComplete()
-        testObserver.assertValue(CryptoValue.bitcoinFromSatoshis(10))
+        testObserver.assertValue(10.satoshi())
     }
 
     @Test
@@ -546,14 +554,29 @@ class TransactionExecutorViaDataManagersTest {
         // Arrange
         val account = AccountReference.Pax("", "", "")
 
-        whenever(erc20Account.getBalance()).thenReturn(Single.just(100.toBigInteger()))
+        whenever(paxAccount.getBalance()).thenReturn(Single.just(100.toBigInteger()))
 
         // Act
         val testObserver = subject.getMaximumSpendable(account, mock())
-                .test()
+            .test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertValue(CryptoValue(CryptoCurrency.PAX, 100.toBigInteger()))
+    }
+
+    @Test
+    fun `get maximum spendable USDT`() {
+        // Arrange
+        val account = AccountReference.Usdt("", "", "")
+
+        whenever(usdtAccount.getBalance()).thenReturn(Single.just(100.toBigInteger()))
+
+        // Act
+        val testObserver = subject.getMaximumSpendable(account, mock())
+            .test()
+        // Assert
+        testObserver.assertComplete()
+        testObserver.assertValue(CryptoValue(CryptoCurrency.USDT, 100.toBigInteger()))
     }
 
     @Test
@@ -579,7 +602,7 @@ class TransactionExecutorViaDataManagersTest {
         ).test()
         // Assert
         testObserver.assertComplete()
-        testObserver.assertValue(CryptoValue.bitcoinFromSatoshis(10))
+        testObserver.assertValue(10.satoshi())
     }
 
     @Test
@@ -654,9 +677,9 @@ class TransactionExecutorViaDataManagersTest {
         // Assert
         testObserver.assertComplete()
         testObserver.assertValue(
-            CryptoValue.etherFromWei(
+            CryptoValue.fromMinor(CryptoCurrency.ETHER,
                 1_000_000_000_000_000_000L.toBigInteger() -
-                        ethereumNetworkFee.absoluteRegularFeeInWei.amount
+                    ethereumNetworkFee.absoluteRegularFeeInWei.toBigInteger()
             )
         )
     }
@@ -722,7 +745,7 @@ class TransactionExecutorViaDataManagersTest {
             .test()
         // Assert
         testObserver.assertComplete()
-        testObserver.assertValue(CryptoValue.bitcoinFromSatoshis(500))
+        testObserver.assertValue(500.satoshi())
     }
 
     @Test
@@ -746,7 +769,7 @@ class TransactionExecutorViaDataManagersTest {
             .test()
         // Assert
         testObserver.assertComplete()
-        testObserver.assertValue(CryptoValue.bitcoinFromSatoshis(500))
+        testObserver.assertValue(500.satoshi())
     }
 
     @Test
@@ -771,7 +794,7 @@ class TransactionExecutorViaDataManagersTest {
                 .test()
         // Assert
         testObserver.assertComplete()
-        testObserver.assertValue(CryptoValue.bitcoinFromSatoshis(500))
+        testObserver.assertValue(500.satoshi())
     }
 
     @Test
@@ -811,8 +834,9 @@ class TransactionExecutorViaDataManagersTest {
         val amount = 150.stroops()
         val account = AccountReference.Xlm("", "")
         // Act
-        val testObserver = subject.getFeeForTransaction(amount, account, XlmFees(200.stroops(), 250.stroops()))
-            .test()
+        val testObserver =
+            subject.getFeeForTransaction(amount, account, XlmFees(200.stroops(), 250.stroops()))
+                .test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertValue(200.stroops())
