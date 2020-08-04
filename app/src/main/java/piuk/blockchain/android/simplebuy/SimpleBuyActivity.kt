@@ -153,15 +153,19 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
         KycNavHostActivity.startForResult(this, CampaignType.SimpleBuy, KYC_STARTED)
     }
 
+    override fun pop() {
+        onBackPressed()
+    }
+
     override fun hasMoreThanOneFragmentInTheStack(): Boolean =
         supportFragmentManager.backStackEntryCount > 1
 
     override fun goToCardPaymentScreen(addToBackStack: Boolean) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.content_frame, SimpleBuyCardPaymentFragment(), SimpleBuyCardPaymentFragment::class.simpleName)
+            .replace(R.id.content_frame, SimpleBuyPaymentFragment(), SimpleBuyPaymentFragment::class.simpleName)
             .apply {
                 if (addToBackStack) {
-                    addToBackStack(SimpleBuyCardPaymentFragment::class.simpleName)
+                    addToBackStack(SimpleBuyPaymentFragment::class.simpleName)
                 }
             }
             .commitAllowingStateLoss()

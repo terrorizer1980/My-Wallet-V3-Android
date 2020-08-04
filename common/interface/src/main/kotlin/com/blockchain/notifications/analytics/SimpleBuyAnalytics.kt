@@ -5,7 +5,6 @@ import info.blockchain.balance.CryptoCurrency
 enum class SimpleBuyAnalytics(override val event: String, override val params: Map<String, String> = emptyMap()) :
     AnalyticsEvent {
 
-    NOT_ELIGIBLE_FOR_FLOW("sb_not_eligible_for_flow"),
     SIMPLE_BUY_SIDE_NAV("side_nav_simple_buy"),
     INTRO_SCREEN_SHOW("sb_screen_shown"),
     I_WANT_TO_BUY_CRYPTO_BUTTON_CLICKED("sb_button_clicked"),
@@ -13,8 +12,6 @@ enum class SimpleBuyAnalytics(override val event: String, override val params: M
     I_WANT_TO_BUY_CRYPTO_ERROR("sb_want_to_buy_screen_error"),
 
     BUY_FORM_SHOWN("sb_buy_form_shown"),
-    BUY_MIN_CLICKED("sb_buy_min"),
-    BUY_MAX_CLICKED("sb_buy_max"),
 
     START_GOLD_FLOW("sb_kyc_start"),
     KYC_VERIFYING("sb_kyc_verifying"),
@@ -56,16 +53,34 @@ enum class SimpleBuyAnalytics(override val event: String, override val params: M
     CARD_BILLING_ADDRESS_SET("sb_billing_address_set"),
     CARD_3DS_COMPLETED("sb_three_d_secure_complete"),
     PAYMENT_METHODS_SHOWN("sb_payment_method_shown"),
-    REMOVE_CARD("sb_remove_card")
+    REMOVE_CARD("sb_remove_card"),
+
+    SETTINGS_ADD_CARD("sb_settings_add_card_clicked"),
+
+    REMOVE_BANK("sb_remove_bank"),
+
+    LINK_BANK_CLICKED("sb_link_bank_clicked"),
+    LINK_BANK_LOADING_ERROR("sb_link_bank_loading_error"),
+    LINK_BANK_SCREEN_SHOWN("sb_link_bank_screen_shown"),
 }
 
-fun buyConfirmClicked(amount: String, fiatCurrency: String): AnalyticsEvent = object : AnalyticsEvent {
-    override val event: String = "sb_buy_form_confirm_click"
-    override val params: Map<String, String> = mapOf(
-        "amount" to amount,
-        "currency" to fiatCurrency
-    )
-}
+fun buyConfirmClicked(amount: String, fiatCurrency: String, paymentMethod: String): AnalyticsEvent =
+    object : AnalyticsEvent {
+        override val event: String = "sb_buy_form_confirm_click"
+        override val params: Map<String, String> = mapOf(
+            "amount" to amount,
+            "paymentMethod" to paymentMethod,
+            "currency" to fiatCurrency
+        )
+    }
+
+fun eventWithPaymentMethod(analytics: SimpleBuyAnalytics, paymentMethod: String): AnalyticsEvent =
+    object : AnalyticsEvent {
+        override val event: String = analytics.event
+        override val params: Map<String, String> = mapOf(
+            "paymentMethod" to paymentMethod
+        )
+    }
 
 fun cryptoChanged(cryptoCurrency: CryptoCurrency): AnalyticsEvent = object : AnalyticsEvent {
     override val event: String = "sb_buy_form_crypto_changed"
@@ -108,6 +123,22 @@ fun bankFieldName(field: String): AnalyticsEvent = object : AnalyticsEvent {
         "field" to field
     )
 }
+
+fun linkBankFieldCopied(field: String, currency: String): AnalyticsEvent = object : AnalyticsEvent {
+    override val event: String = "sb_link_bank_details_copied"
+    override val params: Map<String, String> = mapOf(
+        "field" to field,
+        "currency" to currency
+    )
+}
+
+fun linkBankEventWithCurrency(analytics: SimpleBuyAnalytics, currency: String): AnalyticsEvent =
+    object : AnalyticsEvent {
+        override val event: String = analytics.event
+        override val params: Map<String, String> = mapOf(
+            "currency" to currency
+        )
+    }
 
 class PendingTransactionShown(fiatCurrency: String) : AnalyticsEvent {
     override val event: String = "sb_pending_modal_shown"

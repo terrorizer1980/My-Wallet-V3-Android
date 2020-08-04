@@ -5,7 +5,9 @@ import com.blockchain.swap.nabu.datamanagers.BillingAddress
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
 import com.blockchain.swap.nabu.datamanagers.CardToBeActivated
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.swap.nabu.datamanagers.FiatTransaction
 import com.blockchain.swap.nabu.datamanagers.OrderState
+import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.CardStatus
 import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.PaymentMethodType
@@ -23,7 +25,6 @@ import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.cards.CardIntent
 import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.util.AppUtil
-import java.lang.IllegalStateException
 import java.util.concurrent.TimeUnit
 
 class SimpleBuyInteractor(
@@ -39,6 +40,9 @@ class SimpleBuyInteractor(
         nabu.fetchNabuToken()
             .flatMap { custodialWalletManager.getBuyLimitsAndSupportedCryptoCurrencies(it, targetCurrency) }
             .trackLoading(appUtil.activityIndicator)
+
+    fun fetchTransactions(currency: String): Single<List<FiatTransaction>> =
+        custodialWalletManager.getTransactions(currency)
 
     fun fetchSupportedFiatCurrencies(): Single<SimpleBuyIntent.SupportedCurrenciesUpdated> =
         nabu.fetchNabuToken()
@@ -155,11 +159,17 @@ class SimpleBuyInteractor(
         tierService.tiers().flatMap { tier ->
             custodialWalletManager.fetchSuggestedPaymentMethod(fiatCurrency,
                 tier.isApprovedFor(KycTierLevel.GOLD)
-            ).map {
+            ).map { paymentMethods ->
                 SimpleBuyIntent.PaymentMethodsUpdated(
-                    it,
-                    tier.isApprovedFor(KycTierLevel.GOLD),
-                    preselectedId
+                    availablePaymentMethods = paymentMethods,
+                    canAddCard = tier.isApprovedFor(KycTierLevel.GOLD),
+                    canLinkFunds = tier.isApprovedFor(KycTierLevel.GOLD),
+                    preselectedId = if (tier.isApprovedFor(
+                            KycTierLevel.GOLD) || preselectedId != null) {
+                        preselectedId
+                    } else {
+                        PaymentMethod.UNDEFINED_PAYMENT_ID
+                    }
                 )
             }
         }

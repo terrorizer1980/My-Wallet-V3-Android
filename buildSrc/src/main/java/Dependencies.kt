@@ -4,11 +4,11 @@ object Versions {
 
     // Release info
     const val minSdk = 21
-    const val targetSdk = 28
+    const val targetSdk = 29
     const val compileSdk = 28
 
-    const val versionCode = 555
-    const val versionName = "6.35.1"
+    const val versionCode = 560
+    const val versionName = "6.36.2"
 
     const val buildTools = "28.0.3"
 
